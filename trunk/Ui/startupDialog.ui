@@ -1,0 +1,124 @@
+<ui version="4.0" >
+ <class>StartupDialogClass</class>
+ <widget class="QDialog" name="StartupDialogClass" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>672</width>
+    <height>332</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Startup</string>
+  </property>
+  <property name="modal" >
+   <bool>false</bool>
+  </property>
+  <layout class="QGridLayout" name="gridLayout" >
+   <item row="0" column="0" >
+    <widget class="QCommandLinkButton" name="buttonNewProject" >
+     <property name="text" >
+      <string>Nouveau projet (vide)</string>
+     </property>
+     <property name="iconSize" >
+      <size>
+       <width>64</width>
+       <height>64</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" >
+    <widget class="QCommandLinkButton" name="buttonNewProjectImage" >
+     <property name="text" >
+      <string>Nouveau projet (à partir d'une image)</string>
+     </property>
+     <property name="iconSize" >
+      <size>
+       <width>64</width>
+       <height>64</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" >
+    <widget class="QCommandLinkButton" name="buttonOpenProject" >
+     <property name="text" >
+      <string>Ouvrir un projet existant</string>
+     </property>
+     <property name="iconSize" >
+      <size>
+       <width>64</width>
+       <height>64</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" >
+    <widget class="QCommandLinkButton" name="buttonImportSTL" >
+     <property name="text" >
+      <string>Importer un fichier STL</string>
+     </property>
+     <property name="iconSize" >
+      <size>
+       <width>64</width>
+       <height>64</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+   <item rowspan="4" row="0" column="1" >
+    <widget class="QLabel" name="label" >
+     <property name="sizePolicy" >
+      <sizepolicy vsizetype="Expanding" hsizetype="Preferred" >
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text" >
+      <string>Créer un nouveau projet à partir de rien...</string>
+     </property>
+     <property name="alignment" >
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonNewProject</sender>
+   <signal>clicked()</signal>
+   <receiver>StartupDialogClass</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>170</x>
+     <y>45</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>335</x>
+     <y>165</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonOpenProject</sender>
+   <signal>clicked()</signal>
+   <receiver>StartupDialogClass</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>170</x>
+     <y>205</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>335</x>
+     <y>165</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

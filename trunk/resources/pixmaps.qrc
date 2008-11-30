@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="perso" >
+    <file>pixmaps/fil_arianne.PNG</file>
+  </qresource>
+</RCC>

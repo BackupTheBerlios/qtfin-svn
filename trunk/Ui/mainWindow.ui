@@ -1,0 +1,484 @@
+<ui version="4.0" >
+ <class>mainWindowClass</class>
+ <widget class="QMainWindow" name="mainWindowClass" >
+  <property name="enabled" >
+   <bool>true</bool>
+  </property>
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>939</width>
+    <height>635</height>
+   </rect>
+  </property>
+  <property name="sizePolicy" >
+   <sizepolicy vsizetype="Expanding" hsizetype="Expanding" >
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize" >
+   <size>
+    <width>800</width>
+    <height>600</height>
+   </size>
+  </property>
+  <property name="maximumSize" >
+   <size>
+    <width>16777215</width>
+    <height>16777215</height>
+   </size>
+  </property>
+  <property name="windowTitle" >
+   <string>Monofin - Draw mode</string>
+  </property>
+  <property name="windowIcon" >
+   <iconset resource="../resources/icons.qrc" >
+    <normaloff>:/SilkIconSet/icons/chart_line.png</normaloff>:/SilkIconSet/icons/chart_line.png</iconset>
+  </property>
+  <property name="unifiedTitleAndToolBarOnMac" >
+   <bool>false</bool>
+  </property>
+  <widget class="QWidget" name="centralwidget" >
+   <property name="sizePolicy" >
+    <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_3" >
+    <item>
+     <widget class="QLabel" name="label" >
+      <property name="frameShape" >
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <property name="frameShadow" >
+       <enum>QFrame::Plain</enum>
+      </property>
+      <property name="text" >
+       <string/>
+      </property>
+      <property name="pixmap" >
+       <pixmap resource="../resources/pixmaps.qrc" >:/perso/pixmaps/fil_arianne.PNG</pixmap>
+      </property>
+      <property name="alignment" >
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout" >
+      <item>
+       <widget class="QGraphicsView" name="graphicsView" >
+        <property name="minimumSize" >
+         <size>
+          <width>645</width>
+          <height>77</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QTabWidget" name="tabWidget" >
+        <property name="sizePolicy" >
+         <sizepolicy vsizetype="Expanding" hsizetype="Minimum" >
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize" >
+         <size>
+          <width>100</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="layoutDirection" >
+         <enum>Qt::LeftToRight</enum>
+        </property>
+        <property name="tabPosition" >
+         <enum>QTabWidget::West</enum>
+        </property>
+        <property name="tabShape" >
+         <enum>QTabWidget::Triangular</enum>
+        </property>
+        <property name="currentIndex" >
+         <number>1</number>
+        </property>
+        <property name="iconSize" >
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+        <widget class="QWidget" name="tab" >
+         <attribute name="title" >
+          <string>Librairie de formes</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_2" >
+          <item>
+           <widget class="QListWidget" name="listWidget_2" >
+            <property name="sizePolicy" >
+             <sizepolicy vsizetype="Expanding" hsizetype="Fixed" >
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximumSize" >
+             <size>
+              <width>90</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="frameShape" >
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow" >
+             <enum>QFrame::Sunken</enum>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tab_2" >
+         <attribute name="title" >
+          <string>Formes personnalisées</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout" >
+          <item>
+           <widget class="QListWidget" name="listWidget" >
+            <property name="sizePolicy" >
+             <sizepolicy vsizetype="Expanding" hsizetype="Fixed" >
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximumSize" >
+             <size>
+              <width>90</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="frameShape" >
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow" >
+             <enum>QFrame::Sunken</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButtonAddItem" >
+            <property name="text" >
+             <string>Ajouter</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButtonDeleteItem" >
+            <property name="text" >
+             <string>Supprimer</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QGridLayout" name="gridLayout" >
+      <item row="0" column="0" >
+       <widget class="QPushButton" name="prevButton" >
+        <property name="text" >
+         <string>&lt;&lt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2" >
+       <widget class="QPushButton" name="pushButtonPreview" >
+        <property name="text" >
+         <string>Prévisualiser</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3" >
+       <spacer name="horizontalSpacer" >
+        <property name="orientation" >
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0" >
+         <size>
+          <width>40</width>
+          <height>4</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="0" column="4" >
+       <widget class="QPushButton" name="nextButton" >
+        <property name="text" >
+         <string>>></string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" >
+       <spacer name="horizontalSpacer_2" >
+        <property name="orientation" >
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0" >
+         <size>
+          <width>40</width>
+          <height>4</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>939</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_File" >
+    <property name="title" >
+     <string>&amp;File</string>
+    </property>
+    <addaction name="action_New" />
+    <addaction name="action_Open" />
+    <addaction name="separator" />
+    <addaction name="actionE_xit" />
+   </widget>
+   <widget class="QMenu" name="menu_Help" >
+    <property name="title" >
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="action_About_Monofin" />
+    <addaction name="separator" />
+    <addaction name="actionAbout_Qt" />
+   </widget>
+   <widget class="QMenu" name="menu_Edit" >
+    <property name="title" >
+     <string>&amp;Edit</string>
+    </property>
+    <addaction name="actionUndo" />
+    <addaction name="actionRedo" />
+    <addaction name="separator" />
+    <addaction name="actionToogle_Grid" />
+    <addaction name="separator" />
+    <addaction name="action_Preferences" />
+   </widget>
+   <widget class="QMenu" name="menu_Draw" >
+    <property name="title" >
+     <string>&amp;Draw</string>
+    </property>
+    <addaction name="actionAdd_Point" />
+    <addaction name="actionRemove_Point" />
+    <addaction name="separator" />
+    <addaction name="actionAdd_vector" />
+    <addaction name="actionRemove_vector" />
+   </widget>
+   <addaction name="menu_File" />
+   <addaction name="menu_Edit" />
+   <addaction name="menu_Draw" />
+   <addaction name="menu_Help" />
+  </widget>
+  <widget class="QStatusBar" name="statusBar" />
+  <widget class="QToolBar" name="toolBar" >
+   <property name="windowTitle" >
+    <string>toolBar</string>
+   </property>
+   <property name="movable" >
+    <bool>true</bool>
+   </property>
+   <property name="allowedAreas" >
+    <set>Qt::LeftToolBarArea|Qt::RightToolBarArea|Qt::TopToolBarArea</set>
+   </property>
+   <property name="floatable" >
+    <bool>false</bool>
+   </property>
+   <attribute name="toolBarArea" >
+    <enum>LeftToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak" >
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionUndo" />
+   <addaction name="actionRedo" />
+   <addaction name="separator" />
+   <addaction name="actionDefault_Cursor" />
+   <addaction name="actionMove" />
+   <addaction name="separator" />
+   <addaction name="actionAdd_Point" />
+   <addaction name="actionRemove_Point" />
+   <addaction name="actionAdd_vector" />
+   <addaction name="actionRemove_vector" />
+   <addaction name="separator" />
+   <addaction name="actionToogle_Grid" />
+  </widget>
+  <action name="action_New" >
+   <property name="icon" >
+    <iconset resource="../resources/icons.qrc" >
+     <normaloff>:/SilkIconSet/icons/new.png</normaloff>:/SilkIconSet/icons/new.png</iconset>
+   </property>
+   <property name="text" >
+    <string>&amp;New</string>
+   </property>
+  </action>
+  <action name="action_Open" >
+   <property name="enabled" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>&amp;Open</string>
+   </property>
+  </action>
+  <action name="actionE_xit" >
+   <property name="icon" >
+    <iconset resource="../resources/icons.qrc" >
+     <normaloff>:/SilkIconSet/icons/door_out.png</normaloff>:/SilkIconSet/icons/door_out.png</iconset>
+   </property>
+   <property name="text" >
+    <string>E&amp;xit</string>
+   </property>
+  </action>
+  <action name="action_About_Monofin" >
+   <property name="icon" >
+    <iconset resource="../resources/icons.qrc" >
+     <normaloff>:/SilkIconSet/icons/help.png</normaloff>:/SilkIconSet/icons/help.png</iconset>
+   </property>
+   <property name="text" >
+    <string>&amp;About Monofin</string>
+   </property>
+  </action>
+  <action name="actionAbout_Qt" >
+   <property name="text" >
+    <string>About &amp;Qt</string>
+   </property>
+  </action>
+  <action name="actionUndo" >
+   <property name="icon" >
+    <iconset resource="../resources/icons.qrc" >
+     <normaloff>:/SilkIconSet/icons/arrow_undo.png</normaloff>:/SilkIconSet/icons/arrow_undo.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Undo</string>
+   </property>
+  </action>
+  <action name="actionRedo" >
+   <property name="icon" >
+    <iconset resource="../resources/icons.qrc" >
+     <normaloff>:/SilkIconSet/icons/arrow_redo.png</normaloff>:/SilkIconSet/icons/arrow_redo.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Redo</string>
+   </property>
+  </action>
+  <action name="actionToogle_Grid" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="checked" >
+    <bool>true</bool>
+   </property>
+   <property name="icon" >
+    <iconset resource="../resources/icons.qrc" >
+     <normaloff>:/SilkIconSet/icons/shading.png</normaloff>:/SilkIconSet/icons/shading.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Show grid</string>
+   </property>
+  </action>
+  <action name="actionDefault_Cursor" >
+   <property name="icon" >
+    <iconset resource="../resources/icons.qrc" >
+     <normaloff>:/SilkIconSet/icons/cursor.png</normaloff>:/SilkIconSet/icons/cursor.png</iconset>
+   </property>
+   <property name="text" >
+    <string>default Cursor</string>
+   </property>
+  </action>
+  <action name="actionMove" >
+   <property name="icon" >
+    <iconset resource="../resources/icons.qrc" >
+     <normaloff>:/SilkIconSet/icons/arrow_out.png</normaloff>:/SilkIconSet/icons/arrow_out.png</iconset>
+   </property>
+   <property name="text" >
+    <string>move</string>
+   </property>
+  </action>
+  <action name="actionAdd_vector" >
+   <property name="icon" >
+    <iconset resource="../resources/icons.qrc" >
+     <normaloff>:/SilkIconSet/icons/vector_add.png</normaloff>:/SilkIconSet/icons/vector_add.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Add vector</string>
+   </property>
+  </action>
+  <action name="actionRemove_vector" >
+   <property name="icon" >
+    <iconset resource="../resources/icons.qrc" >
+     <normaloff>:/SilkIconSet/icons/vector_delete.png</normaloff>:/SilkIconSet/icons/vector_delete.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Remove vector</string>
+   </property>
+  </action>
+  <action name="action_Preferences" >
+   <property name="text" >
+    <string>&amp;Preferences</string>
+   </property>
+  </action>
+  <action name="actionAdd_Point" >
+   <property name="icon" >
+    <iconset resource="../resources/icons.qrc" >
+     <normaloff>:/SilkIconSet/icons/chart_line_add.png</normaloff>:/SilkIconSet/icons/chart_line_add.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Add point</string>
+   </property>
+  </action>
+  <action name="actionRemove_Point" >
+   <property name="icon" >
+    <iconset resource="../resources/icons.qrc" >
+     <normaloff>:/SilkIconSet/icons/chart_line_delete.png</normaloff>:/SilkIconSet/icons/chart_line_delete.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Remove Point</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="9" />
+ <resources>
+  <include location="../resources/icons.qrc" />
+  <include location="../resources/pixmaps.qrc" />
+ </resources>
+ <connections>
+  <connection>
+   <sender>actionE_xit</sender>
+   <signal>activated()</signal>
+   <receiver>mainWindowClass</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>427</x>
+     <y>335</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

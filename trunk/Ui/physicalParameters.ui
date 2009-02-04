@@ -5,22 +5,22 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>431</width>
-    <height>261</height>
+    <width>598</width>
+    <height>351</height>
    </rect>
   </property>
   <property name="windowTitle" >
    <string>Physical Parameters</string>
   </property>
   <layout class="QGridLayout" name="gridLayout" >
-   <item row="0" column="0" >
+   <item row="1" column="0" >
     <widget class="QLabel" name="label" >
      <property name="text" >
       <string>matériau</string>
      </property>
     </widget>
    </item>
-   <item row="0" column="2" >
+   <item row="1" column="2" >
     <widget class="QComboBox" name="comboBox" >
      <item>
       <property name="text" >
@@ -49,37 +49,37 @@
      </item>
     </widget>
    </item>
-   <item row="1" column="0" >
+   <item row="2" column="0" >
     <widget class="QLabel" name="label_2" >
      <property name="text" >
       <string>module de Young</string>
      </property>
     </widget>
    </item>
-   <item row="2" column="0" >
+   <item row="3" column="0" >
     <widget class="QLabel" name="label_3" >
      <property name="text" >
       <string>coefficient de Poisson</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="0" >
+   <item row="4" column="0" >
     <widget class="QLabel" name="label_4" >
      <property name="text" >
       <string>masse volumique</string>
      </property>
     </widget>
    </item>
-   <item row="1" column="2" >
+   <item row="2" column="2" >
     <widget class="QLineEdit" name="lineEdit" />
    </item>
-   <item row="2" column="2" >
+   <item row="3" column="2" >
     <widget class="QLineEdit" name="lineEdit_2" />
    </item>
-   <item row="3" column="2" >
+   <item row="4" column="2" >
     <widget class="QLineEdit" name="lineEdit_3" />
    </item>
-   <item row="0" column="1" >
+   <item row="1" column="1" >
     <spacer name="horizontalSpacer" >
      <property name="orientation" >
       <enum>Qt::Horizontal</enum>
@@ -95,8 +95,32 @@
      </property>
     </spacer>
    </item>
+   <item row="0" column="2" >
+    <widget class="QComboBox" name="comboBox_2" >
+     <item>
+      <property name="text" >
+       <string>strate 01</string>
+      </property>
+      <property name="icon" >
+       <iconset resource="../resources/icons.qrc" >
+        <normaloff>:/SilkIconSet/icons/shape_align_left.png</normaloff>:/SilkIconSet/icons/shape_align_left.png</iconset>
+      </property>
+     </item>
+     <item>
+      <property name="text" >
+       <string>strate 02</string>
+      </property>
+      <property name="icon" >
+       <iconset resource="../resources/icons.qrc" >
+        <normaloff>:/SilkIconSet/icons/shape_align_left.png</normaloff>:/SilkIconSet/icons/shape_align_left.png</iconset>
+      </property>
+     </item>
+    </widget>
+   </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../resources/icons.qrc" />
+ </resources>
  <connections/>
 </ui>

@@ -14,7 +14,7 @@ HEADERS += Ui/mainwindow.h \
     Ui/startupdialog.h \
     Ui/parametersdialog.h \
     Ui/layerparameters.h \
-    Data/monofin.h \
+    Data/monofinfile.h \
     Data/stratefile.h
 FORMS += Ui/mainwindow.ui \
     Ui/startupDialog.ui \

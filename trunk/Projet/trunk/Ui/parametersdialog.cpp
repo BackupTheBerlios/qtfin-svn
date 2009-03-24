@@ -1,6 +1,6 @@
 #include "parametersdialog.h"
 
-#include "../stratefile.h"
+#include "../Data/stratefile.h"
 #include "layerparameters.h"
 
 ParametersDialog::ParametersDialog(QWidget *parent) :

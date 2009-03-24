@@ -1,0 +1,16 @@
+INPUT(
+./release\main.o
+./release\toolbar.o
+./release\tangent.o
+./release\symmetryaxis.o
+./release\paintingview.o
+./release\paintingscene.o
+./release\ghostpoint.o
+./release\ghostline.o
+./release\extremitypoint.o
+./release\controlpoint.o
+./release\brline.o
+./release\boundingpoint.o
+./release\moc_toolbar.o
+./release\moc_paintingscene.o
+);

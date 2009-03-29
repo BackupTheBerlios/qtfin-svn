@@ -72,7 +72,7 @@
    <item row="0" column="1">
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="physicalPage">
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -94,6 +94,9 @@
        </item>
        <item>
         <widget class="QTabWidget" name="layerTabWidget">
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
          <widget class="QWidget" name="tab_5">
           <attribute name="title">
            <string>Tab 1</string>
@@ -123,7 +126,7 @@
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
-           <widget class="QLabel" name="pathLabel_3">
+           <widget class="QLabel" name="pathLabel">
             <property name="text">
              <string>path</string>
             </property>
@@ -133,10 +136,10 @@
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="pathLineEdit_3"/>
+           <widget class="QLineEdit" name="pathLineEdit"/>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_3">
+           <widget class="QPushButton" name="browseButton">
             <property name="text">
              <string>Browse...</string>
             </property>
@@ -146,7 +149,7 @@
         </widget>
        </item>
        <item row="0" column="0">
-        <widget class="QRadioButton" name="customRadioButton_3">
+        <widget class="QRadioButton" name="customRadioButton">
          <property name="text">
           <string>Custom</string>
          </property>
@@ -156,7 +159,7 @@
         </widget>
        </item>
        <item row="1" column="0">
-        <widget class="QRadioButton" name="fileRadioButton_3">
+        <widget class="QRadioButton" name="fileRadioButton">
          <property name="text">
           <string>File</string>
          </property>
@@ -172,7 +175,7 @@
          </property>
          <layout class="QGridLayout" name="gridLayout_7">
           <item row="0" column="0">
-           <widget class="QLabel" name="durationLabel_3">
+           <widget class="QLabel" name="durationLabel">
             <property name="text">
              <string>duration</string>
             </property>
@@ -185,7 +188,7 @@
            </widget>
           </item>
           <item row="0" column="3">
-           <widget class="QLabel" name="stepLabel_3">
+           <widget class="QLabel" name="stepLabel">
             <property name="text">
              <string>step</string>
             </property>
@@ -198,7 +201,7 @@
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QLabel" name="formulaLabel_3">
+           <widget class="QLabel" name="formulaLabel">
             <property name="text">
              <string>formula</string>
             </property>
@@ -211,16 +214,16 @@
            </widget>
           </item>
           <item row="1" column="1" colspan="4">
-           <widget class="QLineEdit" name="formulaLineEdit_3"/>
+           <widget class="QLineEdit" name="formulaLineEdit"/>
           </item>
           <item row="2" column="1" colspan="4">
-           <widget class="QComboBox" name="formulaComboBox_3"/>
+           <widget class="QComboBox" name="formulaComboBox"/>
           </item>
           <item row="0" column="1">
-           <widget class="QDoubleSpinBox" name="durationDoubleSpinBox_3"/>
+           <widget class="QDoubleSpinBox" name="durationDoubleSpinBox"/>
           </item>
           <item row="0" column="4">
-           <widget class="QDoubleSpinBox" name="stepDoubleSpinBox_3"/>
+           <widget class="QDoubleSpinBox" name="stepDoubleSpinBox"/>
           </item>
          </layout>
         </widget>
@@ -261,7 +264,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>customRadioButton_3</sender>
+   <sender>customRadioButton</sender>
    <signal>toggled(bool)</signal>
    <receiver>groupBox_5</receiver>
    <slot>setEnabled(bool)</slot>
@@ -309,7 +312,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>fileRadioButton_3</sender>
+   <sender>fileRadioButton</sender>
    <signal>toggled(bool)</signal>
    <receiver>groupBox_6</receiver>
    <slot>setEnabled(bool)</slot>

@@ -11,8 +11,14 @@ class ParametersDialog : public QDialog, public Ui::ParametersDialog {
 public:
     explicit ParametersDialog(QWidget *parent = 0);
 
+protected slots:
+    void chooseFile();
+
 protected:
     virtual void changeEvent(QEvent *e);
+
+private:
+    void setConnections();
 
 private:
     QList<StrateFile*> m_strates;

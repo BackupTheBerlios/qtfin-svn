@@ -3,7 +3,6 @@
 #include "Ui/mainwindow.h"
 
 #include "Ui/parametersdialog.h"
-#include "Ui/layerParameters.h"
 
 int main(int argc, char *argv[])
 {
@@ -28,17 +27,6 @@ int main(int argc, char *argv[])
     mainWin.show();
     splash->finish(&mainWin);
     delete splash;
-
-    /** pour test :**/
-    ParametersDialog pdiag;
-    if(pdiag.exec()) {
-        QTabWidget *qtw = pdiag.layerTabWidget;
-        for(int i = 0; i<qtw->count(); ++i) {
-            LayerParameters * ll = static_cast<LayerParameters*> (qtw->widget(i));
-            qDebug("%f", ll->youngDoubleSpinBox->value());
-        }
-    }
-    /** fin test **/
 
     return app.exec();
 }

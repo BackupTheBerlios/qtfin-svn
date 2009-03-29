@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1024</width>
+    <height>768</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>1024</width>
      <height>19</height>
     </rect>
    </property>
@@ -34,15 +34,42 @@
     <addaction name="separator"/>
     <addaction name="actionE_xit"/>
    </widget>
+   <widget class="QMenu" name="menu_Simulation">
+    <property name="title">
+     <string>&amp;Simulation</string>
+    </property>
+    <addaction name="action_Configurate"/>
+    <addaction name="action_Launch"/>
+   </widget>
+   <widget class="QMenu" name="menu_Draw">
+    <property name="title">
+     <string>&amp;Draw</string>
+    </property>
+    <addaction name="action_Show_Grid"/>
+    <addaction name="action_Properties"/>
+   </widget>
    <addaction name="menu_File"/>
+   <addaction name="menu_Draw"/>
+   <addaction name="menu_Simulation"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
+   <property name="floatable">
+    <bool>false</bool>
+   </property>
    <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
+    <enum>LeftToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionCreatePolygon"/>
+   <addaction name="actionCleanPolygon"/>
+   <addaction name="separator"/>
+   <addaction name="actionAddControl"/>
+   <addaction name="actionRemoveControl"/>
+   <addaction name="actionAddPoint"/>
+   <addaction name="separator"/>
+   <addaction name="actionAlignTangents"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockFormLibrary">
@@ -93,6 +120,89 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionAddControl">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Add control point</string>
+   </property>
+  </action>
+  <action name="actionAddPoint">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Add point</string>
+   </property>
+  </action>
+  <action name="actionCreatePolygon">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Create polygon</string>
+   </property>
+  </action>
+  <action name="actionCleanPolygon">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Clean polygon</string>
+   </property>
+  </action>
+  <action name="actionRemoveControl">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Remove control point</string>
+   </property>
+  </action>
+  <action name="actionAlignTangents">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Align tangents</string>
+   </property>
+  </action>
+  <action name="action_Configurate">
+   <property name="text">
+    <string>&amp;Configurate...</string>
+   </property>
+  </action>
+  <action name="action_Launch">
+   <property name="text">
+    <string>&amp;Launch</string>
+   </property>
+  </action>
+  <action name="action_Show_Grid">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Show Grid</string>
+   </property>
+  </action>
+  <action name="action_Properties">
+   <property name="text">
+    <string>&amp;Properties...</string>
    </property>
   </action>
  </widget>

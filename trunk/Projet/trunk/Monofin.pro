@@ -4,19 +4,41 @@
 TARGET = Monofin
 TEMPLATE = app
 SOURCES += main.cpp \
-    Ui/mainwindow.cpp \
-    Ui/startupdialog.cpp \
-    Ui/parametersdialog.cpp \
-    Ui/layerparameters.cpp \
     Data/monofinfile.cpp \
-    Data/stratefile.cpp
-HEADERS += Ui/mainwindow.h \
-    Ui/startupdialog.h \
-    Ui/parametersdialog.h \
+    Data/stratefile.cpp \
+    Drawing/boundingpoint.cpp \
+    Drawing/brline.cpp \
+    Drawing/controlpoint.cpp \
+    Drawing/extremitypoint.cpp \
+    Drawing/ghostline.cpp \
+    Drawing/ghostpoint.cpp \
+    Drawing/paintingscene.cpp \
+    Drawing/paintingview.cpp \
+    Drawing/selectionrect.cpp \
+    Drawing/symmetryaxis.cpp \
+    Drawing/tangent.cpp \
+    Ui/layerparameters.cpp \
+    Ui/mainwindow.cpp \
+    Ui/parametersdialog.cpp \
+    Ui/startupdialog.cpp
+HEADERS += Data/monofinfile.h \
+    Data/stratefile.h \
+    Drawing/boundingpoint.h \
+    Drawing/brline.h \
+    Drawing/controlpoint.h \
+    Drawing/extremitypoint.h \
+    Drawing/ghostline.h \
+    Drawing/ghostpoint.h \
+    Drawing/paintingscene.h \
+    Drawing/paintingview.h \
+    Drawing/selectionrect.h \
+    Drawing/symmetryaxis.h \
+    Drawing/tangent.h \
     Ui/layerparameters.h \
-    Data/monofinfile.h \
-    Data/stratefile.h
-FORMS += Ui/mainwindow.ui \
-    Ui/startupDialog.ui \
+    Ui/mainwindow.h \
+    Ui/parametersdialog.h \
+    Ui/startupdialog.h
+FORMS += Ui/layerParameters.ui \
+    Ui/mainwindow.ui \
     Ui/parametersDialog.ui \
-    Ui/layerParameters.ui
+    Ui/startupDialog.ui

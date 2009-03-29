@@ -12,6 +12,6 @@ void GhostPoint::paint(QPainter* painter, const QStyleOptionGraphicsItem* option
     painter->setOpacity(0.8);
     if(_canBePlaced){painter->setPen(Qt::black);}
     else{painter->setPen(Qt::red);}
-    painter->drawRect(_p->boundingRect());
+    painter->drawRect(_p->rect());
 
 }

@@ -41,10 +41,12 @@ void ControlPoint::paint(QPainter* painter, const QStyleOptionGraphicsItem* opti
 //PROTECTED
 
 void ControlPoint::hoverEnterEvent(QGraphicsSceneHoverEvent* event){
+    _scene->setCanCreateSelectionRect(false);
     _color = Qt::green;
     _scene->update(_scene->sceneRect());
 }
 void ControlPoint::hoverLeaveEvent(QGraphicsSceneHoverEvent* event){
+    _scene->setCanCreateSelectionRect(true);
     _color = Qt::black;
     _scene->update(_scene->sceneRect());
 }

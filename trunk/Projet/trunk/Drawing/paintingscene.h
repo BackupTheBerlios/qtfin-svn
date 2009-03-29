@@ -18,6 +18,7 @@ class SymmetryAxis;
 class GhostPoint;
 class GhostLine;
 class ExtremityPoint;
+class SelectionRect;
 
 class PaintingScene: public QGraphicsScene{
 
@@ -41,6 +42,7 @@ public:
     void removePoint(BoundingPoint* p);
     void scale(qreal factor);
     qreal scaleFactor(){return _scaleFactor;}
+    void setCanCreateSelectionRect(bool c){_canCreateSelectionRect = c;}
     qreal width(){return this->sceneRect().width();}
 
 public slots:
@@ -58,18 +60,23 @@ protected:
     QList<ControlPoint*> _controlPointsList;
     GhostLine* _ghostLine;
     GhostPoint* _ghostPoint;
+    bool _canCreateSelectionRect;
     bool _hasPlacedFirstPoint;
     bool _isAddControlActivated;
     bool _isAddPointActivated;
     bool _isCreateLineActivated;
+    bool _isCreatingSelectionRect;
+    bool _isOneSelection;
     bool _isRemoveControlPointActivated;
     QList<BrLine*> _lineList;
     QList<BoundingPoint*> _pointList;
     qreal _scaleFactor;
+    SelectionRect* _selectionRect;
 
     void keyPressEvent(QKeyEvent* event);
     void mouseMoveEvent(QGraphicsSceneMouseEvent* event);
     void mousePressEvent(QGraphicsSceneMouseEvent* event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
     void updateLinesId();
 
 signals:

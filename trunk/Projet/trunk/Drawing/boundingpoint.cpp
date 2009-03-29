@@ -43,7 +43,10 @@ void BoundingPoint::alignTangents(){
         QPointF rightContr = _rightLine->coordControlPoint();
         QLineF l(leftContr, rightContr);
         //for(qreal t = 0; t <= 1; t+= 0.1){
-        this->moveTo(l.pointAt(0.5));
+        QPointF pos((leftContr.x()+rightContr.x())/2.0,
+                    (leftContr.y()+rightContr.y())/2.0);
+        //this->moveTo(l.pointAt(0.5));
+        this->moveTo(pos);
         _scene->update(_scene->sceneRect());
     }
 }
@@ -70,6 +73,7 @@ void BoundingPoint::moveTo(const QPointF& p){
 void BoundingPoint::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget){
     Q_UNUSED(option);
     Q_UNUSED(widget);
+    QPen pen;
     if(this->isSelected()){
         _color = Qt::red;
         painter->setPen(_color);
@@ -77,11 +81,14 @@ void BoundingPoint::paint(QPainter* painter, const QStyleOptionGraphicsItem* opt
     }else{
         if(_isMouseOnPoint){
             _color = Qt::blue;
+            pen.setWidthF(2.2);
         }else{
             _color = Qt::black;
         }
     }
-    painter->setPen(_color);
+
+    pen.setColor(_color);
+    painter->setPen(pen);
     painter->drawRect(*_rect);
 
     //affichage du symétrique

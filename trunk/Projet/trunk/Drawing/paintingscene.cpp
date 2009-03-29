@@ -3,14 +3,16 @@
 #include "ghostpoint.h"
 #include "ghostline.h"
 #include "brline.h"
+#include "selectionrect.h"
 
 //PUBLIC
 
 PaintingScene::PaintingScene(qreal width, qreal height, QObject* parent)
-    :QGraphicsScene(parent), _hasPlacedFirstPoint(false),
-    _isAddControlActivated(false), _isAddPointActivated(false),
-    _isCreateLineActivated(false), _isRemoveControlPointActivated(false),
-    _scaleFactor(1){
+    :QGraphicsScene(parent), _canCreateSelectionRect(true),
+    _hasPlacedFirstPoint(false), _isAddControlActivated(false),
+    _isAddPointActivated(false), _isCreateLineActivated(false),
+    _isCreatingSelectionRect(false), _isOneSelection(false),
+    _isRemoveControlPointActivated(false), _scaleFactor(1){
 
      this->setSceneRect(0,-height/2,width, height);
 
@@ -154,7 +156,7 @@ void PaintingScene::keyPressEvent(QKeyEvent* event){
 void PaintingScene::mouseMoveEvent(QGraphicsSceneMouseEvent* event){
     QRectF r(event->scenePos().x() - 3, event->scenePos().y() - 3, 6,6);
     BoundingPoint* bp;
-    bool oneSelection = false;
+    _isOneSelection = false;
 
     if(_isCreateLineActivated){
         bool intersect = false;
@@ -193,35 +195,45 @@ void PaintingScene::mouseMoveEvent(QGraphicsSceneMouseEvent* event){
             pos.setY(0);
         }else{}
         _ghostPoint->moveTo(pos);
-    }else{
+    }
+    else if(_isCreatingSelectionRect){
+        _selectionRect->setBottomRight(event->scenePos());
+    }
 
-        if(!(_isAddControlActivated || _isAddPointActivated)){
+
+
+    else{
+
+        if(!(_isAddControlActivated ||
+             _isAddPointActivated ||
+             _isRemoveControlPointActivated)){
+
             foreach(bp, _pointList){
                 bp->setMouseOnPoint(false);
-                if(r.intersects(bp->boundingRect()) && !oneSelection){
+                if(r.intersects(bp->boundingRect()) && !_isOneSelection){
                     bp->setMouseOnPoint(true);
-                    oneSelection = true;
+                    _isOneSelection = true;
                     break;
                 }
-            }
-        }
+            }//foreach
+        }//if
 
         /********************/
         if(_isAddControlActivated || _isAddPointActivated){
             BrLine* lf;
             foreach(lf, _lineList){
-                lf->setMouseOnLine(false);;
-                /*for(qreal i = BEZIERSTEP; i <= 1 && !oneSelection; i += BEZIERSTEP){
+                lf->setMouseOnLine(false);
+                /*for(qreal i = BEZIERSTEP; i <= 1 && !_isOneSelection; i += BEZIERSTEP){
                     if(r.intersects(QRectF(lf->cubicBezierPoint(i-BEZIERSTEP), lf->cubicBezierPoint(i)))){
                         lf->setMouseOnLine(true);
-                        oneSelection = true;
+                        _isOneSelection = true;
                         break;
                     }
                 }*/
-                if(!oneSelection){
+                if(!_isOneSelection){
                     if(lf->intersects(r)){
                         lf->setMouseOnLine(true);
-                        oneSelection = true;
+                        _isOneSelection = true;
                     }
                 }
             }//foreach
@@ -300,7 +312,20 @@ void PaintingScene::mousePressEvent(QGraphicsSceneMouseEvent* event){
                     int i = lf->lineId();
                     qDebug("line id = %d",i);
                     _pointList.at(i)->removeRightLine();
-                    BoundingPoint* bp = new BoundingPoint(event->scenePos(), this);
+                    QRectF zone = this->pointsBoundingZone();
+                    QPointF pos(event->scenePos());
+                    if(pos.x() < zone.bottomLeft().x()){
+                        pos.setX(zone.bottomLeft().x());
+                    }else if(pos.x() > zone.bottomRight().x()){
+                        pos.setX(zone.bottomRight().x());
+                    }
+                    if(pos.y() < 0){
+                        pos.setY(0);
+                    }else if(pos.y() > zone.bottomLeft().y()){
+                        pos.setY(zone.bottomLeft().y());
+                    }
+
+                    BoundingPoint* bp = new BoundingPoint(pos, this);
                     this->addItem(bp);
                     _pointList.insert(i+1, bp);
                     this->createLine(_pointList.at(i), bp);
@@ -309,15 +334,37 @@ void PaintingScene::mousePressEvent(QGraphicsSceneMouseEvent* event){
                 }
             }
         }else if(_isRemoveControlPointActivated){}
+        else if(_isOneSelection){
+            QPainterPath path(event->scenePos());
+            path.addEllipse(event->scenePos(), 5, 5);
+            this->setSelectionArea(path, Qt::IntersectsItemBoundingRect);
+        }
+        else if(_canCreateSelectionRect){
+            qDebug("create selection rect");
+            _isCreatingSelectionRect = true;
+            _selectionRect = new SelectionRect(QRectF(event->scenePos(), event->scenePos()));
+            this->addItem(_selectionRect);
+
+        }
         else{
 
-            QPainterPath path(event->scenePos());
-            path.addEllipse(event->scenePos(), 2, 2);
-            this->setSelectionArea(path, Qt::IntersectsItemBoundingRect);
         }
         this->update(this->sceneRect());
 
         QGraphicsScene::mousePressEvent(event);
+    }
+}
+
+void PaintingScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event){
+
+    if(_isCreatingSelectionRect){
+        _isCreatingSelectionRect = false;
+        QPainterPath path(event->scenePos());
+        //path.addEllipse(event->scenePos(), 2, 2);
+        path.addRect(_selectionRect->rect());
+        this->setSelectionArea(path, Qt::IntersectsItemBoundingRect);
+        this->removeItem(_selectionRect);
+        delete _selectionRect;
     }
 }
 

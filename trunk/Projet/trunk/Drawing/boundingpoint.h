@@ -40,6 +40,7 @@ public:
     bool isMouseOnPoint(){return _isMouseOnPoint;}
     void moveTo(const QPointF& p);
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
+    QRectF rect(){return *_rect;}
     void removeLeftLine();
     void removeRightLine();
     void setLeftLine(BrLine* l);

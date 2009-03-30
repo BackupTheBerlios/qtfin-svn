@@ -2,7 +2,7 @@
 
 using namespace Scripting;
 
-Script::Script(Monofin& monofin, std::ostream& script)
+Script::Script(Monofin& monofin, QTextStream& script)
 	: monofin(monofin), script(script) {
 }
 

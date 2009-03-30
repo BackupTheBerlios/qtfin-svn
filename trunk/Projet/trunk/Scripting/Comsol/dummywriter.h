@@ -1,15 +1,15 @@
 #ifndef DUMMYWRITER_H
 #define DUMMYWRITER_H
 
-#include "../scriptwriter.h"
+#include "comsolscriptwriter.h"
 
 namespace Scripting {
 	namespace Comsol {
 
-		class DummyWriter : public ScriptWriter
-		{
+		class DummyWriter : public ComsolScriptWriter {
 		public:
-			virtual void write(Monofin& monofin, std::ostream& script);
+			// Redéfinition
+			virtual void write(Monofin& monofin, QTextStream& script);
 		};
 
 	}

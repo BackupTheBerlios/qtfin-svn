@@ -6,10 +6,13 @@
 namespace Scripting {
 	namespace Comsol {
 
-		class ComsolScript : public Script
-		{
+		/**
+		  * Définition du script COMSOL "classique".
+		  */
+		class ComsolScript : public Script {
 		public:
-			ComsolScript(Monofin& monofin, std::ostream& script);
+			// Redéfinitions
+			ComsolScript(Monofin& monofin, QTextStream& script);
 			void initWriters(std::vector<ScriptWriter*>* writers) const;
 		};
 

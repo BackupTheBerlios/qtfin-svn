@@ -1,9 +1,8 @@
 #include "dummywriter.h"
 
 using namespace Scripting::Comsol;
-using namespace std;
 
-void DummyWriter::write(Monofin& monofin, std::ostream& script) {
+void DummyWriter::write(Monofin& monofin, QTextStream& script) {
 	script << comment << "Voilà un commentaire" << endl;
 	script << "appelDeFonction(" << eendl;
 	script << "\tparam1," << eendl;

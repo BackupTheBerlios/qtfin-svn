@@ -2,17 +2,21 @@
 #define SCRIPTWRITER_H
 
 #include "../Data/monofinfile.h"
-#include <ostream>
+#include <qtextstream.h>
 #include <string>
 
 namespace Scripting {
 
-	class ScriptWriter
-	{
+	/**
+	  * Classe abstraite responsable de l'écriture d'une partie d'un script.
+	  */
+	class ScriptWriter {
 	public:
-		virtual void write(Monofin& monofin, std::ostream& script) = 0;
-		static std::ostream& comment(std::ostream& stream);
-		static std::ostream& eendl(std::ostream& stream);
+		/**
+		  * Méthode appelée par une classe héritant de Script au moment de la génération
+		  * d'une portion du script.
+		  */
+		virtual void write(Monofin& monofin, QTextStream& script) = 0;
 	};
 
 }

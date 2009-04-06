@@ -37,23 +37,67 @@ BoundingPoint::BoundingPoint(const QPointF& coord, PaintingScene* scene):
                BOUNDINPOINTSIZE);
 }
 
+BoundingPoint::~BoundingPoint(){
+    delete _rect;
+    //les objets BrLine* sont détruits dans la PaintingScene
+}
+
 void BoundingPoint::alignTangents(){
     if(_hasLeftLine && _hasRightLine){
-        QPointF leftContr = _leftLine->coordControlPoint();
-        QPointF rightContr = _rightLine->coordControlPoint();
+        QPointF leftContr;
+        QPointF rightContr;
+        if(_leftLine->isControlPointActivated()){
+            leftContr = _leftLine->coordControlPoint();
+        }else{
+            leftContr = _leftLine->p1();
+        }
+        if(_rightLine->isControlPointActivated()){
+            rightContr = _rightLine->coordControlPoint();
+        }else{
+            rightContr = _rightLine->p2();
+        }
+
+        /*
+        //trouve la perpendiculaire à la ligne formée par les
+        //deux points entre lesquels il faut aligner
         QLineF l(leftContr, rightContr);
-        //for(qreal t = 0; t <= 1; t+= 0.1){
-        QPointF pos((leftContr.x()+rightContr.x())/2.0,
-                    (leftContr.y()+rightContr.y())/2.0);
-        //this->moveTo(l.pointAt(0.5));
+        QLineF norm(l.normalVector());
+        QLineF offset(leftContr, this->coord());
+        norm.translate(offset.dx(), offset.dy());
+        QPointF pos(0,0);
+        norm.intersect(l,&pos);
+        */
+        qreal leftLength = QLineF(leftContr,_rect->center()).length();
+        qreal rightLength = QLineF(rightContr,_rect->center()).length();
+        QLineF l(leftContr, rightContr);
+        qreal t = leftLength / (leftLength + rightLength);
+        QPointF pos = l.pointAt(t);
         this->moveTo(pos);
-        _scene->update(_scene->sceneRect());
+    }else{
+        qreal x = 0;
+        if(_hasLeftLine){
+            if(_leftLine->isControlPointActivated()){
+                x = _leftLine->coordControlPoint().x();
+            }else{
+                x = _leftLine->p1().x();
+            }
+
+        }else if(_hasRightLine){
+            if(_rightLine->isControlPointActivated()){
+                x = _rightLine->coordControlPoint().x();
+            }else{
+                x = _rightLine->p2().x();
+            }
+        }
+        this->moveTo(QPointF(x, this->coord().y()));
     }
+   _scene->update(_scene->sceneRect());
 }
 
 QRectF BoundingPoint::boundingRect() const{
     //qDebug("bounding rect : %f, %f, %f, %f", _rect->x(), _rect->y(), _rect->width(), _rect->height());
-    return *_rect;
+    QRectF r(_rect->topLeft().x()-5, _rect->topLeft().y()-5, _rect->width()+10, _rect->height()+10);
+    return /**_rect*/r;
 
 }
 
@@ -73,42 +117,48 @@ void BoundingPoint::moveTo(const QPointF& p){
 void BoundingPoint::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget){
     Q_UNUSED(option);
     Q_UNUSED(widget);
-    QPen pen;
-    if(this->isSelected()){
-        _color = Qt::red;
-        painter->setPen(_color);
-        painter->drawEllipse(*_rect);
-    }else{
-        if(_isMouseOnPoint){
-            _color = Qt::blue;
-            pen.setWidthF(2.2);
+    if(!_scene->isSimplifyViewActivated()){
+        QPen pen;
+        if(this->isSelected()){
+            _color = Qt::red;
+            painter->setPen(_color);
+            painter->drawEllipse(*_rect);
         }else{
-            _color = Qt::black;
+            if(_isMouseOnPoint){
+                _color = Qt::blue;
+                pen.setWidthF(2.2);
+            }else{
+                _color = Qt::black;
+            }
         }
+
+        pen.setColor(_color);
+        painter->setPen(pen);
+        painter->drawRect(*_rect);
+
+        //affichage du symétrique
+        /*painter->setPen(Qt::black);
+        painter->setOpacity(0.5);
+        painter->drawRect(QRectF(_rect->bottomLeft().x(), -_rect->bottomLeft().y(), _rect->width(), _rect->height()));
+        */
+    }else{
+        Q_UNUSED(painter);
     }
-
-    pen.setColor(_color);
-    painter->setPen(pen);
-    painter->drawRect(*_rect);
-
-    //affichage du symétrique
-    /*painter->setPen(Qt::black);
-    painter->setOpacity(0.5);
-    painter->drawRect(QRectF(_rect->bottomLeft().x(), -_rect->bottomLeft().y(), _rect->width(), _rect->height()));
-    */
 }
 
 void BoundingPoint::removeLeftLine(){
     if(_hasLeftLine){
         _hasLeftLine = false;
-        _leftLine->removeFromScene();
+        //on appelle la fonction de destruction d'une ligne
+        _scene->removeLine(_leftLine);
     }
 }
 
 void BoundingPoint::removeRightLine(){
     if(_hasRightLine){
         _hasRightLine = false;
-        _rightLine->removeFromScene();
+        //on appelle la fonction de destruction d'une ligne
+        _scene->removeLine(_rightLine);
     }
 }
 
@@ -169,12 +219,9 @@ void BoundingPoint::mouseMoveEvent(QGraphicsSceneMouseEvent* event){
 
 void BoundingPoint::mousePressEvent(QGraphicsSceneMouseEvent* event){
     if(event->button() == Qt::LeftButton){
-        qDebug("mouse click");
-        if(!this->isSelected()){_canMove = !_atLeastOneClick;}
+        qDebug("click on bounding point");
+        if(!this->isSelected()){_canMove = false;}//!_atLeastOneClick;}
         else{_canMove = true;}
-        /*if(!_atLeastOneClick){
-            this->setSelected(false);
-        }*/
 
     }else{
         _canMove = false;
@@ -184,7 +231,7 @@ void BoundingPoint::mousePressEvent(QGraphicsSceneMouseEvent* event){
 
 void BoundingPoint::mouseReleaseEvent(QGraphicsSceneMouseEvent* event){
     if(event->button() == Qt::LeftButton){
-        qDebug("mouse release");
+        qDebug("mouse released of bounding point");
         _canMove = false;
         if(_atLeastOneClick){
             /*if(_canBeSelected){

@@ -16,6 +16,7 @@ class SymmetryAxis: public QGraphicsItem{
 
 public:
     SymmetryAxis(PaintingScene* scene);
+    ~SymmetryAxis();
 
     virtual QRectF boundingRect() const;
     QLineF line(){return *_line;}

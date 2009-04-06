@@ -31,6 +31,7 @@ public:
 
     BoundingPoint(qreal x, qreal y, PaintingScene* scene);
     BoundingPoint(const QPointF& coord, PaintingScene* scene);
+    ~BoundingPoint();
 
     void alignTangents();
     virtual QRectF boundingRect() const;
@@ -43,6 +44,7 @@ public:
     QRectF rect(){return *_rect;}
     void removeLeftLine();
     void removeRightLine();
+    void setCanMove(bool c){_canMove = c;}
     void setLeftLine(BrLine* l);
     void setMouseOnPoint(bool on);
     void setRightLine(BrLine* l);

@@ -26,6 +26,7 @@ public:
 
     ControlPoint(qreal x, qreal y, BrLine* line, PaintingScene* scene);
     ControlPoint(const QPointF& coord, BrLine* line, PaintingScene* scene);
+    ~ControlPoint();
 
     virtual QRectF boundingRect() const{return *_rect;}
     QPointF coord() const{return _rect->center();}

@@ -11,6 +11,7 @@ class GhostPoint: public QGraphicsItem{
 
 public:
     GhostPoint(QPointF coord, PaintingScene* scene);
+    ~GhostPoint();
 
     virtual QRectF boundingRect() const{return _p->rect();}
     bool canBePlaced(){return _canBePlaced;}

@@ -29,18 +29,27 @@ ControlPoint::ControlPoint(const QPointF& coord, BrLine* line, PaintingScene* sc
 
 }
 
+ControlPoint::~ControlPoint(){
+    delete _rect;
+}
+
 void ControlPoint::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget){
     Q_UNUSED(option);
     Q_UNUSED(widget);
-    painter->setPen(_color);
-    //painter->setRenderHint(QPainter::Antialiasing);
-    painter->drawEllipse(*_rect);
+    if(!_scene->isSimplifyViewActivated()){
+        painter->setPen(_color);
+        //painter->setRenderHint(QPainter::Antialiasing);
+        painter->drawEllipse(*_rect);
+    }else{
+        Q_UNUSED(painter);
+    }
 }
 
 
 //PROTECTED
 
 void ControlPoint::hoverEnterEvent(QGraphicsSceneHoverEvent* event){
+    qDebug("control hover");
     _scene->setCanCreateSelectionRect(false);
     _color = Qt::green;
     _scene->update(_scene->sceneRect());
@@ -81,6 +90,9 @@ void ControlPoint::mousePressEvent(QGraphicsSceneMouseEvent* event){
     if(event->button() == Qt::LeftButton){
         if(_scene->isRemoveControlPointActivated()){
             _line->setControlPoint(false);
+            //si on supprime un point de contrôle, celui-ci ne peut pas rétablir
+            //la variable _canCreateSelectionRect à true, il faut donc le faire ici :
+            _scene->setCanCreateSelectionRect(true);
         }else{
             _canMove = true;
         }

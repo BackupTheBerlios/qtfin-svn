@@ -7,6 +7,10 @@ SymmetryAxis::SymmetryAxis(PaintingScene* scene)
     _line = new QLineF(0, 0, _scene->width(), 0);
 }
 
+SymmetryAxis::~SymmetryAxis(){
+    delete _line;
+}
+
 QRectF SymmetryAxis::boundingRect() const{
     return QRectF(_line->p1(), _line->p2());
 }

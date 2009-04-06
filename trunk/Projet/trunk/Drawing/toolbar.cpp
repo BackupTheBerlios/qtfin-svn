@@ -36,6 +36,11 @@ ToolBar::ToolBar(PaintingScene* scene, QWidget* parent)
     _toolButtonClean->setDisabled(true);
     _vlayout->addWidget(_toolButtonClean);
 
+    _toolButtonSimplifyView = new QPushButton("Simplify view",this);
+    _toolButtonSimplifyView->setCheckable(true);
+    _toolButtonSimplifyView->setEnabled(true);
+    _vlayout->addWidget(_toolButtonSimplifyView);
+
     /*QPushButton* viewCoords = new QPushButton("View coords", this);
     _vlayout->addWidget(viewCoords);*/
 
@@ -53,9 +58,11 @@ ToolBar::ToolBar(PaintingScene* scene, QWidget* parent)
     QObject::connect(_toolButtonAddPoint, SIGNAL(clicked(bool)), this, SLOT(activeAddPoint(bool)));
     QObject::connect(_toolButtonPoint, SIGNAL(clicked(bool)), this, SLOT(beginLine(bool)));
     QObject::connect(_scene, SIGNAL(lineFinished(bool)), this, SLOT(finishedLine(bool)));
+    QObject::connect(_scene, SIGNAL(lineInterrupted()), this, SLOT(lineInterrupted()));
     QObject::connect(_toolButtonAlignTangents, SIGNAL(clicked()), _scene, SLOT(alignTangents()));
     QObject::connect(_toolButtonClean, SIGNAL(clicked()), _scene, SLOT(cleanPoints()));
     QObject::connect(_toolButtonClean, SIGNAL(clicked()), this, SLOT(clean()));
+    QObject::connect(_toolButtonSimplifyView, SIGNAL(clicked(bool)), _scene, SLOT(simplifyView(bool)));
     //QObject::connect(viewCoords, SIGNAL(clicked()), _scene, SLOT(showCoords()));
 }
 
@@ -106,4 +113,9 @@ void ToolBar::finishedLine(bool a){
         _toolButtonPoint->click();
         _toolButtonPoint->setDisabled(true);
     }
+}
+
+void ToolBar::lineInterrupted(){
+    _toolButtonPoint->setEnabled(true);
+    _toolButtonPoint->click();
 }

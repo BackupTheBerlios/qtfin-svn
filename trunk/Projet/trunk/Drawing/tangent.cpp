@@ -1,11 +1,15 @@
 #include "tangent.h"
+#include "paintingscene.h"
 
 //PUBLIC
 
-Tangent::Tangent(QPointF p1, QPointF p2)
-        :QGraphicsItem(){
+Tangent::Tangent(QPointF p1, QPointF p2, PaintingScene* scene)
+        :QGraphicsItem(), _scene(scene){
     _line = new QLineF(p1, p2);
+}
 
+Tangent::~Tangent(){
+    delete _line;
 }
 
 QRectF Tangent::boundingRect() const{
@@ -13,8 +17,14 @@ QRectF Tangent::boundingRect() const{
 }
 
 void Tangent::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget){
-    painter->setPen(Qt::DashLine);
-    painter->drawLine(*_line);
+    Q_UNUSED(option);
+    Q_UNUSED(widget);
+    if(!_scene->isSimplifyViewActivated()){
+        painter->setPen(Qt::DashLine);
+        painter->drawLine(*_line);
+    }else{
+        Q_UNUSED(painter);
+    }
 }
 
 void Tangent::setLine(QPointF p1, QPointF p2){

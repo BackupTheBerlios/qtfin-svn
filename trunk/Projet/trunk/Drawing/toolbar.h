@@ -21,6 +21,7 @@ public slots:
     void beginLine(bool a);
     void clean();
     void finishedLine(bool a);
+    void lineInterrupted();
 
 protected:
     PaintingScene* _scene;
@@ -30,6 +31,7 @@ protected:
     QPushButton* _toolButtonClean;
     QPushButton* _toolButtonPoint;
     QPushButton* _toolButtonRemoveControl;
+    QPushButton* _toolButtonSimplifyView;
     QVBoxLayout* _vlayout;
 
 };

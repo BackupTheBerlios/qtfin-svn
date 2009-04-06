@@ -8,6 +8,10 @@ GhostPoint::GhostPoint(QPointF coord, PaintingScene* scene)
     _p = new BoundingPoint(coord, scene);
 }
 
+GhostPoint::~GhostPoint(){
+    delete _p;
+}
+
 void GhostPoint::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget){
     painter->setOpacity(0.8);
     if(_canBePlaced){painter->setPen(Qt::black);}

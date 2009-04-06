@@ -15,8 +15,8 @@ BrLine::BrLine(BoundingPoint* p1, BoundingPoint* p2, PaintingScene* scene, int i
 
     _scene->addControlPoint(_contr,_lineId);
 
-    _tangent1 = new Tangent(_line->p1(), _contr->coord());
-    _tangent2 = new Tangent(_line->p2(), _contr->coord());
+    _tangent1 = new Tangent(_line->p1(), _contr->coord(), _scene);
+    _tangent2 = new Tangent(_line->p2(), _contr->coord(), _scene);
     _contr->setTangent1(_tangent1);
     _contr->setTangent2(_tangent2);
 
@@ -24,6 +24,15 @@ BrLine::BrLine(BoundingPoint* p1, BoundingPoint* p2, PaintingScene* scene, int i
     _path->cubicTo(_contr->coord(), _contr->coord(), _p2->coord());
 
     this->setAcceptHoverEvents(true);
+}
+
+BrLine::~BrLine(){
+    //on cache la ligne à ses points d'extrémité avant de la supprimer
+    _p1->hideRightLine();
+    _p2->hideLeftLine();
+    delete _line;
+    delete _path;
+
 }
 
 QRectF BrLine::boundingRect() const{
@@ -48,6 +57,23 @@ QPointF BrLine::cubicBezierPoint(QPointF p0, QPointF p1, QPointF p2, QPointF p3,
 
 QPointF BrLine::cubicBezierPoint(qreal t){
     return cubicBezierPoint(_line->p1(), _contr->coord(), _contr->coord(), _line->p2(), t);
+}
+
+void BrLine::deleteBezier(){
+    //on appelle une fonction pour supprimer le point de contrôle
+    //puisque celui-ci est stocké dans une liste dans la PaintingScene.
+    //le deuxième paramètre indique s'il est ou non présent dans la scène
+    _scene->removeControlPoint(_contr, _isControlPointActivated);
+
+    //si les tangentes appartiennet à la scène, on les supprime de celle-ci
+    if(_isControlPointActivated){
+        _scene->removeItem(_tangent1);
+        _scene->removeItem(_tangent2);
+    }
+
+    //Ensuite, on supprime directement les tangentes
+    delete _tangent1;
+    delete _tangent2;
 }
 
 bool BrLine::intersect(BrLine& line){
@@ -77,6 +103,12 @@ void BrLine::move(){
     _tangent2->setLine(_line->p2(), _contr->coord());
     this->updatePath();
     //_scene->update(QRectF(_scene->sceneRect()));
+}
+
+void BrLine::moveControlPoint(QPointF pos){
+    _contr->moveTo(pos);
+    _tangent1->setLine(_line->p1(), _contr->coord());
+    _tangent2->setLine(_line->p2(), _contr->coord());
 }
 
 void BrLine::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget){
@@ -119,8 +151,13 @@ void BrLine::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QW
     }*/
 
     //affichage du symétrique
-    painter->setPen(Qt::black);
-    painter->setOpacity(0.5);
+    if(!_scene->isSimplifyViewActivated()){
+        painter->setPen(Qt::black);
+        painter->setOpacity(0.5);
+    }else{
+        pen.setColor(Qt::black);
+        painter->setPen(pen);
+    }
     if(_isControlPointActivated){
         QPainterPath path;
         path.moveTo(QPointF(_line->p1().x(), -_line->p1().y()));
@@ -133,18 +170,6 @@ void BrLine::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QW
 
     }
 
-}
-
-void BrLine::removeFromScene(){
-    _p1->hideRightLine();
-    _p2->hideLeftLine();
-    _scene->removeControlPoint(_contr);
-    _scene->removeItem(_tangent1);
-    _scene->removeItem(_tangent2);
-    delete _contr;
-    delete _tangent1;
-    delete _tangent2;
-    _scene->removeLine(this);
 }
 
 void BrLine::setControlPoint(bool on){
@@ -163,10 +188,11 @@ void BrLine::setControlPoint(bool on){
         _scene->removeItem(_tangent2);
         _contr->moveTo(_line->pointAt(0.5));
     }
+    _scene->update(_scene->sceneRect());
 }
 
 void BrLine::setLineId(int i){
-    if(i >= 0){ _lineId = i;}
+    if(i >= 0){_lineId = i;}
 }
 
 void BrLine::updatePath(){

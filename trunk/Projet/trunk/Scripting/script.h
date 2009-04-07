@@ -14,7 +14,7 @@ namespace Scripting {
 	  */
 	class Script {
 	private:
-		Monofin& monofin;
+        Data::MonofinFile& monofin;
 		QTextStream& script;
 
 	public:
@@ -23,7 +23,7 @@ namespace Scripting {
 		  * @param monofin L'instance à partir de laquelle le script doit être cosntruit.
 		  * @param script Le flux de données dans lequel le script est écrit.
 		  */
-		Script(Monofin& monofin, QTextStream& script);
+        Script(Data::MonofinFile& monofin, QTextStream& script);
 
 		/**
 		  * Méthode qui lance la génération du script.

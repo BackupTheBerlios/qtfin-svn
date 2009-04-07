@@ -16,7 +16,7 @@ namespace Scripting {
 		  * Méthode appelée par une classe héritant de Script au moment de la génération
 		  * d'une portion du script.
 		  */
-		virtual void write(Monofin& monofin, QTextStream& script) = 0;
+        virtual void write(Data::MonofinFile& monofin, QTextStream& script) = 0;
 	};
 
 }

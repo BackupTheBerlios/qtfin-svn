@@ -14,14 +14,22 @@ ParametersDialog::ParametersDialog(QWidget *parent) :
 
     layerTabWidget->clear();
     for(int i=0; i<m_strates.count(); ++i)
-        layerTabWidget->addTab(new LayerParameters, QString("layer %1").arg(i));
+        layerTabWidget->addTab(new LayerParameters, tr("layer %1").arg(i));
 
     setConnections();
+    _retranslateUi();
 }
 
 void ParametersDialog::setConnections()
 {
     connect(browseButton, SIGNAL(clicked()), this, SLOT(chooseFile()));
+}
+
+void ParametersDialog::_retranslateUi()
+{
+    for(int i=0; i<layerTabWidget->count(); ++i)
+        layerTabWidget->setTabText(i, tr("layer %1").arg(i));
+    retranslateUi(this);
 }
 
 void ParametersDialog::chooseFile()
@@ -38,7 +46,7 @@ void ParametersDialog::changeEvent(QEvent *e)
 {
     switch (e->type()) {
     case QEvent::LanguageChange:
-        retranslateUi(this);
+        _retranslateUi();
         break;
     default:
         break;

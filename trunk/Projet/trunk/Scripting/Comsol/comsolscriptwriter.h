@@ -1,7 +1,7 @@
 #ifndef COMSOLSCRIPTWRITER_H
 #define COMSOLSCRIPTWRITER_H
 
-#include "../ScriptWriter.h"
+#include "../scriptwriter.h"
 #include <qtextstream.h>
 
 namespace Scripting {

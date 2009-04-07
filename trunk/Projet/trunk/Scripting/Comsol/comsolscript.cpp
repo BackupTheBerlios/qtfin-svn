@@ -4,7 +4,7 @@
 using namespace Scripting;
 using namespace Scripting::Comsol;
 
-ComsolScript::ComsolScript(Monofin& monofin, QTextStream& script) :
+ComsolScript::ComsolScript(Data::MonofinFile& monofin, QTextStream& script) :
 		Script(monofin, script) {
 }
 

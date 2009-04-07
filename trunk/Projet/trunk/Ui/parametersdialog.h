@@ -19,6 +19,7 @@ protected:
 
 private:
     void setConnections();
+    void _retranslateUi();
 
 private:
     QList<StrateFile*> m_strates;

@@ -2,7 +2,7 @@
 
 using namespace Scripting;
 
-Script::Script(Monofin& monofin, QTextStream& script)
+Script::Script(Data::MonofinFile& monofin, QTextStream& script)
 	: monofin(monofin), script(script) {
 }
 

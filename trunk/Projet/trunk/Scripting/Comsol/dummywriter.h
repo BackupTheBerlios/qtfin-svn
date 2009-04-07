@@ -9,7 +9,7 @@ namespace Scripting {
 		class DummyWriter : public ComsolScriptWriter {
 		public:
 			// Redéfinition
-			virtual void write(Monofin& monofin, QTextStream& script);
+            virtual void write(Data::MonofinFile& monofin, QTextStream& script);
 		};
 
 	}

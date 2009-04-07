@@ -12,7 +12,7 @@ namespace Scripting {
 		class ComsolScript : public Script {
 		public:
 			// Redéfinitions
-			ComsolScript(Monofin& monofin, QTextStream& script);
+            ComsolScript(Data::MonofinFile& monofin, QTextStream& script);
 			void initWriters(std::vector<ScriptWriter*>* writers) const;
 		};
 

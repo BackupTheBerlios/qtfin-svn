@@ -5,7 +5,7 @@ namespace Data{
     class LayerFile;
 
     enum Modification {MonofinSurface,MonofinLayer,MonofinLayerConfig};
-    const int MONOFIN_SURFACE_NO_CONTROL_POINT = 42; //extrait de surface.h
+    const int MONOFIN_SURFACE_NO_CONTROL_POINT = -1; //extrait de surface.h
 
     class MonofinFile
     {
@@ -13,7 +13,7 @@ namespace Data{
         MonofinFile();
 
         /****************************
-        * Modification des donnes *
+         * Modification des donnees *
          ****************************/
 
         //pour commencer les modifications

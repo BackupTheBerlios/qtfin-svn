@@ -1,40 +1,44 @@
-#ifndef STRATUMCONFIG_H
-#define STRATUMCONFIG_H
+#ifndef LAYERCONFIG_H
+#define LAYERCONFIG_H
 
-class StratumConfig
-{
-private:
-    float _young,_poisson,_rho;
-public:
-    StratumConfig();
+namespace Data{
 
-    /*********************
-     * Getters & Setters *
-     *********************/
+    class LayerConfig
+    {
+    private:
+        float _young,_poisson,_rho;
+    public:
+        StratumConfig();
 
-    void setYoung(float young){
-        _young = young;
-    }
+        /*********************
+         * Getters & Setters *
+         *********************/
 
-    void setPoisson(float poisson){
-        _poisson = poisson;
-    }
+        void setYoung(float young){
+            _young = young;
+        }
 
-    void setRho(float rho){
-        _rho = rho;
-    }
+        void setPoisson(float poisson){
+            _poisson = poisson;
+        }
 
-    float getYoung(){
-        return _young;
-    }
+        void setRho(float rho){
+            _rho = rho;
+        }
 
-    float getPoisson(){
-        return _poisson;
-    }
+        float getYoung(){
+            return _young;
+        }
 
-    float getRho(){
-        return _rho;
-    }
-};
+        float getPoisson(){
+            return _poisson;
+        }
 
-#endif // STRATUMCONFIG_H
+        float getRho(){
+            return _rho;
+        }
+    };
+
+} // namespace Data
+
+#endif // LAYERCONFIG_H

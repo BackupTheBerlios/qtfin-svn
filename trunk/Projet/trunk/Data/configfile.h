@@ -1,32 +1,36 @@
 #ifndef CONFIGFILE_H
 #define CONFIGFILE_H
 
-#include <vector>
-#include "StrateConfig.h"
+#include <QVector>
+#include "LayerConfig.h"
 
-class Profil;
+namespace Data{
 
-class ConfigFile
-{
-    friend class Profil;
-private:
-    std::vector<StrateConfig> _monofinStratumConfig;
-public:
-    ConfigFile();
+    class Profil;
 
-    StrateConfig& getStrateConfig(int rang){
-        return _monofinStratumConfig.at(rang);
-    }
+    class ConfigFile
+    {
+        friend class Profil;
+    private:
+        QVector<LayerConfig> _monofinLayerConfig;
+    public:
+        ConfigFile();
 
-private:
+        LayerConfig& getLayerConfig(int rank){
+            return _monofinStratumConfig.at(rank);
+        }
 
-    void updateCreate(int rang);
+    private:
 
-    void updateRemove(int rang);
+        void updateCreate(int rank);
 
-    void addStrateConfig(StrateConfig& s, int i);
+        void updateRemove(int rank);
 
-    void removeStrateConfig(int rang);
-};
+        void addLayerConfig(StrateConfig& s, int rank);
+
+        void removeStrateConfig(int rank);
+    };
+
+} // namespace Data
 
 #endif // CONFIGFILE_H

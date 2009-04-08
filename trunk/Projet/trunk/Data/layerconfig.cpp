@@ -1,5 +1,1 @@
-#include "stratumconfig.h"
-
-StratumConfig::StratumConfig()
-{
-}
+#include "layerconfig.h"

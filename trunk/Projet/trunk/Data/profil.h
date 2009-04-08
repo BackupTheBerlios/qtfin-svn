@@ -1,39 +1,42 @@
 #ifndef PROFIL_H
 #define PROFIL_H
 
-#include "stratum.h"
-#include <vector>
+#include "layer.h"
+#include <QVector>
 
-class ConfigFile;
+namespace Data{
 
-class Profil
-{
-private:
-    //utilisation de vector pas thread safe
-    //si soucis rflchir sur ce point.
-    std::vector<Stratum> _monofinStratums;
+    class ConfigFile;
 
-    ConfigFile * _linkedConfigFile;
+    class Profil
+    {
+    private:
 
-public:
-    Profil(): _linkedConfigFile(NULL) {}
+        QVector<Layer> _monofinLayers;
 
-    Stratum * getStratum(int rang);
+        ConfigFile * _linkedConfigFile;
 
-    int getHowManyStratums();
+    public:
+        Profil(): _linkedConfigFile(NULL) {}
 
-    void addStratum(int rang, Stratum s);
+        Layer * getLayer(int rank);
 
-    void remStratum(int rang);
+        int getHowManyLayers();
 
-    void link(ConfigFile* toLink);
+        void addLayer(int rang, Layer s);
 
-    void acceptVisitor(Visitor* v);
+        void remLayer(int rank);
 
-private:
-    notifyCreate(int rang);
+        void link(ConfigFile* toLink);
 
-    notifyDelete(int rang);
-};
+        void acceptVisitor(Visitor* v);
+
+    private:
+        notifyCreate(int rank);
+
+        notifyDelete(int rank);
+    };
+
+} // namespace Data
 
 #endif // PROFIL_H

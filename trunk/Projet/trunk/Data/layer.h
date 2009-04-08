@@ -1,34 +1,39 @@
-#ifndef STRATUM_H
-#define STRATUM_H
+#ifndef LAYER_H
+#define LAYER_H
 
-class Stratum
-{
-private:
-    float _length, _height;
-public:
-    /**
-      */
-    Stratum(float length=0.0f, float height=0.0f): _length(length), _height(height) {}
 
-    /************************
-     * Getters & Setters    *
-     ************************/
+namespace Data{
 
-    float getLength(){
-        return _length;
-    }
+    class Layer
+    {
+    private:
+        float _lengthRatio, _height;
+    public:
+        /**
+          */
+        Stratum(float length=0.0f, float height=0.0f): _length(length), _height(height) {}
 
-    float getHeight(){
-        return _height;
-    }
+        /************************
+         * Getters & Setters    *
+         ************************/
 
-    void setLength(float length){
-        _length = length;
-    }
+        float getLength(){
+            return _length;
+        }
 
-    void setHeight(float heigth){
-        _height = height;
-    }
-};
+        float getHeight(){
+            return _height;
+        }
 
-#endif // STRATUM_H
+        void setLength(float length){
+            _length = length;
+        }
+
+        void setHeight(float heigth){
+            _height = height;
+        }
+    };
+
+} // namespace Data
+
+#endif // LAYER_H

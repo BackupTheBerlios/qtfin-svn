@@ -1,5 +1,2 @@
-#include "stratum.h"
+#include "layer.h"
 
-Stratum::Stratum()
-{
-}

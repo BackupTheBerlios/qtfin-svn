@@ -22,9 +22,10 @@ namespace Data{
         void endModification();
 
         //modifications possibles sur les strates
-        void addLayer(int rank, float lengthRatio);
+        void addLayer(int rank, float lengthRatio, float heightRatio);
 
         void setLayerLengthRatio(int rank, float lengthRatio);
+        void setLayerHeightRatio(int rank, float heightRatio);
 
         void removeLayer(int rank);
 
@@ -60,7 +61,8 @@ namespace Data{
          ****************************/
 
         //consultations possible sur les strates
-        const LayerFile * getLayer(int rank) const;
+        float getLayerLengthRatio(int rank) const;
+        float getLayerHeightRatio(int rank) const;
 
         int getHowManyLayers() const;
 

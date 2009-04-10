@@ -7,30 +7,49 @@ namespace Data{
     class Layer
     {
     private:
-        float _lengthRatio, _height;
+        float _lengthRatio, _heightRatio;
     public:
         /**
-          */
-        Stratum(float length=0.0f, float height=0.0f): _length(length), _height(height) {}
+         * the constructor of layers
+         *@param lengthRatio a float, the ratio (between 0 and 1) between the length of the layer and the length of the fin
+         *@param heightRatio a float, the ratio (between 0 and 1) between the height if the layer and the height of the fin
+         */
+        Layer(float lengthRatio=0.0f, float heightRatio=0.0f): _lengthRatio(lengthRatio), _heightRatio(heightRatio) {}
 
         /************************
          * Getters & Setters    *
          ************************/
 
-        float getLength(){
-            return _length;
+        /**
+         * a getter on the length ratio
+         *@return a float, the length ratio of the layer
+         */
+        float getLengthRatio(){
+            return _lengthRatio;
         }
 
-        float getHeight(){
-            return _height;
+        /**
+         * a getter on the height ratio
+         *@return a float, the height ratio of the layer
+         */
+        float getHeightRatio(){
+            return _heightRatio;
         }
 
-        void setLength(float length){
-            _length = length;
+        /**
+         * a setter on the length ratio
+         *@param lengthRatio a float, the new length ratio
+         */
+        void setLengthRatio(float lengthRatio){
+            _lengthRatio = lengthRatio;
         }
 
-        void setHeight(float heigth){
-            _height = height;
+        /**
+         * a setter on the height ratio
+         *@param heightRatio a float, the new height ratio
+         */
+        void setHeightRatio(float heightRatio){
+            _heightRatio = heightRatio;
         }
     };
 

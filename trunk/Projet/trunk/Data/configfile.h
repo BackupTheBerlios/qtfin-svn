@@ -7,17 +7,18 @@
 namespace Data{
 
     class Profil;
+    class LayerConfig;
 
     class ConfigFile
     {
         friend class Profil;
     private:
-        QVector<LayerConfig> _monofinLayerConfig;
+        QVector<LayerConfig*> _monofinLayerConfig;
     public:
         ConfigFile();
 
-        LayerConfig& getLayerConfig(int rank){
-            return _monofinStratumConfig.at(rank);
+        LayerConfig* getLayerConfig(int rank){
+            return _monofinLayerConfig.value(rank);
         }
 
     private:
@@ -26,7 +27,7 @@ namespace Data{
 
         void updateRemove(int rank);
 
-        void addLayerConfig(StrateConfig& s, int rank);
+        void addLayerConfig(LayerConfig& s, int rank);
 
         void removeStrateConfig(int rank);
     };

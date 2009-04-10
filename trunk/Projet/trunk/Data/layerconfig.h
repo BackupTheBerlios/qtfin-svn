@@ -8,7 +8,7 @@ namespace Data{
     private:
         float _young,_poisson,_rho;
     public:
-        StratumConfig();
+        LayerConfig();
 
         /*********************
          * Getters & Setters *

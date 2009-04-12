@@ -1,9 +1,10 @@
-#include "profil.h"
 #include "configfile.h"
+#include "layerconfig.h"
+#include "profil.h"
 
 namespace Data{
 
-    Profil::Profil(): _linkedConfigFile(NULL) {}
+    Profil::Profil(ConfigFile * link) : _linkedConfigFile(link) {}
 
     Profil::~Profil(){
         while(!_monofinLayers.empty()){
@@ -113,11 +114,70 @@ namespace Data{
     }
 
     /**
+     * a setter on the length ratio of the layer at the given rank
+     *@param rank an integer, the rank of the layer to modify, if it's an incorrect rank, nothing will be done
+     *@param lengthRatio a float, the new length ratio
+     */
+    void Profil::setLayerLengthRatio(int rank, float lengthRatio){
+        if(getLayer(rank)!=NULL){
+            getLayer(rank)->setLengthRatio(lengthRatio);
+        }
+    }
+
+    /**
+     * a setter on the heigth ratio of the layer at the given rank
+     *@param heightRatio a float, the new heigtht ratio
+     */
+    void Profil::setLayerHeightRatio(int rank, float heightRatio){
+        if(getLayer(rank)!=NULL){
+            getLayer(rank)->setHeightRatio(heightRatio);
+        }
+    }
+
+    /**
+     * a getter on the length ratio of the ranked layer
+     *@param rank an integer, the rank of the layer we want the length
+     *@return a float, the length ratio of the layer, MONOFIN_PROFIL_BAD_RANK if rank don't exist
+     */
+    float Profil::getLayerLengthRatio(int rank){
+        if (getLayer(rank)==NULL)
+            return MONOFIN_PROFIL_BAD_LAYER;
+
+        return getLayer(rank)->getLengthRatio();
+    }
+
+    /**
+     * a getter on the height ratio of the ranked layer
+     *@param rank an integer, the rank of the layer we want the height
+     *@return a float, the height ratio of the layer, MONOFIN_PROFIL_BAD_RANK if rank don't exist
+     */
+    float Profil::getLayerHeightRatio(int rank){
+        if (getLayer(rank)==NULL)
+            return MONOFIN_PROFIL_BAD_LAYER;
+
+        return getLayer(rank)->getHeightRatio();
+    }
+
+
+    void Profil::startHistory(Modification t){
+
+    }
+
+    HistoryHolder<Modification> * Profil::retrieveHistory(Modification t){
+        return NULL;
+
+    }
+
+    void Profil::undo(HistoryHolder<Modification> * history){
+
+    }
+
+    /**
      * a function called at the initialisation of the structure to linkthe profil and the configfile (which also manage layers)
      *@param toLink a pointer to ConfigFile, the address of the current ConfigFile
      */
-    void Profil::link(ConfigFile* toLink){
+    /*void Profil::link(ConfigFile* toLink){
         _linkedConfigFile = toLink;
-    }
+    }*/
 
 } // namespace Data

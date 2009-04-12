@@ -1,12 +1,30 @@
 #ifndef PROJECTFILE_H
 #define PROJECTFILE_H
 
+#include "DataConstants.h"
+#include "historyholder.h"
+#include <QStack>
+
 namespace Data{
 
-    class ProjectFile
+    class MonofinFile;
+    class ConfigFile;
+    class Action;
+
+    class ProjectFile : public HistoryTakeCarer<Modification>
     {
+    private:
+        MonofinFile *_monofinGeometry;
+        ConfigFile *_monofinPhysicalProperties;
+
+        bool _geometryModification;
+        bool _layerModification;
+        bool _layerConfigModification;
+
     public:
         ProjectFile();
+
+        //~ProjectFile();
 
         /****************************
          * Modification des donnees *
@@ -16,6 +34,10 @@ namespace Data{
         void beginModification(Modification);
 
         void endModification();
+
+        void startHistory(Modification);
+
+        void stopHistory(Modification);
 
         //modifications possibles sur les strates
         void addLayer(int rank, float lengthRatio, float heightRatio);
@@ -47,9 +69,9 @@ namespace Data{
          *         Undo Redo        *
          ****************************/
 
-        void undo(Modification);
+        //void undo(Modification);
 
-        void redo(Modification);
+        //void redo(Modification);
 
 
         /****************************
@@ -71,6 +93,9 @@ namespace Data{
         void getIntersectionPoint(int intersectionPointKey, float &x, float &y);
         void getControlPoint(int controlPointKey, float &x, float &y);
         void getSegment(int segmentKey, int &intersectionPointKey1, int &intersectionPointKey2, int &controlPointKey);
+        QList<int> getAllSegmentKeys();
+        QList<int> getAllIntersectionPointKeys();
+        QList<int> getAllControlPointKeys();
     };
 
 } // namespace Data

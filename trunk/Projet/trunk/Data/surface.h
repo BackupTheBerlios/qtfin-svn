@@ -5,15 +5,13 @@
 #include <QHash>
 #include <QList>
 #include "segment.h"
+#include "historyholder.h"
 #include "DataConstants.h"
 
 namespace Data{
 
-    class MonofinFile;
-
-    class Surface
+    class Surface : public HistoryMaker<Modification>
     {
-        friend class MonofinFile;
     private:
         struct Point{
             QPointF coordinates;
@@ -29,8 +27,7 @@ namespace Data{
     public:
         Surface(): _segmentKey(0), _intersectionKey(0), _controlKey(0) {}
 
-        ~Surface();
-    private:
+        virtual ~Surface();
 
         /**
          * Surface Modification
@@ -133,6 +130,30 @@ namespace Data{
          *@param controlPointKey an integer, return the key of the control point (bezier curve), may return MONOFIN_SURFACE_NO_SEGMENT_ERASED if the point don't exist
          */
         void getSegment(int segmentKey, int &intersectionPointKey1, int &intersectionPointKey2, int &controlPointKey);
+
+        QList<int> getAllSegmentKeys();
+
+        QList<int> getAllIntersectionPointKeys();
+
+        QList<int> getAllControlPointKeys();
+
+        void startHistory(Modification t);
+
+        HistoryHolder<Modification> * retrieveHistory(Modification t);
+
+        void undo(HistoryHolder<Modification> * history);
+
+    private:
+
+        void insertControlPoint(int key, Point *controlPoint);
+
+        void insertIntersectionPoint(int key, Point *intersectionPoint);
+
+        void insertSegment(int segmentKey,int intersectionPointKey1,int intersectionPointKey2,int controlPointKey);
+
+        void setSegment(int segmentKey, int intersectionKey1, int intersectionKey2, int controlKey);
+
+        void removeSegment(int segmentKey);
     };
 
 }

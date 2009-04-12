@@ -4,6 +4,17 @@
 #include "monofinfile.h"
 
 namespace Data{
+
+    MonofinFile::MonofinFile(ConfigFile * link) {
+        _monofinProfil = new Profil(link);
+        _monofinSurface = new Surface();
+    }
+
+    MonofinFile::~MonofinFile(){
+        delete _monofinProfil;
+        delete _monofinSurface;
+    }
+
     /***********
      * Setters *
      ***********/
@@ -17,7 +28,7 @@ namespace Data{
      *@param length a float, the length of the monofin
      */
     void MonofinFile::setMonofinLength(float length){
-        _monofinProfil.setMonofinLength(length);
+        _monofinProfil->setMonofinLength(length);
     }
 
     /**
@@ -25,7 +36,7 @@ namespace Data{
      *@param height a float, the height of the monofin
      */
     void MonofinFile::setMonofinHeight(float height){
-        _monofinProfil.setMonofinHeight(height);
+        _monofinProfil->setMonofinHeight(height);
     }
 
     /**
@@ -35,7 +46,7 @@ namespace Data{
      *@param heightRatio a float, the ratio (between 0 and 1) between the height if the layer and the height of the fin
      */
     void MonofinFile::addLayer(int rank, float lengthRatio, float heightRatio){
-        _monofinProfil.addLayer(rank,new Layer(lengthRatio,heightRatio));
+        _monofinProfil->addLayer(rank,new Layer(lengthRatio,heightRatio));
     }
 
     /**
@@ -44,9 +55,7 @@ namespace Data{
      *@param lengthRatio a float, the new length ratio
      */
     void MonofinFile::setLayerLengthRatio(int rank, float lengthRatio){
-        if(_monofinProfil.getLayer(rank)!=NULL){
-            _monofinProfil.getLayer(rank)->setLengthRatio(lengthRatio);
-        }
+        _monofinProfil->setLayerLengthRatio(rank, lengthRatio);
     }
 
     /**
@@ -54,9 +63,7 @@ namespace Data{
      *@param heightRatio a float, the new heigtht ratio
      */
     void MonofinFile::setLayerHeightRatio(int rank, float heightRatio){
-        if(_monofinProfil.getLayer(rank)!=NULL){
-            _monofinProfil.getLayer(rank)->setHeightRatio(heightRatio);
-        }
+        _monofinProfil->setLayerHeightRatio(rank, heightRatio);
     }
 
     /**
@@ -64,7 +71,7 @@ namespace Data{
      *@param rank an integer, the rank of the layer we want to remove
      */
     void MonofinFile::removeLayer(int rank){
-        _monofinProfil.remLayer(rank);
+        _monofinProfil->remLayer(rank);
     }
 
     /***********
@@ -79,7 +86,7 @@ namespace Data{
      *@return an integer, the key of the created segment or MONOFIN_SURFACE_NOT_CREATED_SEGMENT if an error occured.
      */
     int MonofinFile::addSegment(int intersectionPointKey1, int intersectionPointKey2, int controlPointKey){
-        return _monofinSurface.addSegment(intersectionPointKey1,intersectionPointKey2,controlPointKey);
+        return _monofinSurface->addSegment(intersectionPointKey1,intersectionPointKey2,controlPointKey);
     }
 
     /**
@@ -89,7 +96,7 @@ namespace Data{
      *@return an integer, the key of the created control point, or  MONOFIN_SURFACE_NOT_CREATED_POINT
      */
     int MonofinFile::addControlPoint(float x, float y){
-        return _monofinSurface.addControlPoint(x,y);
+        return _monofinSurface->addControlPoint(x,y);
     }
 
     /**
@@ -99,7 +106,7 @@ namespace Data{
      *@return an integer, the key of the created intersection point, or  MONOFIN_SURFACE_NOT_CREATED_POINT
      */
     int MonofinFile::addIntersectionPoint(float x, float y){
-        return _monofinSurface.addIntersectionPoint(x,y);
+        return _monofinSurface->addIntersectionPoint(x,y);
     }
 
     /**
@@ -109,7 +116,7 @@ namespace Data{
      *@return an integer, the key of the created segment or MONOFIN_SURFACE_NOT_CREATED_SEGMENT if a key is not valid or an error occured
      */
     int MonofinFile::subdivideSegment(int segmentKey, int intersectionPointKey){
-        return _monofinSurface.subdivideSegment(segmentKey,intersectionPointKey);
+        return _monofinSurface->subdivideSegment(segmentKey,intersectionPointKey);
     }
 
     /**
@@ -117,7 +124,7 @@ namespace Data{
      *@param controlPointKey an integer, the key of the control point to remove, must be a valid key otherwise nothing will be done
      */
     void MonofinFile::removeControlPoint(int controlPointKey){
-        _monofinSurface.removeControlPoint(controlPointKey);
+        _monofinSurface->removeControlPoint(controlPointKey);
     }
 
     /**
@@ -126,7 +133,7 @@ namespace Data{
      *@return an integer, the key of the erased segement, or MONOFIN_SURFACE_NO_SEGMENT_ERASED if the key weren't valid or an error occured
      */
     int MonofinFile::removeIntersectionPoint(int intersectionPointKey){
-        return _monofinSurface.removeIntersectionPoint(intersectionPointKey);
+        return _monofinSurface->removeIntersectionPoint(intersectionPointKey);
     }
 
     /**
@@ -136,7 +143,7 @@ namespace Data{
      *@param y a float, the new y-axis coordinate of the point
      */
     void MonofinFile::setIntersectionPoint(int intersectionPointKey, float x, float y){
-        _monofinSurface.setIntersectionPoint(intersectionPointKey,x,y);
+        _monofinSurface->setIntersectionPoint(intersectionPointKey,x,y);
     }
 
     /**
@@ -146,7 +153,7 @@ namespace Data{
      *@param y a float, the new y-axis coordinate of the point
      */
     void MonofinFile::setControlPoint(int controlPointKey, float x, float y){
-        _monofinSurface.setControlPoint(controlPointKey,x,y);
+        _monofinSurface->setControlPoint(controlPointKey,x,y);
     }
 
     /**
@@ -155,7 +162,7 @@ namespace Data{
      *@param controlPointKey an integer, the key of the control point to add
      */
     void MonofinFile::addControlPointToSegment(int segmentKey, int controlPointKey){
-        _monofinSurface.addControlPointToSegment(segmentKey,controlPointKey);
+        _monofinSurface->addControlPointToSegment(segmentKey,controlPointKey);
     }
 
 
@@ -173,10 +180,7 @@ namespace Data{
      *@return a float, the length ratio of the layer, MONOFIN_PROFIL_BAD_RANK if rank don't exist
      */
     float MonofinFile::getLayerLengthRatio(int rank){
-        if (_monofinProfil.getLayer(rank)==NULL)
-            return MONOFIN_PROFIL_BAD_LAYER;
-
-        return _monofinProfil.getLayer(rank)->getLengthRatio();
+        return _monofinProfil->getLayerLengthRatio(rank);
     }
 
     /**
@@ -185,10 +189,7 @@ namespace Data{
      *@return a float, the height ratio of the layer, MONOFIN_PROFIL_BAD_RANK if rank don't exist
      */
     float MonofinFile::getLayerHeightRatio(int rank){
-        if (_monofinProfil.getLayer(rank)==NULL)
-            return MONOFIN_PROFIL_BAD_LAYER;
-
-        return _monofinProfil.getLayer(rank)->getHeightRatio();
+        return _monofinProfil->getLayerHeightRatio(rank);
     }
 
     /**
@@ -196,7 +197,7 @@ namespace Data{
      *@return an integer, the number of layer created
      */
     int MonofinFile::getHowManyLayers(){
-        return _monofinProfil.getHowManyLayers();
+        return _monofinProfil->getHowManyLayers();
     }
 
     /**
@@ -204,7 +205,7 @@ namespace Data{
      *@return a float, the length of the monofin
      */
     float MonofinFile::getMonofinLength(){
-        return _monofinProfil.getMonofinLength();
+        return _monofinProfil->getMonofinLength();
     }
 
     /**
@@ -212,7 +213,7 @@ namespace Data{
      *@return a float, the height of the monofin
      */
     float MonofinFile::getMonofinHeight(){
-        return _monofinProfil.getMonofinHeight();
+        return _monofinProfil->getMonofinHeight();
     }
 
     /***********
@@ -227,7 +228,7 @@ namespace Data{
      *@param y a float, return the y-axis coordinate
      */
     void MonofinFile::getIntersectionPoint(int intersectionPointKey, float &x, float &y){
-        _monofinSurface.getIntersectionPoint(intersectionPointKey,x,y);
+        _monofinSurface->getIntersectionPoint(intersectionPointKey,x,y);
     }
 
     /**
@@ -237,7 +238,7 @@ namespace Data{
      *@param y a float, return the y-axis coordinate
      */
     void MonofinFile::getControlPoint(int controlPointKey, float &x, float &y){
-        _monofinSurface.getControlPoint(controlPointKey,x,y);
+        _monofinSurface->getControlPoint(controlPointKey,x,y);
     }
 
     /**
@@ -248,15 +249,39 @@ namespace Data{
      *@param controlPointKey an integer, return the key of the control point (bezier curve), may return MONOFIN_SURFACE_NO_SEGMENT_ERASED if the point don't exist
      */
     void MonofinFile::getSegment(int segmentKey, int &intersectionPointKey1, int &intersectionPointKey2, int &controlPointKey){
-        _monofinSurface.getSegment(segmentKey,intersectionPointKey1,intersectionPointKey2,controlPointKey);
+        _monofinSurface->getSegment(segmentKey,intersectionPointKey1,intersectionPointKey2,controlPointKey);
     }
 
     /**
      * a function called at the initialisation of the structure to linkthe profil and the configfile (which also manage layers)
      *@param toLink a pointer to ConfigFile, the address of the current ConfigFile
      */
-    void MonofinFile::linkProfilWithConfigFile(ConfigFile * toLink){
-        _monofinProfil.link(toLink);
+    /*void MonofinFile::linkProfilWithConfigFile(ConfigFile * toLink){
+        _monofinProfil->link(toLink);
+    }*/
+
+    void MonofinFile::startHistory(Modification t){
+        _monofinSurface->startHistory(t);
+    }
+
+    HistoryHolder<Modification> * MonofinFile::retrieveHistory(Modification t){
+        return _monofinSurface->retrieveHistory(t);
+    }
+
+    void MonofinFile::undo(HistoryHolder<Modification> * history){
+        _monofinSurface->undo(history);
+    }
+
+    QList<int> MonofinFile::getAllSegmentKeys(){
+        return _monofinSurface->getAllSegmentKeys();
+    }
+
+    QList<int> MonofinFile::getAllIntersectionPointKeys(){
+        return _monofinSurface->getAllIntersectionPointKeys();
+    }
+
+    QList<int> MonofinFile::getAllControlPointKeys(){
+        return _monofinSurface->getAllControlPointKeys();
     }
 
 }// namespace Data

@@ -48,37 +48,37 @@ namespace Data{
          * a getter on the first intersection point key (representing an edge of the segment)
          *@return an integer, the key of the intersection point
          */
-        inline int getFirstIntersectionPointKey();
+        int getFirstIntersectionPointKey();
 
         /**
          * a setter on the first intersection point key (representing an edge of the segment)
          *@param firstIntersectionPointKey an integer, the key of the intersection point
          */
-        inline void setFirstIntersectionPointKey(int firstIntersectionPointKey);
+        void setFirstIntersectionPointKey(int firstIntersectionPointKey);
 
         /**
          * a getter on the second intersection point key (representing an edge of the segment)
          *@return an integer, the key of the intersection point
          */
-        inline int getSecondIntersectionPointKey();
+        int getSecondIntersectionPointKey();
 
         /**
          * a setter on the second intersection point key (representing an edge of the segment)
          *@param secondIntersectionPointKey an integer, the key of the intersection point
          */
-        inline void setSecondIntersectionPointKey(int secondIntersectionPointKey);
+        void setSecondIntersectionPointKey(int secondIntersectionPointKey);
 
         /**
          * a getter on the control point key (bezier curves) may be MONOFIN_SURFACE_NO_CONTROL_POINT if no control point is specified
          *@return an integer, the key of the intersection point
          */
-        inline int getControlPointKey();
+        int getControlPointKey();
 
         /**
          * a setter on the control point key (bezier curves) may be MONOFIN_SURFACE_NO_CONTROL_POINT if no control point is specified
          *@param firstIntersectionPoint an integer, the key of the intersection point
          */
-        inline void setControlPointKey(int controlPointKey = MONOFIN_SURFACE_NO_CONTROL_POINT);
+        void setControlPointKey(int controlPointKey = MONOFIN_SURFACE_NO_CONTROL_POINT);
 
     };
 

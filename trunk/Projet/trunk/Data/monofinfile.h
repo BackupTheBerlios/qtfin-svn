@@ -1,23 +1,24 @@
 #ifndef MONOFINFILE_H
 #define MONOFINFILE_H
+
 #include "DataConstants.h"
+#include "historyholder.h"
+
 namespace Data{
 
-    class Profil;
     class Surface;
     class ProjectFile;
     class ConfigFile;
 
-    class MonofinFile
+    class MonofinFile : public HistoryMaker<Modification>
     {
-        friend class ProjectFile;
     private:
-        Profil _monofinProfil;
-        Surface _monofinSurface;
+        Profil *_monofinProfil;
+        Surface *_monofinSurface;
     public:
-        MonofinFile();
+        MonofinFile(ConfigFile * link);
 
-    private:
+        virtual ~MonofinFile();
 
         /***********
          * Setters *
@@ -210,12 +211,24 @@ namespace Data{
          */
         void getSegment(int segmentKey, int &intersectionPointKey1, int &intersectionPointKey2, int &controlPointKey);
 
+        QList<int> getAllSegmentKeys();
+
+        QList<int> getAllIntersectionPointKeys();
+
+        QList<int> getAllControlPointKeys();
+
+        void startHistory(Modification t);
+
+        HistoryHolder<Modification> * retrieveHistory(Modification t);
+
+        void undo(HistoryHolder<Modification> * history);
+
     private:
         /**
          * a function called at the initialisation of the structure to linkthe profil and the configfile (which also manage layers)
          *@param toLink a pointer to ConfigFile, the address of the current ConfigFile
          */
-        void linkProfilWithConfigFile(ConfigFile * toLink);
+        //void linkProfilWithConfigFile(ConfigFile * toLink);
 
     }; // class MonofinFile
 

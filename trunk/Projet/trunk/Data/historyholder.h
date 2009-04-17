@@ -162,9 +162,51 @@ namespace Data{
             _historyMakers.append(hM);
         }
 
-        virtual void startHistory(Type t) = 0;
+        virtual int numberOfUndo(Type t){
+            if(_passedHistory.contains(t))
+                return _passedHistory.value(t)->size();
+            else
+                return 0;
+        }
 
-        virtual void stopHistory(Type t) = 0;
+        virtual int numberOfRedo(Type t){
+            if(_futureHistory.contains(t))
+                return _futureHistory.value(t)->size();
+            else
+                return 0;
+        }
+
+        virtual void startHistory(Type t){
+            if(_futureHistory.contains(t))
+                _futureHistory.value(t)->clear();
+
+            foreach(HistoryMaker<Type> * hM, _historyMakers){
+                hM->startHistory(t);
+            }
+        }
+
+        virtual void stopHistory(Type t){
+            HistoryHolder<Type> * globalHistory = NULL;
+
+            foreach(HistoryMaker<Type> * hM, _historyMakers){
+                HistoryHolder<Type> * localHistory;
+                if( (localHistory = hM->retrieveHistory(t)) != NULL){
+                    if (globalHistory==NULL){
+                        globalHistory = localHistory;
+                    }else{
+                        globalHistory->getFirst()->setNextAction(localHistory);
+                    }
+                }
+            }
+
+            if(_passedHistory.contains(t)){
+                _passedHistory.value(t)->push_back(globalHistory);
+            }else{
+                QStack<HistoryHolder<Type> *> * toFill = new QStack<HistoryHolder<Type> *>();
+                toFill->push(globalHistory);
+                _passedHistory.insert(t,toFill);
+            }
+        }
     };
 
 }

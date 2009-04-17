@@ -262,14 +262,22 @@ namespace Data{
 
     void MonofinFile::startHistory(Modification t){
         _monofinSurface->startHistory(t);
+        _monofinProfil->startHistory(t);
     }
 
     HistoryHolder<Modification> * MonofinFile::retrieveHistory(Modification t){
-        return _monofinSurface->retrieveHistory(t);
+        HistoryHolder<Modification> * globalHistory = NULL;
+        globalHistory = _monofinProfil->retrieveHistory(t);
+        if (globalHistory!=NULL)
+            globalHistory->getFirst()->setNextAction(_monofinSurface->retrieveHistory(t));
+        else
+            globalHistory = _monofinSurface->retrieveHistory(t);
+        return globalHistory;
     }
 
     void MonofinFile::undo(HistoryHolder<Modification> * history){
         _monofinSurface->undo(history);
+        _monofinProfil->undo(history);
     }
 
     QList<int> MonofinFile::getAllSegmentKeys(){

@@ -1,6 +1,5 @@
 #include "configfile.h"
 #include "monofinfile.h"
-#include "action.h"
 #include "projectfile.h"
 
 namespace Data{
@@ -10,21 +9,6 @@ namespace Data{
         _monofinGeometry = new MonofinFile(_monofinPhysicalProperties);
         addHistoryMaker(_monofinGeometry);
         addHistoryMaker(_monofinPhysicalProperties);
-    }
-
-    void ProjectFile::startHistory(Modification compote){
-        _monofinGeometry->startHistory(compote);
-    }
-
-    void ProjectFile::stopHistory(Modification compote){
-        HistoryHolder<Modification> * history = _monofinGeometry->retrieveHistory(compote);
-        if(_passedHistory.contains(compote)){
-            _passedHistory.value(compote)->push_back(history);
-        }else{
-            QStack<HistoryHolder<Modification> *> * toFill = new QStack<HistoryHolder<Modification> *>();
-            toFill->push(history);
-            _passedHistory.insert(compote,toFill);
-        }
     }
 
     void ProjectFile::addLayer(int rank, float lengthRatio, float heightRatio){
@@ -85,6 +69,15 @@ namespace Data{
 
     void ProjectFile::setControlPoint(int controlPointKey, float x, float y) {
         _monofinGeometry->setControlPoint(controlPointKey,x,y);
+    }
+
+    /**
+     * set an existing control point to an existing segment, if keys are incorrect nothing will be done
+     *@param segmentKey an integer, the key of the segment we want to add a control point
+     *@param controlPointKey an integer, the key of the control point to add
+     */
+    void ProjectFile::addControlPointToSegment(int segmentKey, int controlPointKey){
+        _monofinGeometry->addControlPointToSegment(segmentKey,controlPointKey);
     }
 
     /*void ProjectFile::undo(Modification) {}

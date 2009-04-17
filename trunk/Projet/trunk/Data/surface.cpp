@@ -461,7 +461,7 @@ namespace Data{
                     int key;
                     coord = (QPointF *) (historyReader->pop());
                     key = (int) (historyReader->pop());
-                    setControlPoint(key,coord->x(),coord->y());
+                    setIntersectionPoint(key,coord->x(),coord->y());
                     delete coord;
                     break;
                 }

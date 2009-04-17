@@ -30,15 +30,6 @@ namespace Data{
          * Modification des donnees *
          ****************************/
 
-        //pour commencer les modifications
-        void beginModification(Modification);
-
-        void endModification();
-
-        void startHistory(Modification);
-
-        void stopHistory(Modification);
-
         //modifications possibles sur les strates
         void addLayer(int rank, float lengthRatio, float heightRatio);
 
@@ -64,6 +55,12 @@ namespace Data{
 
         void setIntersectionPoint(int intersectionPointKey, float x, float y);
         void setControlPoint(int controlPointKey, float x, float y);
+        /**
+         * set an existing control point to an existing segment, if keys are incorrect nothing will be done
+         *@param segmentKey an integer, the key of the segment we want to add a control point
+         *@param controlPointKey an integer, the key of the control point to add
+         */
+        void addControlPointToSegment(int segmentKey, int controlPointKey);
 
         /****************************
          *         Undo Redo        *

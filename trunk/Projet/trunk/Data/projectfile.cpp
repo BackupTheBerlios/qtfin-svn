@@ -80,11 +80,12 @@ namespace Data{
         _monofinGeometry->addControlPointToSegment(segmentKey,controlPointKey);
     }
 
-    /*void ProjectFile::undo(Modification) {}
-
-    void ProjectFile::redo(Modification) {}*/
-
-
+    /**
+     * clear all the surface's structure(delete everything), undo/redo works on it
+     */
+    void ProjectFile::clearSurface(){
+        _monofinGeometry->clearSurface();
+    }
 
     float ProjectFile::getLayerLengthRatio(int rank) const{
         return 0;

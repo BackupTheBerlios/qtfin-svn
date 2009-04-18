@@ -131,11 +131,33 @@ namespace Data{
          */
         void getSegment(int segmentKey, int &intersectionPointKey1, int &intersectionPointKey2, int &controlPointKey);
 
+        /**
+         * return all segment's keys
+         *@return QList<int>, key's list
+         */
         QList<int> getAllSegmentKeys();
 
+        /**
+         * return all intersection point's keys
+         *@return QList<int>, key's list
+         */
         QList<int> getAllIntersectionPointKeys();
 
+        /**
+         * return all control point's keys
+         *@return QList<int>, key's list
+         */
         QList<int> getAllControlPointKeys();
+
+        /**
+         * clear all the structure (delete everything), undo/redo works on it
+         */
+        void clearSurface();
+
+
+        /************************
+         * UNDO/REDO Management *
+         ************************/
 
         void startHistory(Modification t);
 

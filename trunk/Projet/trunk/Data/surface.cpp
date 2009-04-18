@@ -611,4 +611,24 @@ namespace Data{
     QList<int> Surface::getAllControlPointKeys(){
         return _controlPointTable.keys();
     }
+
+    void Surface::clearSurface(){
+        QList<int> keys = getAllControlPointKeys();
+        //first we delete control points
+        foreach(int key, keys){
+            removeControlPoint(key);
+        }
+
+        //next we delete segments
+        keys = getAllSegmentKeys();
+        foreach(int key, keys){
+            removeSegment(key);
+        }
+
+        //finally we delete intersection points
+        keys = getAllIntersectionPointKeys();
+        foreach(int key, keys){
+            removeIntersectionPoint(key);
+        }
+    }
 } // namespace Data

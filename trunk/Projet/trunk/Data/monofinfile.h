@@ -140,6 +140,11 @@ namespace Data{
          */
         void addControlPointToSegment(int segmentKey, int controlPointKey);
 
+        /**
+         * clear all the surface's structure(delete everything), undo/redo works on it
+         */
+        void clearSurface();
+
 
         /***********
          * Getters *

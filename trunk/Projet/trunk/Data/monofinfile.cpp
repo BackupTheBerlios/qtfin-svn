@@ -165,6 +165,12 @@ namespace Data{
         _monofinSurface->addControlPointToSegment(segmentKey,controlPointKey);
     }
 
+    /**
+     * clear all the surface's structure(delete everything), undo/redo works on it
+     */
+    void MonofinFile::clearSurface(){
+        _monofinSurface->clearSurface();
+    }
 
     /***********
      * Getters *

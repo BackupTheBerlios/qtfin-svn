@@ -4,18 +4,13 @@
 
 SymmetryAxis::SymmetryAxis(PaintingScene* scene)
         :_scene(scene){
-    _line = new QLineF(0, 0, _scene->width(), 0);
-}
-
-SymmetryAxis::~SymmetryAxis(){
-    delete _line;
-}
-
-QRectF SymmetryAxis::boundingRect() const{
-    return QRectF(_line->p1(), _line->p2());
+    this->setLine(0, 0, _scene->width(), 0);
+    //_line = new QLineF(0, 0, _scene->width(), 0);
 }
 
 void SymmetryAxis::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget){
+    Q_UNUSED(option);
+    Q_UNUSED(widget);
     painter->setPen(QColor(200,100,50));
-    painter->drawLine(*_line);
+    painter->drawLine(this->line());
 }

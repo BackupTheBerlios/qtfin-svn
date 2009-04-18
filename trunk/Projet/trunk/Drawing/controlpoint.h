@@ -20,25 +20,105 @@ class ControlPoint: public QGraphicsItem{
 
     //Q_OBJECT
 
-#define CONTRPOINTHEIGHT 10
+#define CONTRPOINTHEIGHT 9
 
 public:
 
+    /**
+    * Constructs a control point with the given coordinates. It belongs to
+    * the given BrLine.
+    * When constructed, the point does not know the two tangents which will
+    * move with it, they must be set by setTangent1() and setTangent2().
+    *@param x the coordinate x of the point
+    *@param y the coordinate y of the point
+    *@param line a pointer to the bezier curve which has this control point
+    *@param scene a pointer to the Painting scene
+    * in which the point will be placed
+    **/
     ControlPoint(qreal x, qreal y, BrLine* line, PaintingScene* scene);
+
+    /**
+    * Constructs a control point with the coordinates of the given QPointF.
+    * This control point belongs to the given BrLine.
+    * When constructed, the point does not know the two tangents which will
+    * move with it, they must be set by setTangent1() and setTangent2().
+    *@param coord the coordinate of the point as a QPointF
+    *@param line a pointer to the bezier curve which has this control point
+    *@param scene a pointer to the Painting scene
+    * in which the point will be placed
+    **/
     ControlPoint(const QPointF& coord, BrLine* line, PaintingScene* scene);
+
+    /**
+    * Destroys the QPointF _pos
+    **/
     ~ControlPoint();
 
-    virtual QRectF boundingRect() const{return *_rect;}
-    QPointF coord() const{return _rect->center();}
-    void moveTo(const QPointF& p){_rect->moveCenter(p);}
-    virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
-    void setLeftLine(BrLine* l);
-    void setRightLine(BrLine* l);
-    void setTangent1(Tangent* t){ _tangent1 = t;}
-    void setTangent2(Tangent* t){ _tangent2 = t;}
 
-/*signals:
-    void moving();*/
+    /**
+    * Returns the bounding rectangle of the item : it's here the same
+    * rectangle as the one painted in the view.
+    *@return the bounding rectangle of the item
+    **/
+    virtual QRectF boundingRect() const{return QRectF(_pos->x() - (CONTRPOINTHEIGHT / 2.0),
+                                                      _pos->y() - (CONTRPOINTHEIGHT / 2.0),
+                                                      CONTRPOINTHEIGHT,
+                                                      CONTRPOINTHEIGHT);}
+
+    /**
+    * Returns the coordinates of the control point with a float precision.
+    *@return the coordinates of the point as a QPointF
+    **/
+    QPointF coord() const{return *_pos;}
+
+    /**
+    * Returns the key of the point in the internal structure of the monofin.
+    * Make sure the internal key has been set by setInternalKey before,
+    * or verify that the value is not the default value : PaintingScene::BADKEY.
+    *@return the internal key of the point
+    **/
+    int internalKey(){return _internalKey;}
+
+    /**
+    * Makes the control point moving to the coordinates of the given QPointF.
+    * @param p the new coordinates of the control point as a QPointF
+    **/
+    void moveTo(const QPointF& p){
+        _pos->setX(p.x());
+        _pos->setY(p.y());
+    }
+
+    /**
+    * Paints the item as a black circle when it's not under the mouse
+    * When it's under the mouse, it's painted in green.
+    * This function is called by Qt when needed, or by others functions with
+    * the method update() of the scene.
+    *@param painter the painter which will be used to draw the point
+    *@param option not used here, see the documentation of QGraphicsItem
+    *@param widget not used here, see the documentation of QGraphicsItem
+    **/
+    virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
+
+    /**
+    * Sets the internal key of the point with the given key
+    * which comes from the internal strucure of the monofin.
+    *@param key the new key of the point which has to come from the structure
+    **/
+    void setInternalKey(int key){_internalKey = key;}
+
+    /**
+    * Sets the first tangent to the given tangent and set the
+    * control boolean _hasFirstTangent to true.
+    *@param t a pointer to the first tangent controlled by the control point
+    **/
+    void setTangent1(Tangent* t);
+
+    /**
+    * Sets the second tangent to the given tangent and set the
+    * control boolean _hasSecondTangent to true.
+    *@param t a pointer to the second tangent controlled by the control point
+    **/
+    void setTangent2(Tangent* t);
 
 protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent* event);
@@ -47,13 +127,38 @@ protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* event);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
 
-    bool _canMove;
-    QColor _color;
-    BrLine* _line;
-    QRectF* _rect;
-    PaintingScene* _scene;
-    Tangent* _tangent1;
-    Tangent* _tangent2;
+
+//ATTRIBUTES
+
+    bool _canMove;  //if true, the point can move when it receives
+                    //a mouseMoveEvent ; if false, it can not
+
+    QColor _color;  //the color used by the QPainter to draw the point
+
+    bool _hasFirstTangent;  //a control boolean, to be sure that the first
+                            //tangent has been set, before using the pointer
+
+    bool _hasSecondTangent;  //a control boolean, to be sure that the second
+                             //tangent has been set, before using the pointer
+
+    int _internalKey;  //the key of the point in the internal
+                       //structure of the monofin
+
+    bool _isMoving;  //boolean used to determine if the point has changed its
+                     //position between a mousePressEvent and a
+                     //mouseReleaseEvent : if true, the position has changed
+
+    BrLine* _line;  //a pointer to the line controlled by the control point
+
+    QPointF* _pos;  //The coordinates of the point
+
+    PaintingScene* _scene;  //a pointer to the main scene
+
+    Tangent* _tangent1;  //a pointer to the left tangent which
+                         //extremity is this control point
+
+    Tangent* _tangent2;  //a pointer to the right tangent which
+                         //extremity is this control point
 
 };
 

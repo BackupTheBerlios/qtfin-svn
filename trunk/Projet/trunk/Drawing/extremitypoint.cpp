@@ -8,10 +8,12 @@ ExtremityPoint::ExtremityPoint(const QPointF& coord, PaintingScene* scene)
 
 void ExtremityPoint::mouseMoveEvent(QGraphicsSceneMouseEvent* event){
     if(_canMove){
-        qDebug("mouse move");
+
+        _isMoving = true;
 
         QRectF zone = _scene->pointsBoundingZone();
         QPointF pos(event->scenePos().x(), 0);
+
         if(pos.x() < zone.bottomLeft().x()){
             pos.setX(zone.bottomLeft().x());
         }else if(pos.x() > zone.bottomRight().x()){
@@ -19,11 +21,10 @@ void ExtremityPoint::mouseMoveEvent(QGraphicsSceneMouseEvent* event){
         }
 
         this->moveTo(pos);
-        /*_rect->moveTo(event->scenePos().x() - (BOUNDINPOINTSIZE / 2.0),
-                      0 - (BOUNDINPOINTSIZE / 2.0));*/
 
         if(_hasLeftLine) {_leftLine->move();}
         if(_hasRightLine) {_rightLine->move();}
+
     }else{
         QGraphicsItem::mousePressEvent(event);
     }

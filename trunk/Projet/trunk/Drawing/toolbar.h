@@ -22,9 +22,11 @@ public slots:
     void clean();
     void finishedLine(bool a);
     void lineInterrupted();
+    void pointsOnScene(bool a);
 
 protected:
     PaintingScene* _scene;
+    QPushButton* _redoButton;
     QPushButton* _toolButtonAddControl;
     QPushButton* _toolButtonAddPoint;
     QPushButton* _toolButtonAlignTangents;
@@ -32,6 +34,7 @@ protected:
     QPushButton* _toolButtonPoint;
     QPushButton* _toolButtonRemoveControl;
     QPushButton* _toolButtonSimplifyView;
+    QPushButton* _undoButton;
     QVBoxLayout* _vlayout;
 
 };

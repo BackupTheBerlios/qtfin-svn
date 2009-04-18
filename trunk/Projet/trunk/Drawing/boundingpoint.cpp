@@ -6,43 +6,53 @@
 
 BoundingPoint::BoundingPoint(qreal x, qreal y, PaintingScene* scene):
         QGraphicsItem(), _atLeastOneClick(false), _canMove(false),
-      /*_canBeSelected(true), _isMoving(false),*/
+      /*_canBeSelected(true),*/
      _color(Qt::black), _hasLeftLine(false), _hasRightLine(false),
-     _isMouseOnPoint(false), _scene(scene){
+     _internalKey(PaintingScene::BADKEY),
+     _isMouseOnPoint(false),  _isMoving(false),
+     _scene(scene){
 
     this->setAcceptHoverEvents(true);
-    this->setFlag(QGraphicsItem::ItemIsMovable,true);
     this->setFlag(QGraphicsItem::ItemIsSelectable, true);
 
-    _rect = new QRectF(x - (BOUNDINPOINTSIZE / 2.0),
-               y - (BOUNDINPOINTSIZE / 2.0),
-               BOUNDINPOINTSIZE,
-               BOUNDINPOINTSIZE);
+    _pos = new QPointF(x, y);
 
 }
 
 BoundingPoint::BoundingPoint(const QPointF& coord, PaintingScene* scene):
         QGraphicsItem(), _atLeastOneClick(false), _canMove(false),
-      /*_canBeSelected(true), _isMoving(false),*/
+      /*_canBeSelected(true),*/
      _color(Qt::black), _hasLeftLine(false), _hasRightLine(false),
-     _isMouseOnPoint(false), _scene(scene){
+     _internalKey(PaintingScene::BADKEY),
+     _isMouseOnPoint(false),  _isMoving(false),
+     _scene(scene){
 
     this->setAcceptHoverEvents(true);
-    this->setFlag(QGraphicsItem::ItemIsMovable,true);
     this->setFlag(QGraphicsItem::ItemIsSelectable, true);
 
-    _rect = new QRectF(coord.x() - (BOUNDINPOINTSIZE / 2.0),
-               coord.y() - (BOUNDINPOINTSIZE / 2.0),
-               BOUNDINPOINTSIZE,
-               BOUNDINPOINTSIZE);
+    _pos = new QPointF(coord);
+}
+
+BoundingPoint::BoundingPoint(const BoundingPoint& p):
+        _atLeastOneClick(p._atLeastOneClick), _canMove(p._canMove),
+     _color(p._color), _hasLeftLine(false), _hasRightLine(false),
+     _isMouseOnPoint(p._isMouseOnPoint), _isMoving(p._isMoving),
+     _scene(p._scene){
+
+    this->setAcceptHoverEvents(true);
+    this->setFlag(QGraphicsItem::ItemIsSelectable, true);
+
+    _pos = new QPointF(p.coord());
+
 }
 
 BoundingPoint::~BoundingPoint(){
-    delete _rect;
+    delete _pos;
     //les objets BrLine* sont détruits dans la PaintingScene
 }
 
 void BoundingPoint::alignTangents(){
+    QPointF oldPos = this->coord();
     if(_hasLeftLine && _hasRightLine){
         QPointF leftContr;
         QPointF rightContr;
@@ -67,8 +77,8 @@ void BoundingPoint::alignTangents(){
         QPointF pos(0,0);
         norm.intersect(l,&pos);
         */
-        qreal leftLength = QLineF(leftContr,_rect->center()).length();
-        qreal rightLength = QLineF(rightContr,_rect->center()).length();
+        qreal leftLength = QLineF(leftContr, this->coord()).length();
+        qreal rightLength = QLineF(rightContr, this->coord()).length();
         QLineF l(leftContr, rightContr);
         qreal t = leftLength / (leftLength + rightLength);
         QPointF pos = l.pointAt(t);
@@ -91,24 +101,35 @@ void BoundingPoint::alignTangents(){
         }
         this->moveTo(QPointF(x, this->coord().y()));
     }
+
+    if(oldPos != this->coord()){
+        _scene->boundingPointHasMoved(this, false);
+    }
+
    _scene->update(_scene->sceneRect());
 }
 
 QRectF BoundingPoint::boundingRect() const{
-    //qDebug("bounding rect : %f, %f, %f, %f", _rect->x(), _rect->y(), _rect->width(), _rect->height());
-    QRectF r(_rect->topLeft().x()-5, _rect->topLeft().y()-5, _rect->width()+10, _rect->height()+10);
-    return /**_rect*/r;
+    QRectF r(_pos->x() - (this->rectangleSize() / 2.0) - 5,
+             _pos->y() - (this->rectangleSize() / 2.0) - 5,
+             this->rectangleSize() + 10,
+             this->rectangleSize() + 10);
+    return r;
 
 }
 
-QPointF BoundingPoint::coord() const{
-    return _rect->center();
+int BoundingPoint::internalKeyLeftLine(){
+    if(_hasLeftLine){
+        return _leftLine->internalKey();
+    }else{
+        return PaintingScene::BADKEY;
+    }
 }
 
 void BoundingPoint::moveTo(const QPointF& p){
     this->prepareGeometryChange();
-    _rect->moveCenter(p);/*moveTo(pos.x()- (BOUNDINPOINTSIZE / 2.0),
-                  pos.y() - (BOUNDINPOINTSIZE / 2.0));*/
+    _pos->setX(p.x());
+    _pos->setY(p.y());
 
     if(_hasLeftLine) {_leftLine->move();}
     if(_hasRightLine) {_rightLine->move();}
@@ -122,11 +143,19 @@ void BoundingPoint::paint(QPainter* painter, const QStyleOptionGraphicsItem* opt
         if(this->isSelected()){
             _color = Qt::red;
             painter->setPen(_color);
-            painter->drawEllipse(*_rect);
+            //painter->drawEllipse(*_pos, this->rectangleSize(), this->rectangleSize());
+            /*QRadialGradient gradient(this->coord(), this->rectangleSize() + 1);
+            QBrush brush(gradient);
+            painter->setBrush(brush);*/
+
+            //painter->drawEllipse(this->coord(), this->rectangleSize() + 0.0, this->rectangleSize() + 0.0);
         }else{
             if(_isMouseOnPoint){
                 _color = Qt::blue;
                 pen.setWidthF(2.2);
+                /*pen.setColor(_color);
+                painter->setPen(pen);
+                painter->drawEllipse(this->coord(), this->rectangleSize() + 0.0, this->rectangleSize() + 0.0);*/
             }else{
                 _color = Qt::black;
             }
@@ -134,13 +163,11 @@ void BoundingPoint::paint(QPainter* painter, const QStyleOptionGraphicsItem* opt
 
         pen.setColor(_color);
         painter->setPen(pen);
-        painter->drawRect(*_rect);
+        painter->drawRect((int)(_pos->x() - (this->rectangleSize() / 2.0)),
+               (int)(_pos->y() - (this->rectangleSize() / 2.0)),
+               (int)this->rectangleSize(),
+               (int)this->rectangleSize());
 
-        //affichage du symétrique
-        /*painter->setPen(Qt::black);
-        painter->setOpacity(0.5);
-        painter->drawRect(QRectF(_rect->bottomLeft().x(), -_rect->bottomLeft().y(), _rect->width(), _rect->height()));
-        */
     }else{
         Q_UNUSED(painter);
     }
@@ -192,10 +219,7 @@ void BoundingPoint::setRightLine(BrLine* l){
 
 void BoundingPoint::mouseMoveEvent(QGraphicsSceneMouseEvent* event){
     if(_canMove){
-        //_canBeSelected = false;
-        //_isMoving = true;
-        qDebug("mouse move");
-
+        _isMoving = true;
         QRectF zone = _scene->pointsBoundingZone();
         QPointF pos(event->scenePos().x(), event->scenePos().y());
         if(pos.x() < zone.bottomLeft().x()){
@@ -212,7 +236,7 @@ void BoundingPoint::mouseMoveEvent(QGraphicsSceneMouseEvent* event){
         this->moveTo(pos);
 
     }else{
-        QGraphicsItem::mousePressEvent(event);
+        //QGraphicsItem::mousePressEvent(event);
     }
     _scene->update(_scene->sceneRect());
  }
@@ -233,7 +257,14 @@ void BoundingPoint::mouseReleaseEvent(QGraphicsSceneMouseEvent* event){
     if(event->button() == Qt::LeftButton){
         qDebug("mouse released of bounding point");
         _canMove = false;
+
+        if(_isMoving){
+            _isMoving = false;
+            _scene->boundingPointHasMoved(this);
+        }
+
         if(_atLeastOneClick){
+
             /*if(_canBeSelected){
                 this->setSelected(true);
                 qDebug("point selected");
@@ -270,6 +301,10 @@ void BoundingPoint::mouseReleaseEvent(QGraphicsSceneMouseEvent* event){
     }
     //_isMoving = false;
     _scene->update(_scene->sceneRect());
+}
+
+inline qreal BoundingPoint::rectangleSize() const{
+    return BOUNDINGPOINTSIZE;// / _scene->scaleFactor();
 }
 
 /*void BoundingPoint::hoverEnterEvent(QGraphicsSceneHoverEvent* event){

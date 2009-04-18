@@ -7,19 +7,25 @@
 #include "paintingscene.h"
 #include "paintingview.h"
 #include "toolbar.h"
+#include "../Data/projectfile.h"
+
+using namespace Data;
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    /*MainWindow w;
-    w.show();*/
 
     QWidget* wid = new QWidget();
 
     QHBoxLayout* hlayout = new QHBoxLayout;
     wid->setLayout(hlayout);
 
-    PaintingScene scene(800, 600, wid);
+    /****
+      En attendant d'avoir une structure qui fonctionne...
+    ****/
+    ProjectFile structure;
+
+    PaintingScene scene(800, 600, &structure, wid);
 
     ToolBar bar(&scene);
     hlayout->addWidget(&bar);

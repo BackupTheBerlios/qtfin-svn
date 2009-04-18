@@ -41,6 +41,12 @@ ToolBar::ToolBar(PaintingScene* scene, QWidget* parent)
     _toolButtonSimplifyView->setEnabled(true);
     _vlayout->addWidget(_toolButtonSimplifyView);
 
+    _undoButton = new QPushButton("Undo",this);
+    _vlayout->addWidget(_undoButton);
+
+    _redoButton = new QPushButton("Redo",this);
+    _vlayout->addWidget(_redoButton);
+
     /*QPushButton* viewCoords = new QPushButton("View coords", this);
     _vlayout->addWidget(viewCoords);*/
 
@@ -63,6 +69,9 @@ ToolBar::ToolBar(PaintingScene* scene, QWidget* parent)
     QObject::connect(_toolButtonClean, SIGNAL(clicked()), _scene, SLOT(cleanPoints()));
     QObject::connect(_toolButtonClean, SIGNAL(clicked()), this, SLOT(clean()));
     QObject::connect(_toolButtonSimplifyView, SIGNAL(clicked(bool)), _scene, SLOT(simplifyView(bool)));
+    QObject::connect(_undoButton, SIGNAL(clicked()), _scene, SLOT(undo()));
+    QObject::connect(_redoButton, SIGNAL(clicked()), _scene, SLOT(redo()));
+    QObject::connect(_scene, SIGNAL(pointsOnScene(bool)), this, SLOT(pointsOnScene(bool)));
     //QObject::connect(viewCoords, SIGNAL(clicked()), _scene, SLOT(showCoords()));
 }
 
@@ -118,4 +127,24 @@ void ToolBar::finishedLine(bool a){
 void ToolBar::lineInterrupted(){
     _toolButtonPoint->setEnabled(true);
     _toolButtonPoint->click();
+    this->pointsOnScene(false);
+}
+
+void ToolBar::pointsOnScene(bool a){
+    if(a){
+        _toolButtonPoint->setDisabled(true);
+        _toolButtonAddControl->setEnabled(true);
+        _toolButtonAddPoint->setEnabled(true);
+        _toolButtonAlignTangents->setEnabled(true);
+        _toolButtonClean->setEnabled(true);
+        _toolButtonRemoveControl->setEnabled(true);
+    }else{
+        _toolButtonPoint->setEnabled(true);
+        _toolButtonAddControl->setDisabled(true);
+        _toolButtonAddPoint->setDisabled(true);
+        _toolButtonAlignTangents->setDisabled(true);
+        _toolButtonClean->setDisabled(true);
+        _toolButtonRemoveControl->setDisabled(true);
+    }
+
 }

@@ -4,8 +4,8 @@
 //PUBLIC
 
 BrLine::BrLine(BoundingPoint* p1, BoundingPoint* p2, PaintingScene* scene, int id)
-    : QGraphicsItem(), _color(Qt::black), _isControlPointActivated(false),
-    _isMouseOnLine(false), _lineId(id),
+    : QGraphicsItem(), _color(Qt::black), _internalKey(PaintingScene::BADKEY),
+    _isControlPointActivated(false), _isMouseOnLine(false), _lineId(id),
     _p1(p1), _p2(p2), _scene(scene){
 
     _line = new QLineF(_p1->coord(), _p2->coord());
@@ -23,20 +23,27 @@ BrLine::BrLine(BoundingPoint* p1, BoundingPoint* p2, PaintingScene* scene, int i
     _path = new QPainterPath(_p1->coord());
     _path->cubicTo(_contr->coord(), _contr->coord(), _p2->coord());
 
-    this->setAcceptHoverEvents(true);
+    //this->setAcceptHoverEvents(true);
 }
 
 BrLine::~BrLine(){
-    //on cache la ligne à ses points d'extrémité avant de la supprimer
-    _p1->hideRightLine();
-    _p2->hideLeftLine();
+    this->deleteBezier();
     delete _line;
     delete _path;
 
+    //on cache la ligne à ses points d'extrémité avant de la supprimer
+    if(_p1 != 0){_p1->hideRightLine();}
+    if(_p2 != 0){_p2->hideLeftLine();}
 }
 
 QRectF BrLine::boundingRect() const{
-    return QRectF(_line->p1(), _line->p2());
+
+    QRectF r = _path->boundingRect();
+
+    //ici on crée un rectangle immense qui englobe la courbe et son symétrique
+    return QRectF(r.bottomLeft(), QPointF(r.bottomRight().x(), -r.bottomRight().y()));
+
+    //return QRectF(_line->p1(), _line->p2());
 }
 
 QPointF BrLine::cubicBezierPoint(QPointF p0, QPointF p1, QPointF p2, QPointF p3, qreal t){
@@ -59,23 +66,6 @@ QPointF BrLine::cubicBezierPoint(qreal t){
     return cubicBezierPoint(_line->p1(), _contr->coord(), _contr->coord(), _line->p2(), t);
 }
 
-void BrLine::deleteBezier(){
-    //on appelle une fonction pour supprimer le point de contrôle
-    //puisque celui-ci est stocké dans une liste dans la PaintingScene.
-    //le deuxième paramètre indique s'il est ou non présent dans la scène
-    _scene->removeControlPoint(_contr, _isControlPointActivated);
-
-    //si les tangentes appartiennet à la scène, on les supprime de celle-ci
-    if(_isControlPointActivated){
-        _scene->removeItem(_tangent1);
-        _scene->removeItem(_tangent2);
-    }
-
-    //Ensuite, on supprime directement les tangentes
-    delete _tangent1;
-    delete _tangent2;
-}
-
 bool BrLine::intersect(BrLine& line){
     QPointF* p = new QPointF();
     bool res = (_line->intersect(line.line(), p) == QLineF::BoundedIntersection);
@@ -91,18 +81,23 @@ bool BrLine::intersect(QLineF& line){
 }
 
 void BrLine::move(){
-    qDebug("move line");
     this->prepareGeometryChange();
+
+    //si le point de contrôle n'est pas activé, on le déplace en
+    //même temps que la ligne en le laissant au milieu
     if(!_isControlPointActivated){
         QPointF contr((_p2->coord().x()+_p1->coord().x())/2.0,
                       (_p2->coord().y()+_p1->coord().y())/2.0);
         _contr->moveTo(contr);
     }
+
+
     _line->setPoints(_p1->coord(),_p2->coord());
+
     _tangent1->setLine(_line->p1(), _contr->coord());
     _tangent2->setLine(_line->p2(), _contr->coord());
+
     this->updatePath();
-    //_scene->update(QRectF(_scene->sceneRect()));
 }
 
 void BrLine::moveControlPoint(QPointF pos){
@@ -118,7 +113,7 @@ void BrLine::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QW
     this->updatePath();
     painter->setRenderHint(QPainter::Antialiasing, true);
     QPen pen;
-    int pw = 2;
+    int pw = 2;// / _scene->scaleFactor();
     //qDebug("Pen Width : %d", pw);
     pen.setWidth(pw);
     if(_isMouseOnLine){
@@ -139,18 +134,8 @@ void BrLine::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QW
         painter->drawLine(*_line);
     }
 
-    /*painter->setPen(Qt::blue);
 
-    QPointF p1 = _scene->cubicBezierPoint(_line->p1(), _contr->coord(), _contr->coord(), _line->p2(), 0);
-    QPointF p2;
-
-    for(qreal i = 0.1; i <= 1; i += 0.1){
-        p2 = _scene->cubicBezierPoint(_line->p1(), _contr->coord(), _contr->coord(), _line->p2(), i);
-        painter->drawLine(p1,p2);
-        p1 = p2;
-    }*/
-
-    //affichage du symétrique
+  //affichage du symétrique
     if(!_scene->isSimplifyViewActivated()){
         painter->setPen(Qt::black);
         painter->setOpacity(0.5);
@@ -195,10 +180,29 @@ void BrLine::setLineId(int i){
     if(i >= 0){_lineId = i;}
 }
 
+//PROTECTED
+
+void BrLine::deleteBezier(){
+    //on appelle une fonction pour supprimer le point de contrôle
+    //puisque celui-ci est stocké dans une liste dans la PaintingScene.
+    //le deuxième paramètre indique s'il est ou non présent dans la scène
+    _scene->removeControlPoint(_contr, _isControlPointActivated);
+
+    //si les tangentes appartiennet à la scène, on les supprime de celle-ci
+    if(_isControlPointActivated){
+        _scene->removeItem(_tangent1);
+        _scene->removeItem(_tangent2);
+    }
+
+    //Ensuite, on supprime directement les tangentes
+    if(_tangent1 != 0){delete _tangent1;}
+    if(_tangent2 != 0){delete _tangent2;}
+
+}
+
+
 void BrLine::updatePath(){
     *_path = QPainterPath(_p1->coord());
     _path->cubicTo(_contr->coord(), _contr->coord(), _p2->coord());
     _path->cubicTo(_contr->coord(), _contr->coord(), _p1->coord());
 }
-
-

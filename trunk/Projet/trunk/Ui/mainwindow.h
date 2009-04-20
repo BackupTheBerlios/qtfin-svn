@@ -24,20 +24,13 @@ public:
     MainWindow(QWidget *parent = 0);
 
 protected slots:
-    void activeAddControl(bool a);
-    void activeAddPoint(bool a);
-    void activateRemoveControl(bool a);
-    void beginLine(bool a);
-    void clean();
     void configurate();
-    void finishedLine(bool a);
 
 protected:
     virtual void changeEvent(QEvent *e);
 
 private slots:
     void about();
-    void monofinModified();
     void newFile();
     void open();
     void openRecentFile();
@@ -48,13 +41,7 @@ private slots:
     void updateMenus();
     void updateRecentFileActions();
     void updateToolBars();
-
-    void on_actionAddControl_toggled(bool a);
-    void on_actionAddPoint_toggled(bool a);
-    void on_actionCreatePolygon_toggled(bool a);
-    void on_actionRemoveControl_toggled(bool a);
-    void on_actionAlignTangents_triggered();
-    void on_actionCleanPolygon_triggered();
+    void updateWindowTitle();
 
 private:
     Monofin *activeMonofin();
@@ -81,12 +68,6 @@ private:
     QAction *_actionOpen;
     QAction *_actionSave;
     QAction *_actionSaveAs;
-    QAction *_actionAddControl;
-    QAction *_actionAddPoint;
-    QAction *_actionCreatePolygon;
-    QAction *_actionCleanPolygon;
-    QAction *_actionRemoveControl;
-    QAction *_actionAlignTangents;
     QAction *_actionConfigurate;
     QAction *_actionLaunch;
     QAction *_actionShowGrid;
@@ -100,17 +81,20 @@ private:
     QtWindowListMenu *_menuWin;
     QMenu *_menuLanguage;
     QMenu *_menuHelp;
+
     QToolBar *_mainToolBar;
     QStatusBar *_statusBar;
+
     QDockWidget *_dockFormLibrary;
     QWidget *_dockWidgetContents;
-    QActionGroup *_actionGroupLanguage;
-    QMdiArea *_mdiArea;
+
+    QMdiArea *_mdiArea;    
 
     QString _currentLanguage;
     QString _qmPath;
     QTranslator _appTranslator;
     QTranslator _qtTranslator;
+    QActionGroup *_actionGroupLanguage;
 
     QStringList _recentFiles;
     enum { MaxRecentFiles = 5};

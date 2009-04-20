@@ -3,7 +3,9 @@
 
 #include "../ui_parametersDialog.h"
 
-class StrateFile;
+namespace Data {
+    class Layer;
+}
 
 class ParametersDialog : public QDialog, public Ui::ParametersDialog {
     Q_OBJECT
@@ -22,7 +24,7 @@ private:
     void _retranslateUi();
 
 private:
-    QList<StrateFile*> m_strates;
+    QList<Data::Layer*> m_strates;
 };
 
 #endif // PARAMETERSDIALOG_H

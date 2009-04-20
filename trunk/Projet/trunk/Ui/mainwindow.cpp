@@ -40,6 +40,8 @@ MainWindow::MainWindow(QWidget *parent)
             this, SLOT(updateMenus()));
     connect(_mdiArea, SIGNAL(subWindowActivated(QMdiSubWindow*)),
             this, SLOT(updateToolBars()));
+    connect(_mdiArea, SIGNAL(subWindowActivated(QMdiSubWindow*)),
+            this, SLOT(updateWindowTitle()));
 
     _paramDiag = new ParametersDialog(this);
 
@@ -52,67 +54,19 @@ MainWindow::MainWindow(QWidget *parent)
     qApp->installTranslator(&_qtTranslator);
     qApp->installTranslator(&_appTranslator);
 
-    qDebug("create actions");
     createActions();
-    qDebug("create menus");
     createMenus();
-    qDebug("create docks");
     createDocks();
-    qDebug("create statusbar");
     createStatusBar();
-    qDebug("create toolbars");
     createToolBars();
-    qDebug("set connections");
     setConnections();
 
-    qDebug("read settings");
     readSettings();
 
     retranslateUi();
 
     setWindowTitle(tr("Monofin"));
     setWindowIcon(QPixmap(":/images/icon.png"));
-}
-
-// PROTECTED SLOTS
-
-void MainWindow::activeAddControl(bool a){
-    _actionAddPoint->setDisabled(a);
-    _actionAlignTangents->setDisabled(a);
-    _actionCleanPolygon->setDisabled(a);
-    _actionRemoveControl->setDisabled(a);
-}
-
-void MainWindow::activeAddPoint(bool a){
-    _actionAddControl->setDisabled(a);
-    _actionAlignTangents->setDisabled(a);
-    _actionCleanPolygon->setDisabled(a);
-    _actionRemoveControl->setDisabled(a);
-}
-
-void MainWindow::activateRemoveControl(bool a){
-    _actionCreatePolygon->setDisabled(a);
-    _actionAddControl->setDisabled(a);
-    _actionAlignTangents->setDisabled(a);
-    _actionCleanPolygon->setDisabled(a);
-}
-
-void MainWindow::beginLine(bool a){
-    _actionCreatePolygon->setDisabled(a);
-    _actionAddControl->setDisabled(a);
-    _actionAddPoint->setDisabled(a);
-    _actionAlignTangents->setDisabled(a);
-    _actionCleanPolygon->setDisabled(a);
-    _actionRemoveControl->setDisabled(a);
-}
-
-void MainWindow::clean(){
-    _actionCreatePolygon->setEnabled(true);
-    _actionAddControl->setDisabled(true);
-    _actionAddPoint->setDisabled(true);
-    _actionAlignTangents->setDisabled(true);
-    _actionCleanPolygon->setDisabled(true);
-    _actionRemoveControl->setDisabled(true);
 }
 
 #include "layerparameters.h"
@@ -124,13 +78,6 @@ void MainWindow::configurate()
             LayerParameters * ll = static_cast<LayerParameters*> (qtw->widget(i));
             qDebug("%f", ll->youngDoubleSpinBox->value());
         }
-    }
-}
-
-void MainWindow::finishedLine(bool a){
-    if(a){
-        _actionCreatePolygon->toggle();
-        _actionCreatePolygon->setDisabled(true);
     }
 }
 
@@ -146,55 +93,6 @@ void MainWindow::changeEvent(QEvent *e)
     }
 }
 
-// TOOLBAR
-void MainWindow::on_actionAddControl_toggled(bool a)
-{
-    if(activeMonofin())
-        activeMonofin()->activateAddControl(a);
-}
-
-void MainWindow::on_actionAddPoint_toggled(bool a)
-{
-    if(activeMonofin())
-        activeMonofin()->activateAddPoint(a);
-}
-
-void MainWindow::on_actionCreatePolygon_toggled(bool a)
-{
-    if(activeMonofin())
-        activeMonofin()->activateCreateLine(a);
-}
-
-void MainWindow::on_actionRemoveControl_toggled(bool a)
-{
-    if(activeMonofin())
-        activeMonofin()->activateRemoveControlPoint(a);
-}
-
-void MainWindow::on_actionAlignTangents_triggered()
-{
-    if(activeMonofin())
-        activeMonofin()->alignTangents();
-}
-
-void MainWindow::on_actionCleanPolygon_triggered()
-{
-    if(activeMonofin())
-        activeMonofin()->cleanPoints();
-}
-
-void MainWindow::updateMenus()
-{
-    bool hasMonofin = (activeMonofin() != 0);
-
-    _actionSave->setEnabled(hasMonofin);
-}
-
-void MainWindow::updateToolBars()
-{
-
-}
-
 // PRIVATE SLOTS
 
 void MainWindow::about()
@@ -203,11 +101,6 @@ void MainWindow::about()
                        tr("<h2>Monofin %1.%2</h2>"
                           "<p>Copyright &copy; 2009 Barbec_Guys</p>")
                        .arg(_majorVersion).arg(_minorVersion));
-}
-
-void MainWindow::monofinModified()
-{
-    setWindowModified(true);
 }
 
 void MainWindow::newFile()
@@ -219,8 +112,14 @@ void MainWindow::newFile()
 
 void MainWindow::open()
 {
-    if (activeMonofin())
-        activeMonofin()->open();
+    Monofin *monofin = createMonofin();
+    if(monofin->open())
+        monofin->show();
+    else {
+        _mdiArea->removeSubWindow(monofin);
+        if(monofin)
+            delete monofin;
+    }
 }
 
 void MainWindow::openRecentFile()
@@ -255,6 +154,62 @@ void MainWindow::switchLanguage(QAction *action)
     _qtTranslator.load("qt_" + locale, _qmPath);
     _currentLanguage = _appTranslator.translate("MainWindow", "English");
     retranslateUi();
+}
+
+void MainWindow::updateMenus()
+{
+    bool hasMonofin = (activeMonofin() != 0);
+    _actionSave->setEnabled(hasMonofin);
+    _actionSaveAs->setEnabled(hasMonofin);
+}
+
+void MainWindow::updateRecentFileActions()
+{
+    if (activeMonofin()) {
+        QString curFile = activeMonofin()->currentFile();
+        _recentFiles.removeAll(curFile);
+        _recentFiles.prepend(curFile);
+    }
+
+    QMutableStringListIterator i(_recentFiles);
+    while(i.hasNext()) {
+        if (!QFile::exists(i.next()))
+            i.remove();
+    }
+
+    for (int j=0; j<MaxRecentFiles; ++j) {
+        if (j<_recentFiles.count()) {
+            QString text = tr("&%1 %2")
+                           .arg(j+1)
+                           .arg(strippedName(_recentFiles[j]));
+            _recentFileActions[j]->setText(text);
+            _recentFileActions[j]->setData(_recentFiles[j]);
+            _recentFileActions[j]->setVisible(true);
+        } else
+            _recentFileActions[j]->setVisible(false);
+    }
+    _separatorAction->setVisible(!_recentFiles.isEmpty());
+}
+
+void MainWindow::updateToolBars()
+{
+    if(_mainToolBar) {
+        removeToolBar(_mainToolBar);
+    }
+    if (activeMonofin()) {
+        _mainToolBar = activeMonofin()->toolBar();
+        addToolBar(activeMonofin()->toolBarArea(), _mainToolBar);
+        _mainToolBar->setVisible(true);
+    }
+}
+
+void MainWindow::updateWindowTitle()
+{
+    if (activeMonofin()) {
+        setWindowTitle(tr("%1[*] - %2").arg(strippedName(activeMonofin()->currentFile())).arg(tr("Monofin")));
+    }
+    else
+        setWindowTitle(tr("Monofin"));
 }
 
 
@@ -296,27 +251,6 @@ void MainWindow::createActions()
     _actionShowGrid->setChecked(true);
     _actionProperties = new QAction(this);
     _actionProperties->setObjectName(QString::fromUtf8("actionProperties"));
-    _actionAddControl = new QAction(this);
-    _actionAddControl->setObjectName(QString::fromUtf8("actionAddControl"));
-    _actionAddControl->setCheckable(true);
-    _actionAddControl->setEnabled(false);
-    _actionAddPoint = new QAction(this);
-    _actionAddPoint->setObjectName(QString::fromUtf8("actionAddPoint"));
-    _actionAddPoint->setCheckable(true);
-    _actionAddPoint->setEnabled(false);
-    _actionCreatePolygon = new QAction(this);
-    _actionCreatePolygon->setObjectName(QString::fromUtf8("actionCreatePolygon"));
-    _actionCreatePolygon->setCheckable(true);
-    _actionCleanPolygon = new QAction(this);
-    _actionCleanPolygon->setObjectName(QString::fromUtf8("actionCleanPolygon"));
-    _actionCleanPolygon->setEnabled(false);
-    _actionRemoveControl = new QAction(this);
-    _actionRemoveControl->setObjectName(QString::fromUtf8("actionRemoveControl"));
-    _actionRemoveControl->setCheckable(true);
-    _actionRemoveControl->setEnabled(false);
-    _actionAlignTangents = new QAction(this);
-    _actionAlignTangents->setObjectName(QString::fromUtf8("actionAlignTangents"));
-    _actionAlignTangents->setEnabled(false);
 
     // MENU SIMULATION
     _actionConfigurate = new QAction(this);
@@ -439,7 +373,6 @@ void MainWindow::createMenus()
 Monofin *MainWindow::createMonofin()
 {
     Monofin *monofin = new Monofin;
-    connect(monofin, SIGNAL(lineFinished(bool)), this, SLOT(finishedLine(bool)));
     connect(monofin, SIGNAL(currentFileChanged()), this, SLOT(updateRecentFileActions()));
     _mdiArea->addSubWindow(monofin, Qt::SubWindow);
     return monofin;
@@ -454,20 +387,7 @@ void MainWindow::createStatusBar()
 
 void MainWindow::createToolBars()
 {
-    _mainToolBar = new QToolBar(this);
-    _mainToolBar->setObjectName(QString::fromUtf8("mainToolBar"));
-    _mainToolBar->setFloatable(false);
-    _mainToolBar->setAllowedAreas(Qt::LeftToolBarArea | Qt::RightToolBarArea | Qt::TopToolBarArea);
-    addToolBar(Qt::LeftToolBarArea, _mainToolBar);
-
-    _mainToolBar->addAction(_actionCreatePolygon);
-    _mainToolBar->addAction(_actionCleanPolygon);
-    _mainToolBar->addSeparator();
-    _mainToolBar->addAction(_actionAddControl);
-    _mainToolBar->addAction(_actionRemoveControl);
-    _mainToolBar->addAction(_actionAddPoint);
-    _mainToolBar->addSeparator();
-    _mainToolBar->addAction(_actionAlignTangents);
+    _mainToolBar = NULL;
 }
 
 
@@ -475,11 +395,12 @@ bool MainWindow::loadFile(const QString &fileName)
 {
     Monofin *monofin = createMonofin();
     if(monofin->openFile(fileName)) {
-        _mdiArea->addSubWindow(monofin, Qt::SubWindow);
         monofin->show();
         return true;
     } else {
-        delete monofin;
+        _mdiArea->removeSubWindow(monofin);
+        if(monofin)
+            delete monofin;
         return false;
     }
 }
@@ -490,9 +411,6 @@ void MainWindow::readSettings()
 
 void MainWindow::retranslateUi()
 {
-    // MainWindow
-    setWindowTitle(QApplication::translate("MainWindow", "MainWindow", 0, QApplication::UnicodeUTF8));
-
     // actions
     _actionExit->setText(QApplication::translate("MainWindow", "E&xit", 0, QApplication::UnicodeUTF8));
     _actionExit->setShortcut(QApplication::translate("MainWindow", "Ctrl+Q", 0, QApplication::UnicodeUTF8));
@@ -503,18 +421,12 @@ void MainWindow::retranslateUi()
     _actionSave->setText(QApplication::translate("MainWindow", "&Save", 0, QApplication::UnicodeUTF8));
     _actionSave->setShortcut(QApplication::translate("MainWindow", "Ctrl+S", 0, QApplication::UnicodeUTF8));
     _actionSaveAs->setText(QApplication::translate("MainWindow", "&Save As...", 0, QApplication::UnicodeUTF8));
-    _actionAddControl->setText(QApplication::translate("MainWindow", "Add control point", 0, QApplication::UnicodeUTF8));
-    _actionAddPoint->setText(QApplication::translate("MainWindow", "Add point", 0, QApplication::UnicodeUTF8));
-    _actionCreatePolygon->setText(QApplication::translate("MainWindow", "Create polygon", 0, QApplication::UnicodeUTF8));
-    _actionCleanPolygon->setText(QApplication::translate("MainWindow", "Clean polygon", 0, QApplication::UnicodeUTF8));
-    _actionRemoveControl->setText(QApplication::translate("MainWindow", "Remove control point", 0, QApplication::UnicodeUTF8));
-    _actionAlignTangents->setText(QApplication::translate("MainWindow", "Align tangents", 0, QApplication::UnicodeUTF8));
-    _actionConfigurate->setText(QApplication::translate("MainWindow", "&Configurate...", 0, QApplication::UnicodeUTF8));
-    _actionConfigurate->setShortcut(QApplication::translate("MainWindow", "Ctrl+S", 0, QApplication::UnicodeUTF8));
-    _actionLaunch->setText(QApplication::translate("MainWindow", "&Launch", 0, QApplication::UnicodeUTF8));
-    _actionLaunch->setShortcut(QApplication::translate("MainWindow", "Ctrl+L", 0, QApplication::UnicodeUTF8));
-    _actionShowGrid->setText(QApplication::translate("MainWindow", "&Show Grid", 0, QApplication::UnicodeUTF8));
-    _actionShowGrid->setShortcut(QApplication::translate("MainWindow", "Ctrl+G", 0, QApplication::UnicodeUTF8));
+    _actionShowGrid->setText(QApplication::translate("Monofin", "&Show Grid", 0, QApplication::UnicodeUTF8));
+    _actionShowGrid->setShortcut(QApplication::translate("Monofin", "Ctrl+G", 0, QApplication::UnicodeUTF8));
+    _actionConfigurate->setText(QApplication::translate("Monofin", "&Configurate...", 0, QApplication::UnicodeUTF8));
+    _actionConfigurate->setShortcut(QApplication::translate("Monofin", "Ctrl+S", 0, QApplication::UnicodeUTF8));
+    _actionLaunch->setText(QApplication::translate("Monofin", "&Launch", 0, QApplication::UnicodeUTF8));
+    _actionLaunch->setShortcut(QApplication::translate("Monofin", "Ctrl+L", 0, QApplication::UnicodeUTF8));
     _actionProperties->setText(QApplication::translate("MainWindow", "&Properties...", 0, QApplication::UnicodeUTF8));
     _actionAbout->setText(QApplication::translate("MainWindow", "&About", 0, QApplication::UnicodeUTF8));
     _actionAboutQt->setText(QApplication::translate("MainWindow", "About &Qt", 0, QApplication::UnicodeUTF8));
@@ -532,15 +444,9 @@ void MainWindow::retranslateUi()
 
 void MainWindow::setConnections()
 {
-    // TOOLBAR
-    connect(_actionCreatePolygon, SIGNAL(toggled(bool)), this, SLOT(beginLine(bool)));
-    connect(_actionCleanPolygon, SIGNAL(triggered()), this, SLOT(clean()));
-    connect(_actionAddControl, SIGNAL(toggled(bool)), this, SLOT(activeAddControl(bool)));
-    connect(_actionRemoveControl, SIGNAL(toggled(bool)), this, SLOT(activateRemoveControl(bool)));
-    connect(_actionAddPoint, SIGNAL(toggled(bool)), this, SLOT(activeAddPoint(bool)));
-
     // MENU
     connect(_actionNew, SIGNAL(triggered()), this, SLOT(newFile()));
+    connect(_actionOpen, SIGNAL(triggered()), this, SLOT(open()));
     connect(_actionSave, SIGNAL(triggered()), this, SLOT(save()));
     connect(_actionSaveAs, SIGNAL(triggered()), this, SLOT(saveAs()));
     connect(_actionExit, SIGNAL(triggered()), this, SLOT(close()));
@@ -554,34 +460,6 @@ void MainWindow::setConnections()
 QString MainWindow::strippedName(const QString &fullFileName)
 {
     return QFileInfo(fullFileName).fileName();
-}
-
-void MainWindow::updateRecentFileActions()
-{
-    if(activeMonofin()) {
-        QString curFile = activeMonofin()->currentFile();
-        _recentFiles.removeAll(curFile);
-        _recentFiles.prepend(curFile);
-    }
-
-    QMutableStringListIterator i(_recentFiles);
-    while(i.hasNext()) {
-        if (!QFile::exists(i.next()))
-            i.remove();
-    }
-
-    for (int j=0; j<MaxRecentFiles; ++j) {
-        if (j<_recentFiles.count()) {
-            QString text = tr("&%1 %2")
-                           .arg(j+1)
-                           .arg(strippedName(_recentFiles[j]));
-            _recentFileActions[j]->setText(text);
-            _recentFileActions[j]->setData(_recentFiles[j]);
-            _recentFileActions[j]->setVisible(true);
-        } else
-            _recentFileActions[j]->setVisible(false);
-    }
-    _separatorAction->setVisible(!_recentFiles.isEmpty());
 }
 
 void MainWindow::writeSettings()

@@ -10,8 +10,14 @@ else:DEFINES += QT_NO_DEBUG_OUTPUT \
 SOURCES += main.cpp \
     monofin.cpp \
     lib/qtwindowlistmenu.cpp \
+    Data/configfile.cpp \
+    Data/layerconfig.cpp \
+    Data/layer.cpp \
     Data/monofinfile.cpp \
-    Data/stratefile.cpp \
+    Data/profil.cpp \
+    Data/projectfile.cpp \
+    Data/segment.cpp \
+    Data/surface.cpp \
     Drawing/boundingpoint.cpp \
     Drawing/brline.cpp \
     Drawing/controlpoint.cpp \
@@ -33,8 +39,16 @@ SOURCES += main.cpp \
     Ui/startupdialog.cpp
 HEADERS += monofin.h \
     lib/qtwindowlistmenu.h \
+    Data/DataConstants.h \
+    Data/configfile.h \
+    Data/historyholder.h \
+    Data/layerconfig.h \
+    Data/layer.h \
     Data/monofinfile.h \
-    Data/stratefile.h \
+    Data/profil.h \
+    Data/projectfile.h \
+    Data/segment.h \
+    Data/surface.h \
     Drawing/boundingpoint.h \
     Drawing/brline.h \
     Drawing/controlpoint.h \

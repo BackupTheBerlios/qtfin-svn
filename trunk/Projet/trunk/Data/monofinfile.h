@@ -8,6 +8,7 @@ namespace Data{
 
     class Surface;
     class ProjectFile;
+    class Profil;
     class ConfigFile;
 
     class MonofinFile : public HistoryMaker<Modification>

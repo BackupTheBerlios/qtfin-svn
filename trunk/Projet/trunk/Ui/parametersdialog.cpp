@@ -1,16 +1,18 @@
 #include "parametersdialog.h"
 
-#include "../Data/stratefile.h"
+#include "../Data/layer.h"
 #include "layerparameters.h"
 
 #include <QFileDialog>
+
+using namespace Data;
 
 ParametersDialog::ParametersDialog(QWidget *parent) :
     QDialog(parent)
 {
     setupUi(this);
     for(int i=0; i<4; ++i)
-        m_strates.append(new StrateFile);
+        m_strates.append(new Layer);
 
     layerTabWidget->clear();
     for(int i=0; i<m_strates.count(); ++i)

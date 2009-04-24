@@ -105,20 +105,22 @@ void MainWindow::about()
 
 void MainWindow::newFile()
 {
-    Monofin *monofin = createMonofin();
+    QMdiSubWindow *msw = createMonofin();
+    Monofin *monofin = static_cast<Monofin *>(msw->widget());
     monofin->newFile();
     monofin->show();
 }
 
 void MainWindow::open()
 {
-    Monofin *monofin = createMonofin();
-    if(monofin->open())
+    QMdiSubWindow *msw = createMonofin();
+    Monofin *monofin = static_cast<Monofin *>(msw->widget());
+    if(monofin->open()) {
+        updateToolBars();
         monofin->show();
+    }
     else {
-        _mdiArea->removeSubWindow(monofin);
-        if(monofin)
-            delete monofin;
+        msw->close();
     }
 }
 
@@ -173,7 +175,9 @@ void MainWindow::updateRecentFileActions()
 
     QMutableStringListIterator i(_recentFiles);
     while(i.hasNext()) {
-        if (!QFile::exists(i.next()))
+        QString recentFile = i.next();
+        qDebug("recentFiles[] := %s", recentFile.toStdString().c_str());
+        if (!QFile::exists(recentFile))
             i.remove();
     }
 
@@ -348,8 +352,8 @@ void MainWindow::createMenus()
     _menuSimulation->addAction(_actionLaunch);
 
     // MENU WINDOW
-    _menuWin = new QtWindowListMenu(_menuBar);
-    _menuWin->attachToMdiArea(_mdiArea);
+     _menuWin = new QtWindowListMenu(_menuBar);
+     _menuWin->attachToMdiArea(_mdiArea);
 
     // MENU LANGUAGE
     createLanguageMenu();
@@ -370,12 +374,14 @@ void MainWindow::createMenus()
     _menuBar->addAction(_menuHelp->menuAction());
 }
 
-Monofin *MainWindow::createMonofin()
+QMdiSubWindow *MainWindow::createMonofin()
 {
     Monofin *monofin = new Monofin;
     connect(monofin, SIGNAL(currentFileChanged()), this, SLOT(updateRecentFileActions()));
-    _mdiArea->addSubWindow(monofin, Qt::SubWindow);
-    return monofin;
+
+    QMdiSubWindow *msw = _mdiArea->addSubWindow(monofin);
+    msw->setAttribute(Qt::WA_DeleteOnClose);
+    return msw;
 }
 
 void MainWindow::createStatusBar()
@@ -393,14 +399,14 @@ void MainWindow::createToolBars()
 
 bool MainWindow::loadFile(const QString &fileName)
 {
-    Monofin *monofin = createMonofin();
+    QMdiSubWindow *msw = createMonofin();
+    Monofin *monofin = static_cast<Monofin *>(msw->widget());
     if(monofin->openFile(fileName)) {
         monofin->show();
+        updateToolBars();
         return true;
     } else {
-        _mdiArea->removeSubWindow(monofin);
-        if(monofin)
-            delete monofin;
+        msw->close();
         return false;
     }
 }

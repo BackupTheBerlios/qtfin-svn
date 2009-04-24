@@ -1,3 +1,4 @@
+#include <QtCore/QTimer>
 #include <QtGui/QApplication>
 #include <QtGui/QSplashScreen>
 #include "Ui/mainwindow.h"
@@ -10,27 +11,22 @@ int main(int argc, char *argv[])
      * Application.
      */
     QApplication app(argc, argv);
-    qDebug("create QApplication");
 
-    /*
-     * Splash screen.
-     */
-    /*QSplashScreen *splash = new QSplashScreen;
-    splash->setPixmap(QPixmap(":/images/splash.png"));
+    QTimer *timer = new QTimer;
+    QSplashScreen *splash = new QSplashScreen;
+    splash->setAttribute(Qt::WA_DeleteOnClose);
+    MainWindow* mainWin = new MainWindow;
+    mainWin->setAttribute(Qt::WA_DeleteOnClose);
+    QObject::connect(timer, SIGNAL(timeout()), mainWin, SLOT(show()));
+    QObject::connect(timer, SIGNAL(timeout()), splash, SLOT(close()));
+
+    splash->setPixmap(QPixmap(":/images/splash"));
     splash->show();
 
+    timer->start(2000);
+
     Qt::Alignment topRight = Qt::AlignRight | Qt::AlignTop;
-
     splash->showMessage(QObject::tr("Setting up the main window..."),
-                        topRight, Qt::white);*/
-    MainWindow mainWin;
-    qDebug("create MainWindow");
-
-    mainWin.show();
-    qDebug("showing MainWindow");
-    /*splash->finish(&mainWin);
-    delete splash;*/
-
-    qDebug("entering execution loop");
+                        topRight, Qt::white);
     return app.exec();
 }

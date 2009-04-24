@@ -77,3 +77,4 @@ TRANSLATIONS = translations/monofin_de.ts \
     translations/monofin_fr.ts
 target.path = .
 INSTALLS += target
+RESOURCES += resources/images.qrc

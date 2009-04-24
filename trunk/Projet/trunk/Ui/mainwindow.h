@@ -11,11 +11,12 @@ class QtWindowListMenu;
 class QAction;
 class QActionGroup;
 class QDockWidget;
+class QMdiArea;
+class QMdiSubWindow;
 class QMenu;
 class QMenuBar;
 class QStatusBar;
 class QToolBar;
-class QMdiArea;
 
 class MainWindow : public QMainWindow
 {
@@ -49,7 +50,7 @@ private:
     void createDocks();
     void createLanguageMenu();
     void createMenus();
-    Monofin *createMonofin();
+    QMdiSubWindow *createMonofin();
     void createStatusBar();
     void createToolBars();
     bool loadFile(const QString &fileName);

@@ -18,6 +18,7 @@ class Monofin : public QWidget
     Q_OBJECT
 public:
     Monofin(QWidget *parent = 0);
+    virtual ~Monofin();
 
     QString currentFile() const { return _curFile; }
     bool isEmpty() const { return _isEmpty; }

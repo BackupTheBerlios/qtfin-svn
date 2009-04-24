@@ -44,6 +44,11 @@ Monofin::Monofin(QWidget *parent)
     clean();
 }
 
+Monofin::~Monofin()
+{
+    qDebug("Monofin::~Monofin()");
+}
+
 // PUBLIC
 /*!
 
@@ -65,7 +70,7 @@ void Monofin::newFile()
 bool Monofin::okToContinue()
 {
     if (isWindowModified()) {
-        int r = QMessageBox::warning(this, tr("Monofin"),
+        int r = QMessageBox::warning(0, tr("Monofin"),
                                      tr("The document has been modified.\n"
                                         "Do you want to save your changes?"),
                                      QMessageBox::Yes | QMessageBox::Default,
@@ -85,7 +90,7 @@ bool Monofin::okToContinue()
 bool Monofin::open()
 {
     if (okToContinue()) {
-        QString fileName = QFileDialog::getOpenFileName(this,
+        QString fileName = QFileDialog::getOpenFileName(0,
                                                         tr("Open Monofin"), ".",
                                                         tr("Monofin files (*.fin)"));
         if (!fileName.isEmpty())
@@ -407,19 +412,21 @@ void Monofin::setConnections()
 */
 void Monofin::setCurrentFile(const QString &fileName)
 {
+    qDebug("entering Monofin::setCurrentFile(%s)...", fileName.toStdString().c_str());
     _curFile = fileName;
     setWindowModified(false);
 
-    QString shownName = tr("Untitled_%1").arg(documentNumber);
+    QString shownName = tr("(Untitled %1)").arg(documentNumber);
     _isUntitled = true;
 
     if (!_curFile.isEmpty()) {
         shownName = strippedName(_curFile);
         _isUntitled = false;
+        emit currentFileChanged();
     }
 
     setWindowTitle(tr("%1[*]").arg(shownName));
-    emit currentFileChanged();
+    qDebug("leaving Monofin::setCurrentFile...");
 }
 
 /*!
@@ -427,5 +434,8 @@ void Monofin::setCurrentFile(const QString &fileName)
 */
 QString Monofin::strippedName(const QString &fullFileName)
 {
-    return QFileInfo(fullFileName).fileName();
+    qDebug("entering Monofin::strippedName(%s)...", fullFileName.toStdString().c_str());
+    QString str = QFileInfo(fullFileName).fileName();
+    qDebug("leaving Monofin::strippedName with result %s", str.toStdString().c_str());
+    return str;
 }

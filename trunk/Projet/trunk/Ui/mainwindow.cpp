@@ -126,11 +126,11 @@ void MainWindow::open()
 
 void MainWindow::openRecentFile()
 {
-    if (activeMonofin()->okToContinue()) {
-        QAction *action = qobject_cast<QAction *>(sender());
-        if (action)
-            loadFile(action->data().toString());
-    }
+    if(activeMonofin() && !activeMonofin()->okToContinue())
+        return;
+    QAction *action = qobject_cast<QAction *>(sender());
+    if (action)
+        loadFile(action->data().toString());
 }
 
 bool MainWindow::save()
@@ -352,8 +352,8 @@ void MainWindow::createMenus()
     _menuSimulation->addAction(_actionLaunch);
 
     // MENU WINDOW
-     _menuWin = new QtWindowListMenu(_menuBar);
-     _menuWin->attachToMdiArea(_mdiArea);
+    _menuWin = new QtWindowListMenu(_menuBar);
+    _menuWin->attachToMdiArea(_mdiArea);
 
     // MENU LANGUAGE
     createLanguageMenu();

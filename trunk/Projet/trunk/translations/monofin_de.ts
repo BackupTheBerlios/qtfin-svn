@@ -6,22 +6,22 @@
     <message>
         <location filename="../Ui/layerParameters.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../Ui/layerParameters.ui" line="20"/>
         <source>density</source>
-        <translation type="unfinished"></translation>
+        <translation>Relative Dichte</translation>
     </message>
     <message>
         <location filename="../Ui/layerParameters.ui" line="33"/>
         <source>Young&apos;s modulus</source>
-        <translation type="unfinished"></translation>
+        <translation>Elastizitätsmodul</translation>
     </message>
     <message>
         <location filename="../Ui/layerParameters.ui" line="46"/>
         <source>Poisson&apos;s ratio</source>
-        <translation type="unfinished"></translation>
+        <translation>Poissonzahl</translation>
     </message>
 </context>
 <context>
@@ -43,18 +43,18 @@
     <message>
         <location filename="../Ui/mainwindow.cpp" line="100"/>
         <source>About Monofin</source>
-        <translation type="unfinished"></translation>
+        <translation>Über Monofin</translation>
     </message>
     <message>
         <location filename="../Ui/mainwindow.cpp" line="101"/>
         <source>&lt;h2&gt;Monofin %1.%2&lt;/h2&gt;&lt;p&gt;Copyright &amp;copy; 2009 Barbec_Guys&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../Ui/mainwindow.cpp" line="186"/>
         <location filename="../Ui/mainwindow.cpp" line="306"/>
         <source>&amp;%1 %2</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../Ui/mainwindow.cpp" line="421"/>
@@ -64,7 +64,7 @@
     <message>
         <location filename="../Ui/mainwindow.cpp" line="422"/>
         <source>Ctrl+Q</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../Ui/mainwindow.cpp" line="423"/>
@@ -74,37 +74,37 @@
     <message>
         <location filename="../Ui/mainwindow.cpp" line="424"/>
         <source>Ctrl+N</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../Ui/mainwindow.cpp" line="425"/>
         <source>&amp;Open...</source>
-        <translation type="unfinished"></translation>
+        <translation>Öffn&amp;en...</translation>
     </message>
     <message>
         <location filename="../Ui/mainwindow.cpp" line="426"/>
         <source>Ctrl+O</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../Ui/mainwindow.cpp" line="427"/>
         <source>&amp;Save</source>
-        <translation>&amp;Löschen</translation>
+        <translation>&amp;Speichern</translation>
     </message>
     <message>
         <location filename="../Ui/mainwindow.cpp" line="428"/>
         <source>Ctrl+S</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../Ui/mainwindow.cpp" line="429"/>
         <source>&amp;Save As...</source>
-        <translation type="unfinished"></translation>
+        <translation>Speichern &amp;unter...</translation>
     </message>
     <message>
         <location filename="../Ui/mainwindow.cpp" line="436"/>
         <source>&amp;Properties...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Eigenschaften...</translation>
     </message>
     <message>
         <location filename="../Ui/mainwindow.cpp" line="437"/>
@@ -144,12 +144,12 @@
     <message>
         <location filename="../Ui/mainwindow.cpp" line="448"/>
         <source>Form library</source>
-        <translation type="unfinished"></translation>
+        <translation>Bibliothek</translation>
     </message>
     <message>
         <location filename="../Ui/mainwindow.cpp" line="213"/>
         <source>%1[*] - %2</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -162,27 +162,27 @@
     <message>
         <location filename="../Ui/mainwindow.cpp" line="431"/>
         <source>Ctrl+G</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../Ui/mainwindow.cpp" line="432"/>
         <source>&amp;Configurate...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Konfiguieren...</translation>
     </message>
     <message>
         <location filename="../Ui/mainwindow.cpp" line="433"/>
         <source>Ctrl+S</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../Ui/mainwindow.cpp" line="434"/>
         <source>&amp;Launch</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Starten</translation>
     </message>
     <message>
         <location filename="../Ui/mainwindow.cpp" line="435"/>
         <source>Ctrl+L</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../monofin.cpp" line="94"/>
@@ -209,7 +209,8 @@
         <location filename="../monofin.cpp" line="74"/>
         <source>The document has been modified.
 Do you want to save your changes?</source>
-        <translation type="unfinished"></translation>
+        <translation>Das Dokument wurde geändert.
+Wollen Sie die Änderungen zu speichern?</translation>
     </message>
     <message>
         <location filename="../monofin.cpp" line="372"/>
@@ -249,12 +250,12 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../monofin.cpp" line="419"/>
         <source>(Untitled %1)</source>
-        <translation type="unfinished"></translation>
+        <translation>(ohne Titel %1)</translation>
     </message>
     <message>
         <location filename="../monofin.cpp" line="428"/>
         <source>%1[*]</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -292,27 +293,27 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../Ui/parametersDialog.ui" line="131"/>
         <source>path</source>
-        <translation type="unfinished"></translation>
+        <translation>Pfad</translation>
     </message>
     <message>
         <location filename="../Ui/parametersDialog.ui" line="144"/>
         <source>Browse...</source>
-        <translation type="unfinished"></translation>
+        <translation>Durchsuchen...</translation>
     </message>
     <message>
         <location filename="../Ui/parametersDialog.ui" line="154"/>
         <source>Custom</source>
-        <translation type="unfinished"></translation>
+        <translation>Personalisiert</translation>
     </message>
     <message>
         <location filename="../Ui/parametersDialog.ui" line="164"/>
         <source>File</source>
-        <translation type="unfinished"></translation>
+        <translation>Datei</translation>
     </message>
     <message>
         <location filename="../Ui/parametersDialog.ui" line="180"/>
         <source>duration</source>
-        <translation type="unfinished"></translation>
+        <translation>Dauer</translation>
     </message>
     <message>
         <location filename="../Ui/parametersDialog.ui" line="193"/>
@@ -322,13 +323,13 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../Ui/parametersDialog.ui" line="206"/>
         <source>formula</source>
-        <translation type="unfinished"></translation>
+        <translation>Formel</translation>
     </message>
     <message>
         <location filename="../Ui/parametersdialog.cpp" line="19"/>
         <location filename="../Ui/parametersdialog.cpp" line="33"/>
         <source>layer %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Schicht %1</translation>
     </message>
 </context>
 <context>
@@ -345,7 +346,7 @@ Do you want to save your changes?</source>
         <location filename="../lib/qtwindowlistmenu.cpp" line="125"/>
         <location filename="../lib/qtwindowlistmenu.cpp" line="179"/>
         <source>&amp;Windows</source>
-        <translation type="unfinished"></translation>
+        <translation>Fe&amp;nsters</translation>
     </message>
     <message>
         <location filename="../lib/qtwindowlistmenu.cpp" line="135"/>
@@ -356,7 +357,7 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../lib/qtwindowlistmenu.cpp" line="136"/>
         <source>Ctrl+F4</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../lib/qtwindowlistmenu.cpp" line="137"/>
@@ -380,19 +381,19 @@ Do you want to save your changes?</source>
         <location filename="../lib/qtwindowlistmenu.cpp" line="145"/>
         <location filename="../lib/qtwindowlistmenu.cpp" line="185"/>
         <source>&amp;Tile</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Fliesen</translation>
     </message>
     <message>
         <location filename="../lib/qtwindowlistmenu.cpp" line="146"/>
         <location filename="../lib/qtwindowlistmenu.cpp" line="186"/>
         <source>Tile the windows</source>
-        <translation type="unfinished"></translation>
+        <translation>Fliesen Fenster</translation>
     </message>
     <message>
         <location filename="../lib/qtwindowlistmenu.cpp" line="148"/>
         <location filename="../lib/qtwindowlistmenu.cpp" line="187"/>
         <source>&amp;Cascade</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Kaskade</translation>
     </message>
     <message>
         <location filename="../lib/qtwindowlistmenu.cpp" line="149"/>
@@ -427,12 +428,12 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../lib/qtwindowlistmenu.cpp" line="302"/>
         <source>&amp;%1 %2</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../lib/qtwindowlistmenu.cpp" line="304"/>
         <source>%1 %2</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -440,7 +441,7 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../Ui/startupDialog.ui" line="14"/>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../Ui/startupDialog.ui" line="20"/>

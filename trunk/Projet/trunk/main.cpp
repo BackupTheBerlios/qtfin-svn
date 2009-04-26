@@ -28,5 +28,7 @@ int main(int argc, char *argv[])
     Qt::Alignment topRight = Qt::AlignRight | Qt::AlignTop;
     splash->showMessage(QObject::tr("Setting up the main window..."),
                         topRight, Qt::white);
-    return app.exec();
+
+    qDebug("entering the main event loop");
+    return app.exec();;
 }

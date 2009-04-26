@@ -48,7 +48,7 @@
     <message>
         <location filename="../Ui/mainwindow.cpp" line="101"/>
         <source>&lt;h2&gt;Monofin %1.%2&lt;/h2&gt;&lt;p&gt;Copyright &amp;copy; 2009 Barbec_Guys&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../Ui/mainwindow.cpp" line="186"/>
@@ -144,7 +144,7 @@
     <message>
         <location filename="../Ui/mainwindow.cpp" line="448"/>
         <source>Form library</source>
-        <translation type="unfinished"></translation>
+        <translation>Bibliothèque</translation>
     </message>
     <message>
         <location filename="../Ui/mainwindow.cpp" line="213"/>
@@ -162,7 +162,7 @@
     <message>
         <location filename="../Ui/mainwindow.cpp" line="431"/>
         <source>Ctrl+G</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../Ui/mainwindow.cpp" line="432"/>
@@ -172,7 +172,7 @@
     <message>
         <location filename="../Ui/mainwindow.cpp" line="433"/>
         <source>Ctrl+S</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../Ui/mainwindow.cpp" line="434"/>
@@ -182,7 +182,7 @@
     <message>
         <location filename="../Ui/mainwindow.cpp" line="435"/>
         <source>Ctrl+L</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../monofin.cpp" line="94"/>

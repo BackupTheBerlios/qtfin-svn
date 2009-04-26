@@ -70,7 +70,7 @@ void Monofin::newFile()
 bool Monofin::okToContinue()
 {
     if (isWindowModified()) {
-        int r = QMessageBox::warning(0, tr("Monofin"),
+        int r = QMessageBox::warning(this, tr("Monofin"),
                                      tr("The document has been modified.\n"
                                         "Do you want to save your changes?"),
                                      QMessageBox::Yes | QMessageBox::Default,
@@ -90,7 +90,7 @@ bool Monofin::okToContinue()
 bool Monofin::open()
 {
     if (okToContinue()) {
-        QString fileName = QFileDialog::getOpenFileName(0,
+        QString fileName = QFileDialog::getOpenFileName(this,
                                                         tr("Open Monofin"), ".",
                                                         tr("Monofin files (*.fin)"));
         if (!fileName.isEmpty())

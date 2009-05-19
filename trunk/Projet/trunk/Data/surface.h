@@ -155,6 +155,8 @@ namespace Data{
           */
         QList<int> getExtremityPoint();
 
+        QList<int> getSegmentKeysLinkedToPoint(int pointKey);
+
         /**
          * clear all the structure (delete everything), undo/redo works on it
          */

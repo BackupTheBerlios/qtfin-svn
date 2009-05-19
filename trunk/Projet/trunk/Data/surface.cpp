@@ -622,7 +622,7 @@ namespace Data{
     QList<int> Surface::getExtremityPoint(){
         QList<int> pointList;
         foreach(int key, _intersectionPointTable.keys())
-            if(_intersectionPointTable[key]->countUsage=1)
+            if(_intersectionPointTable[key]->countUsage==1)
                 pointList.append(key);
         return pointList;
     }

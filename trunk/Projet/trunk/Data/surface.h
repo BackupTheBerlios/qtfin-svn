@@ -150,6 +150,12 @@ namespace Data{
         QList<int> getAllControlPointKeys();
 
         /**
+          * return all IntersectionPoint only linked to one segment
+          *@return QList<int>, key's list
+          */
+        QList<int> getExtremityPoint();
+
+        /**
          * clear all the structure (delete everything), undo/redo works on it
          */
         void clearSurface();

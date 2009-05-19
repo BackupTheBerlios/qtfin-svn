@@ -14,19 +14,49 @@ namespace Data{
         HistoryHolder * _next;
         HistoryHolder * _first;
         Type _t;
-        QStack<void *> _toStore;
+
+        struct AutomatedStorage{
+            bool canBeDeleted;
+            void * ptr;
+            int size;
+        };
+
+        QStack<AutomatedStorage> _toStore;
+
     public:
         HistoryHolder(Type t): _next(NULL), _t(t) {
             _first=this;
         }
 
-        void push(void * data){
-            _toStore.push(data);
+        ~HistoryHolder(){
+            while(!_toStore.isEmpty()){
+                AutomatedStorage toDelete = _toStore.pop();
+                if(toDelete.canBeDeleted){
+                    operator delete(toDelete.ptr);
+                }
+            }
+        }
+
+        void pushInt(int data){
+            AutomatedStorage toPush;
+            toPush.canBeDeleted = false;
+            toPush.ptr = (void*) data;
+            toPush.size = 0;
+            _toStore.push(toPush);
+        }
+
+        template<typename PtrType>
+        void pushPtr(PtrType * ptr){
+            AutomatedStorage toPush;
+            toPush.canBeDeleted = true;
+            toPush.ptr = (void *) ptr;
+            toPush.size = sizeof(PtrType);
+            _toStore.push(toPush);
         }
 
         void * pop(){
             if(!_toStore.isEmpty())
-                return _toStore.pop();
+                return _toStore.pop().ptr;
             else
                 return NULL;
         }
@@ -58,6 +88,17 @@ namespace Data{
             return _first;
         }
 
+        static void freeStructure(HistoryHolder<Type> * toFree){
+            if(toFree != NULL){
+                HistoryHolder<Type> * current = toFree;
+                while(current!=NULL){
+                    HistoryHolder<Type> * next = current->getNext();
+                    delete current;
+                    current = next;
+                }
+            }
+        }
+
     private:
         void setFirst(HistoryHolder<Type>* first){
             _first = first;
@@ -72,6 +113,11 @@ namespace Data{
     public:
 
         virtual void startHistory(Type t) = 0;
+
+        virtual ~HistoryMaker() {
+            if(_makedHistory != NULL)
+                HistoryHolder<Type>::freeStructure(_makedHistory);
+        }
 
         virtual HistoryHolder<Type> * retrieveHistory(Type t) = 0;
 
@@ -91,17 +137,27 @@ namespace Data{
     class HistoryTakeCarer{
     protected:
         QList<HistoryMaker<Type> *> _historyMakers;
+        QMap<Type,bool> _isStarted;
         QMap< Type, QStack<HistoryHolder<Type> *> *> _passedHistory;
         QMap< Type, QStack<HistoryHolder<Type> *> *> _futureHistory;
 
     public:
 
         virtual ~HistoryTakeCarer() {
+            // if historic are started but not ended we must stop them
+            // in order to de-allocate them correctly
+            foreach(Type key,_isStarted.keys())
+                if(_isStarted[key])
+                    stopHistory(key);
+
+            //de-allocation of all HistoryHolders.
             foreach(Type key,_passedHistory.keys())
-                delete _passedHistory.value(key);
+                while(!_passedHistory.value(key)->isEmpty())
+                    HistoryHolder<Type>::freeStructure(_passedHistory.value(key)->pop());
 
             foreach(Type key,_futureHistory.keys())
-                delete _futureHistory.value(key);
+                while(!_passedHistory.value(key)->isEmpty())
+                    HistoryHolder<Type>::freeStructure(_futureHistory.value(key)->pop());
         }
 
         virtual void undo(Type t){
@@ -177,8 +233,15 @@ namespace Data{
         }
 
         virtual void startHistory(Type t){
-            if(_futureHistory.contains(t))
+
+            if(_isStarted[t])
+                return;
+
+            _isStarted[t]=true;
+
+            if(_futureHistory.contains(t)){
                 _futureHistory.value(t)->clear();
+            }
 
             foreach(HistoryMaker<Type> * hM, _historyMakers){
                 hM->startHistory(t);
@@ -186,6 +249,10 @@ namespace Data{
         }
 
         virtual void stopHistory(Type t){
+
+            if(!_isStarted[t])
+                return;
+
             HistoryHolder<Type> * globalHistory = NULL;
 
             foreach(HistoryMaker<Type> * hM, _historyMakers){
@@ -206,6 +273,7 @@ namespace Data{
                 toFill->push(globalHistory);
                 _passedHistory.insert(t,toFill);
             }
+            _isStarted[t] = false;
         }
     };
 

@@ -71,8 +71,8 @@ namespace Data{
 
         //save for undo/redo
         HistoryHolder<Modification> * current = getCurrentHistoryHolder(MonofinSurface);
-        current->push((void*)_segmentKey);
-        current->push((void*)AddSegment);
+        current->pushInt(_segmentKey);
+        current->pushInt(AddSegment);
 
         _segmentTable.insert(_segmentKey++,new Segment(intersectionPointKey1,intersectionPointKey2,controlPointKey));
 
@@ -96,8 +96,8 @@ namespace Data{
 
         //manage undo/redo history
         HistoryHolder<Modification> * current = getCurrentHistoryHolder(MonofinSurface);
-        current->push((void *)(_controlKey));
-        current->push((void *)(AddControlPoint));
+        current->pushInt(_controlKey);
+        current->pushInt(AddControlPoint);
 
         _controlPointTable.insert(_controlKey++,newControlPoint);
         return (_controlKey-1);
@@ -120,8 +120,8 @@ namespace Data{
 
         //save for undo/redo
         HistoryHolder<Modification> * current = getCurrentHistoryHolder(MonofinSurface);
-        current->push((void*)_intersectionKey);
-        current->push((void*)AddIntersectionPoint);
+        current->pushInt(_intersectionKey);
+        current->pushInt(AddIntersectionPoint);
 
         _intersectionPointTable.insert(_intersectionKey++, newIntersectionPoint);
         return (_intersectionKey-1);
@@ -179,9 +179,9 @@ namespace Data{
 
             //undo/redo
             HistoryHolder<Modification> * current = getCurrentHistoryHolder(MonofinSurface);
-            current->push((void *)controlPointKey);
-            current->push((void *)controlPoint);
-            current->push((void *)RemoveControlPoint);
+            current->pushInt(controlPointKey);
+            current->pushPtr(controlPoint);
+            current->pushInt(RemoveControlPoint);
 
             _controlPointTable.remove(controlPointKey);
         }
@@ -250,9 +250,9 @@ namespace Data{
 
             HistoryHolder<Modification> * current = getCurrentHistoryHolder(MonofinSurface);
 
-            current->push((void *)intersectionPointKey);
-            current->push((void *)save);
-            current->push((void *)RemoveIntersectionPoint);
+            current->pushInt(intersectionPointKey);
+            current->pushPtr(save);
+            current->pushInt(RemoveIntersectionPoint);
 
             return segmentKey2;
         }
@@ -265,9 +265,9 @@ namespace Data{
 
             HistoryHolder<Modification> * current = getCurrentHistoryHolder(MonofinSurface);
 
-            current->push((void *)intersectionPointKey);
-            current->push((void *)save);
-            current->push((void *)RemoveIntersectionPoint);
+            current->pushInt(intersectionPointKey);
+            current->pushPtr(save);
+            current->pushInt(RemoveIntersectionPoint);
         }
         return MONOFIN_SURFACE_NO_SEGMENT_ERASED;
     }
@@ -285,9 +285,9 @@ namespace Data{
 
             HistoryHolder<Modification> * current = getCurrentHistoryHolder(MonofinSurface);
 
-            current->push((void *)intersectionPointKey);
-            current->push((void *)save);
-            current->push((void *)SetIntersectionPoint);
+            current->pushInt(intersectionPointKey);
+            current->pushPtr(save);
+            current->pushInt(SetIntersectionPoint);
 
             _intersectionPointTable.value(intersectionPointKey)->coordinates=QPointF(x,y);
         }
@@ -307,9 +307,9 @@ namespace Data{
 
             HistoryHolder<Modification> * current = getCurrentHistoryHolder(MonofinSurface);
 
-            current->push((void *)controlPointKey);
-            current->push((void *)save);
-            current->push((void *)SetControlPoint);
+            current->pushInt(controlPointKey);
+            current->pushPtr(save);
+            current->pushInt(SetControlPoint);
 
             _controlPointTable.value(controlPointKey)->coordinates=QPointF(x,y);
         }
@@ -492,8 +492,15 @@ namespace Data{
 
         //manage undo/redo history
         HistoryHolder<Modification> * current = getCurrentHistoryHolder(MonofinSurface);
-        current->push((void *)(key));
-        current->push((void *)(AddControlPoint));
+        current->pushInt(key);
+        current->pushInt(AddControlPoint);
+
+        //verify that the control point wasn't attached to a segment before deletion
+        if (!controlPoint->whereUsed.isEmpty()){
+            int segKey = controlPoint->whereUsed.at(0);
+            controlPoint->whereUsed.clear();
+            addControlPointToSegment(segKey,key);
+        }
         
         _controlPointTable.insert(key,controlPoint);
     }
@@ -501,8 +508,8 @@ namespace Data{
     void Surface::insertIntersectionPoint(int key, Point *intersectionPoint){
         //manage undo/redo history
         HistoryHolder<Modification> * current = getCurrentHistoryHolder(MonofinSurface);
-        current->push((void *)(key));
-        current->push((void *)(AddIntersectionPoint));
+        current->pushInt(key);
+        current->pushInt(AddIntersectionPoint);
 
         _intersectionPointTable.insert(key,intersectionPoint);
     }
@@ -522,8 +529,8 @@ namespace Data{
 
         //save for undo/redo
         HistoryHolder<Modification> * current = getCurrentHistoryHolder(MonofinSurface);
-        current->push((void*)segmentKey);
-        current->push((void*)AddSegment);
+        current->pushInt(segmentKey);
+        current->pushInt(AddSegment);
 
         _segmentTable.insert(segmentKey,toInsert);
 
@@ -545,11 +552,11 @@ namespace Data{
         }
 
         HistoryHolder<Modification> * current = getCurrentHistoryHolder(MonofinSurface);
-        current->push((void *)segmentKey);
-        current->push((void *)inter1);
-        current->push((void *)inter2);
-        current->push((void *)control);
-        current->push((void *)SetSegment);
+        current->pushInt(segmentKey);
+        current->pushInt(inter1);
+        current->pushInt(inter2);
+        current->pushInt(control);
+        current->pushInt(SetSegment);
 
         _intersectionPointTable.value(intersectionKey1)->countUsage++;
         _intersectionPointTable.value(intersectionKey2)->countUsage++;
@@ -575,11 +582,11 @@ namespace Data{
         delete toDelete;
 
         HistoryHolder<Modification> * current = getCurrentHistoryHolder(MonofinSurface);
-        current->push((void *)segmentKey);
-        current->push((void *)inter1);
-        current->push((void *)inter2);
-        current->push((void *)control);
-        current->push((void *)RemoveSegment);
+        current->pushInt(segmentKey);
+        current->pushInt(inter1);
+        current->pushInt(inter2);
+        current->pushInt(control);
+        current->pushInt(RemoveSegment);
 
         _intersectionPointTable.value(inter1)->countUsage--;
         _intersectionPointTable.value(inter1)->whereUsed.removeAll(segmentKey);
@@ -610,6 +617,22 @@ namespace Data{
 
     QList<int> Surface::getAllControlPointKeys(){
         return _controlPointTable.keys();
+    }
+
+    QList<int> Surface::getExtremityPoint(){
+        QList<int> pointList;
+        foreach(int key, _intersectionPointTable.keys())
+            if(_intersectionPointTable[key]->countUsage=1)
+                pointList.append(key);
+        return pointList;
+    }
+
+    QList<int> Surface::getSegmentKeysLinkedToPoint(int pointKey){
+        QList<int> segmentList;
+        if(!_intersectionPointTable.contains(pointKey))
+            return segmentList;
+
+        return _intersectionPointTable[pointKey]->whereUsed;
     }
 
     void Surface::clearSurface(){

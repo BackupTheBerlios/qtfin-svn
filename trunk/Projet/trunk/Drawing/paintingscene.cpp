@@ -14,13 +14,13 @@ PaintingScene::PaintingScene(qreal width,
                              ProjectFile* structure,
                              QObject* parent)
     :QGraphicsScene(parent), _canCreateSelectionRect(true),
-    _firstPointKey(Data::MONOFIN_SURFACE_NOT_CREATED_POINT),
-    _hasPlacedFirstPoint(false), _isAddControlActivated(false),
-    _isAddPointActivated(false), _isCreateLineActivated(false),
+    _hasABoundingPointMoved(false), _hasPlacedFirstPoint(false),
+    _isAddControlActivated(false), _isAddPointActivated(false),
+    _isAPointHighlighted(false), _isCreateLineActivated(false),
     _isCreatingSelectionRect(false), _isMultiSelectionKeyActivated(false),
-    _isOneSelection(false), _isRemoveControlPointActivated(false),
-    _isSimplifyViewActivated(false), _lastPointKey(Data::MONOFIN_SURFACE_NOT_CREATED_POINT),
-    _scaleFactor(1), _structure(structure){
+    _isRemoveControlPointActivated(false),
+    _isSimplifyViewActivated(false), _keepBezierCurve(true),
+    _lastPlacedPoint(0), _scaleFactor(1), _structure(structure){
 
      this->setSceneRect(0,-height/2,width, height);
 
@@ -45,8 +45,8 @@ PaintingScene::~PaintingScene(){
     this->removeAllPoints();
 }
 
-void PaintingScene::addControlPoint(ControlPoint* p, int i){
-    _controlPointsList.insert(i, p);
+void PaintingScene::addControlPoint(ControlPoint* p){
+    _controlPointsList.append(p);
 }
 
 void PaintingScene::boundingPointHasMoved(BoundingPoint* p, bool isUniqueModification){
@@ -55,10 +55,18 @@ void PaintingScene::boundingPointHasMoved(BoundingPoint* p, bool isUniqueModific
     }
 
     _structure->setIntersectionPoint(p->internalKey(), p->coord().x(), p->coord().y());
+    _hasABoundingPointMoved = true;
+
 
     if(isUniqueModification){
         _structure->stopHistory(Data::MonofinSurface);
+        emit this->somethingChanged(this->ActionMoveBoundingPoint);
     }
+}
+
+void PaintingScene::boundingPointIsHighlighted(BoundingPoint* p, bool isHighlighted){
+    _isAPointHighlighted = isHighlighted;
+    _itemUnderMouse = p;
 }
 
 void PaintingScene::controlPointHasMoved(ControlPoint* p, bool isUniqueModification){
@@ -70,23 +78,74 @@ void PaintingScene::controlPointHasMoved(ControlPoint* p, bool isUniqueModificat
 
     if(isUniqueModification){
         _structure->stopHistory(Data::MonofinSurface);
+        emit this->somethingChanged(this->ActionMoveControlPoint);
     }
 }
 
+void PaintingScene::controlPointHasBeenHidden(ControlPoint* p, bool isUniqueModification){
+    if(isUniqueModification){
+        _structure->startHistory(Data::MonofinSurface);
+    }
+
+    _structure->removeControlPoint(p->internalKey());
+
+    if(isUniqueModification){
+        _structure->stopHistory(Data::MonofinSurface);
+        emit this->somethingChanged(this->ActionDeleteControlPoint);
+    }
+}
+
+QList<ControlPoint*> PaintingScene::controlPointsSurroundedBySelectedPoints(){
+    QList<ControlPoint*> l;
+    foreach(BrLine* line, _lineList){
+        if(line->isControlPointActivated()){
+            if(line->boundingPointP1()->isSelected() &&
+               line->boundingPointP2()->isSelected()){
+                l.append(line->controlPoint());
+            }
+        }
+    }//foreach
+    return l;
+}
+
 BrLine* PaintingScene::createLine(BoundingPoint* p1, BoundingPoint* p2){
-    int i = _pointList.indexOf(p1);
-    BrLine* l;
-    l = new BrLine(p1,p2,this, i);
-    p1->setRightLine(l);
-    p2->setLeftLine(l);
-    _lineList.insert(i, l);
+    BrLine* l = new BrLine(p1,p2,this);
+
+    if(!p1->hasRightLine()){
+        p1->setRightLine(l);
+    }else if(!p1->hasLeftLine()){
+        p1->setLeftLine(l);
+    }else{
+        qDebug("Warning : attempting to add a line to a point already linked with two lines.");
+    }
+
+    if(!p2->hasLeftLine()){
+        p2->setLeftLine(l);
+    }else if(!p2->hasRightLine()){
+        p2->setRightLine(l);
+    }else{
+        qDebug("Warning : attempting to add a line to a point already linked with two lines.");
+    }
+
+    _lineList.append(l);
     this->addItem(l);
     this->update(this->sceneRect());
     return l;
 }
 
+bool PaintingScene::existIntersectionsBetweenLines(){
+    bool intersect = false;
+    for(int i =0; i < _lineList.size()-1; i++){
+        for(int j = i+1; j < _lineList.size(); j++){
+            intersect = intersect || _lineList.at(i)->intersects(*(_lineList.at(j)));
+        }
+    }
+    return intersect;
+
+}
+
 QRectF PaintingScene::pointsBoundingZone(){
-    return this->sceneRect().adjusted(20,20,-20,-20);
+    return this->sceneRect()/*.adjusted(20,20,-20,-20)*/;
 }
 
 void PaintingScene::removeAllPoints(){
@@ -101,6 +160,7 @@ void PaintingScene::removeAllPoints(){
         _pointList.removeOne(p);
         this->removeItem(p);
         delete p;
+
     }//foreach
     qDebug("all points are removed");
 }
@@ -121,41 +181,92 @@ void PaintingScene::removeLine(BrLine* l){
     //et on détruit la ligne
     //l->deleteBezier();
     delete l;
-    //on remet à jour l'indice de toutes les lignes
-    this->updateLinesId();
 }
 
 void PaintingScene::removePoint(BoundingPoint* p){    
     //on sauvegarde temporairement les coordonnées au cas où
     QPointF oldCoord = p->coord();
 
-    //on récupère la clé interne de sa ligne de gauche
-    int segmentKey = p->internalKeyLeftLine();
+    //on récupère les références des points autour de p, tout en faisant les
+    //tests nécessaires (pointeurs non nuls) pour éviter les bugs
+    BrLine* left = p->leftLine();
+    BrLine* right = p->rightLine();
+
+    //on récupère au passage les clés internes des deux anciennes lignes
+    int leftKey = left->internalKey();
+    int rightKey = right->internalKey();
+
+
+    BoundingPoint* p1 = 0;
+    BoundingPoint* p2 = 0;
+
+    if(left != 0){
+        p1 = left->boundingPointP1();
+        if(p1 == p){
+            p1 = left->boundingPointP2();
+        }
+    }
+    if(right != 0){
+        p2 = right->boundingPointP2();
+        if(p2 == p){
+            p2 = right->boundingPointP1();
+        }
+    }
 
     //Le point appelle des fonctions de destruction sur chacune de ses lignes
     p->removeLeftLine();
     p->removeRightLine();
 
     //on enlève le point de la liste de points, ainsi que de la scène
-    int i = _pointList.indexOf(p);
-    _pointList.removeAt(i);
+    _pointList.removeOne(p);
     this->removeItem(p);
 
-    _structure->removeIntersectionPoint(p->internalKey());
-
-    //Destruction du point et du GraphicsItem qu'il contient
-    delete p;
+    //on l'enlève de la structure interne et on récupère la clé supprimée
+    int removedKey = _structure->removeIntersectionPoint(p->internalKey());
+    if(removedKey == Data::MONOFIN_SURFACE_NO_SEGMENT_ERASED){
+        qDebug("Big problem while suppressing the point from the structure.");
+        return;
+    }
 
     //si le point n'est pas aux extémités, on relie les deux points autour
     //de celui supprimé, par une ligne
-    BrLine* newLine;
-    if(i != 0 && i != _pointList.size()){
-        newLine = this->createLine(_pointList.at(i-1), _pointList.at(i));
-        newLine->setInternalKey(segmentKey);
+    if(p->type() != ExtremityPoint::Type){
+        BrLine* newLine;
+        if(p1 !=0 && p2 !=0){
+
+///////////////////////////
+
+//PREVOIR UN TEST AVEC CREATELINE(p2,p1)
+
+///////////////////////////
+
+            newLine = this->createLine(p2, p1);
+        }else{
+            qDebug("Problem with pointers while removing a point.");
+            return;
+        }
+
+        //Entre les deux clés des anciennes lignes, on vérifie laquelle a été
+        //supprimée par la structure et laquelle est toujours valide. Celle
+        //toujours valide sert de clé pour la nouvelle ligne.
+        int newSegmentKey = Data::MONOFIN_SURFACE_NOT_CREATED_SEGMENT;
+        if(leftKey == removedKey){
+            newSegmentKey = rightKey;
+        }else if(rightKey == removedKey){
+            newSegmentKey = leftKey;
+        }else{
+            qDebug("Big problem while suppressing a point.");
+        }
+
+        newLine->setInternalKey(newSegmentKey);
+
+
         //newLine->setControlPoint(true);
         //newLine->moveControlPoint(oldCoord);
     }
 
+    //Destruction du point et du GraphicsItem qu'il contient
+    delete p;
 }
 
 void PaintingScene::scale(qreal factor){
@@ -191,7 +302,15 @@ void PaintingScene::ajustSceneRect(qreal dx, qreal dy){
     QRectF newRect = this->sceneRect().adjusted(0, -dy, dx, dy);
     QRectF itemRect = this->itemsBoundingRect();
 
-    if(newRect.contains(itemRect)){
+    ControlPoint c(0,0,0,this);
+    BoundingPoint b(0,0,this);
+    qreal max = c.boundingRect().width();
+    if (max < b.boundingRect().width()){
+        max = b.boundingRect().width();
+    }
+    max/=2.0;
+
+    if(newRect.adjusted(-max, -max, max, max).contains(itemRect)){
         this->setSceneRect(newRect);
     }
     _axis->setLine(0,0,this->width(), 0);
@@ -211,6 +330,7 @@ void PaintingScene::alignTangents(){
             }
         }//foreach
         _structure->stopHistory(Data::MonofinSurface);
+        emit this->somethingChanged(this->ActionAlignTangents);
 }
 
 void PaintingScene::cleanPoints(){
@@ -218,8 +338,13 @@ void PaintingScene::cleanPoints(){
     _structure->startHistory(Data::MonofinSurface);
     _structure->clearSurface();
     _structure->stopHistory(Data::MonofinSurface);
+    emit this->somethingChanged(this->ActionRemoveSomePoints);
     this->update(this->sceneRect());
     _hasPlacedFirstPoint = false;
+}
+
+void PaintingScene::keepBezierCurve(bool k){
+    _keepBezierCurve = k;
 }
 
 void PaintingScene::removeSelectedPoints(){
@@ -232,6 +357,7 @@ void PaintingScene::removeSelectedPoints(){
         }//if
     }//foreach
     _structure->stopHistory(Data::MonofinSurface);
+    emit this->somethingChanged(this->ActionRemoveSomePoints);
 }
 
 void PaintingScene::savePicture(){
@@ -244,14 +370,10 @@ void PaintingScene::savePicture(){
     QPainter painter;
     painter.begin(&pixmap);
     painter.translate(0,y);
-    painter.rotate(0);
     painter.scale(1,-1);
     bool simpl = _isSimplifyViewActivated;
     this->simplifyView(false);
-    this->render(&painter/*, QRectF(), QRectF(this->sceneRect().topLeft().x()-5000,
-                                            this->sceneRect().topLeft().y()-5000,
-                                            this->sceneRect().width()+10000,
-                                            this->sceneRect().height()+10000)*/);
+    this->render(&painter, QRectF(), this->itemsBoundingRect().adjusted(-20,-20,20,20));
     painter.end();
     this->simplifyView(simpl);
     qDebug("save pixmap");
@@ -282,6 +404,7 @@ void PaintingScene::stopCreateLine(){
 
         _structure->clearSurface();
         _structure->stopHistory(Data::MonofinSurface);
+        emit this->somethingChanged(this->ActionNoAction);
 
         emit this->lineInterrupted();
         this->update(this->sceneRect());
@@ -312,197 +435,184 @@ void PaintingScene::getMonofinFromStructure(){
     this->removeAllPoints();
 
     QList<int> l = _structure->getAllSegmentKeys();
-
-/*
-    float x;
-    float y;
-    int p1Key;
-    int p2Key;
-    int controlKey;
-
-
-//on récupère le premier point
-    if(l.size() > 0){
-
-        _structure->getSegment(l.first(), p1Key, p2Key, controlKey);
-
-        _structure->getIntersectionPoint(p1Key, x, y);
-        ExtremityPoint* p = new ExtremityPoint(QPointF(x, y), this);
-        this->addItem(p);
-        _pointList.append(p);
-        p->setInternalKey(p1Key);
-
-    }
-
-
-
-    for(int i = 0; i < l.size(); i++){
-        _structure->getSegment(l.at(i), p1Key, p2Key, controlKey);
-
-        _structure->getIntersectionPoint(p2Key, x, y);
-
-        BoundingPoint* p;
-        if(i == l.size()-1){
-            p = new ExtremityPoint(QPointF(x, y), this);
-        }else{
-            p = new BoundingPoint(x, y, this);
-        }
-        this->addItem(p);
-        _pointList.append(p);
-        p->setInternalKey(p2Key);
-
-        BoundingPoint* p1;
-        p1 = _pointList.at(_pointList.size() - 2);
-        BrLine* newLine = this->createLine(p1, p);
-        newLine->setInternalKey(l.at(i));
-
-        if(controlKey != Data::MONOFIN_SURFACE_NO_CONTROL_POINT){
-            _structure->getControlPoint(controlKey, x, y);
-            ControlPoint* cp = _controlPointsList.at(newLine->lineId());
-            cp->setInternalKey(controlKey);
-            newLine->setControlPoint(true);
-            newLine->moveControlPoint(QPointF(x, y));
-        }
-
-    }//for
-*/
-
-    /*
-    float x;
-    float y;
-    int p1Key;
-    int p2Key;
-    int controlKey;
-
-    QList<int> placed;
-
-    for(int i = 0; i < l.size(); i++){
-        _structure->getSegment(l.at(i), p1Key, p2Key, controlKey);
-
-        if(!placed.contains(p1Key)){
-            placed.append(p1Key);
-
-            _structure->getIntersectionPoint(p1Key, x, y);
-
-            BoundingPoint* p;
-            //if(i == l.size()-1){
-            //    p = new ExtremityPoint(QPointF(x, y), this);
-            //}else{
-                p = new BoundingPoint(x, y, this);
-            //}
-            this->addItem(p);
-            _pointList.append(p);
-            p->setInternalKey(p1Key);
-        }
-
-        if(!placed.contains(p2Key)){
-            placed.append(p2Key);
-
-            _structure->getIntersectionPoint(p2Key, x, y);
-
-            BoundingPoint* p;
-            //if(i == l.size()-1){
-            //    p = new ExtremityPoint(QPointF(x, y), this);
-            //}else{
-                p = new BoundingPoint(x, y, this);
-            //}
-            this->addItem(p);
-            _pointList.append(p);
-            p->setInternalKey(p1Key);
-        }
-
-    }//for
-*/
-
-    float x;
-    float y;
-    int p1Key;
-    int p2Key;
-    int controlKey;
-    int lastPlacedKey;
-    BoundingPoint* p;
     int size = l.size();
 
     if(size > 0){
-        _structure->getIntersectionPoint(_firstPointKey, x, y);
-        p = new ExtremityPoint(QPointF(x, y), this);
+
+        //on récupère la liste des deux clés des points extrémité
+        QList<int> extremityPoints = _structure->getExtremityPoint();
+        if(extremityPoints.size() != 2){
+            qDebug("There is less or more than 2 extremity points in the structure.");
+            return;
+        }
+
+        int extremity1 = extremityPoints.first();
+        int extremity2 = extremityPoints.back();
+
+        float x = 0; //valeurs arbitraires pour l'initialisation
+        float y = 0;
+
+        BoundingPoint* p;
+
+        //on place le premier point extremité (pas forcément le plus à gauche)
+        _structure->getIntersectionPoint(extremity1, x, y);
+        p = new ExtremityPoint(QPointF(x,y),this);
         this->addItem(p);
         _pointList.append(p);
-        p->setInternalKey(_firstPointKey);
+        p->setInternalKey(extremity1);
 
-        lastPlacedKey = _firstPointKey;
-    }
+        //on démarre une boucle qui travaille sur tous les points en
+        //initialisant le point courant au premier point extrémité, et le
+        //segment courant au segment relié au premier point extrémité
+        int currentPointKey = extremity1;
+        QList<int> segmentKeyList = _structure->getSegmentKeysLinkedToPoint(extremity1);
+        if(segmentKeyList.size() != 1){
+            qDebug("An extremity point is linked to less or more than one segment.");
+            return;
+        }
+        int currentSegmentKey = segmentKeyList.first();
 
-    //pour éviter une boucle infinie avec un while,
-    //on fait un for sur une valeur constante
-    for(int j = 0; j < size; j++){
-        foreach(int i, l){
-            _structure->getSegment(i, p1Key, p2Key, controlKey);
+        //on initialise des variables utiles à la boucle
+        int p1Key = Data::MONOFIN_SURFACE_NOT_CREATED_POINT;
+        int p2Key = Data::MONOFIN_SURFACE_NOT_CREATED_POINT;
+        int controlKey = Data::MONOFIN_SURFACE_NO_CONTROL_POINT;
+        BoundingPoint* lastPlacedPoint = p;
 
-            if(p1Key == lastPlacedKey){
-                _structure->getIntersectionPoint(p2Key, x, y);
-                if(p2Key == _lastPointKey){
-                    p = new ExtremityPoint(QPointF(x, y), this);
-                }else{
-                    p = new BoundingPoint(x, y, this);
-                }
-                this->addItem(p);
-                _pointList.append(p);
-                p->setInternalKey(p2Key);
+        bool allPointsPlaced = false;
 
-                BoundingPoint* p1;
-                p1 = _pointList.at(_pointList.size() - 2);
-                BrLine* newLine = this->createLine(p1, p);
-                newLine->setInternalKey(i);
+        //la boucle en question, avec un compteur pour éviter de boucler à
+        //l'infini en cas de problème, mais en principe, la réelle condition
+        //d'arrêt est le booléen allPointsPlaced :
+        //équivalent à " while(!allPointsPlaced){ "
+        for(int i = 0; i < size && !allPointsPlaced; i++){
 
-                if(controlKey != Data::MONOFIN_SURFACE_NO_CONTROL_POINT){
-                    _structure->getControlPoint(controlKey, x, y);
-                    ControlPoint* cp = _controlPointsList.at(newLine->lineId());
-                    cp->setInternalKey(controlKey);
-                    newLine->setControlPoint(true);
-                    newLine->moveControlPoint(QPointF(x, y));
-                }
+            //on récupère les informations sur le segment courant :
+            //clés de ses deux points, et clé de son éventuel point de contrôle
+            _structure->getSegment(currentSegmentKey, p1Key, p2Key, controlKey);
 
-                l.removeOne(i);
-                lastPlacedKey = p2Key;
-                break;
-
-            }else if(p2Key == lastPlacedKey){
-                _structure->getIntersectionPoint(p1Key, x, y);
-                if(p1Key == _lastPointKey){
-                    p = new ExtremityPoint(QPointF(x, y), this);
-                }else{
-                    p = new BoundingPoint(x, y, this);
-                }
-                this->addItem(p);
-                _pointList.append(p);
-                p->setInternalKey(p1Key);
-
-                BoundingPoint* p1;
-                p1 = _pointList.at(_pointList.size() - 2);
-                BrLine* newLine = this->createLine(p1, p);
-                newLine->setInternalKey(i);
-
-                if(controlKey != Data::MONOFIN_SURFACE_NO_CONTROL_POINT){
-                    _structure->getControlPoint(controlKey, x, y);
-                    ControlPoint* cp = _controlPointsList.at(newLine->lineId());
-                    cp->setInternalKey(controlKey);
-                    newLine->setControlPoint(true);
-                    newLine->moveControlPoint(QPointF(x, y));
-                }
-
-                l.removeOne(i);
-                lastPlacedKey = p1Key;
-                break;
+            //entre les deux points du segment, on cherche sur lequel on n'a
+            //pas encore travaillé, et on passe ce dernier en point courant
+            if(p1Key == currentPointKey){
+                currentPointKey = p2Key;
+            }else if(p2Key == currentPointKey){
+                currentPointKey = p1Key;
+            }else{
+                qDebug("Problem with point key while getting the monofin structure.");
+                return;
             }
-        }//foreach
-    }//while
 
-    if(_pointList.size() > 0){
+            //on récupère les coordonnées du point courant
+            _structure->getIntersectionPoint(currentPointKey, x, y);
+
+            //si le point courant est le deuxième point extrémité de la palme,
+            //on le construit en tant que tel, et on fixe un booléen indiquant
+            //que la boucle doit se terminer
+            if(currentPointKey == extremity2){
+                p = new ExtremityPoint(QPointF(x, y), this);
+                allPointsPlaced = true;
+            }else{
+                p = new BoundingPoint(x, y, this);
+            }
+
+            //on insère le point dans la scène
+            this->addItem(p);
+            _pointList.append(p);
+
+            //on fixe sa clé interne
+            p->setInternalKey(currentPointKey);
+
+            //on relie le point courant et le dernier point placé par une ligne
+            //et on fixe la clé interne de la ligne
+            BrLine* newLine = this->createLine(lastPlacedPoint, p);
+            newLine->setInternalKey(currentSegmentKey);
+
+            //on actualise le dernier point placé au point courant
+            lastPlacedPoint = p;
+
+            //si dans la structure, le segment contient un point de contrôle,
+            //on l'active dans la nouvelle ligne, on fixe sa clé interne et on
+            //le place aux coordonnées récupérées
+            if(controlKey != Data::MONOFIN_SURFACE_NO_CONTROL_POINT){
+                _structure->getControlPoint(controlKey, x, y);
+                ControlPoint* cp = newLine->controlPoint();
+                cp->setInternalKey(controlKey);
+                newLine->setControlPoint(true);
+                newLine->moveControlPoint(QPointF(x, y));
+            }
+
+            //Si l'on est pas à la fin de la boucle, on actualise le segment
+            //courant, en prenant celui relié au point courant qui n'est pas
+            //l'ancien segment courant
+            if(!allPointsPlaced){
+                segmentKeyList = _structure->getSegmentKeysLinkedToPoint(currentPointKey);
+                if(segmentKeyList.size() != 2){
+                qDebug("An intersection point is linked to less or more than two segments.");
+                return;
+                }
+                int segmentKey1 = segmentKeyList.first();
+                int segmentKey2 = segmentKeyList.back();
+                if(segmentKey1 == currentSegmentKey){
+                    currentSegmentKey = segmentKey2;
+                }else if(segmentKey2 == currentSegmentKey){
+                    currentSegmentKey = segmentKey1;
+                }else{
+                    qDebug("Problem with the segment keys while getting the monofin structure");
+                    return;
+                }
+
+            }//end if !allPointsPlaced
+
+
+        }//while
+
+        //par sécurité, on ne rend les points sélectionnables
+        //(et donc déplaçables) qu'à la fin
+        foreach(BoundingPoint* bp, _pointList){
+            bp->setFlag(QGraphicsItem::ItemIsSelectable, true);
+        }
+
+        //on émet un signal indiquant que la scène contient des points
         emit this->pointsOnScene(true);
-    }else{
+
+
+        //on vérifie que le rectangle de la scène est bien autour de
+        //tous les objets de cette scène, sinon on l'ajuste :
+
+        QRectF itemRect = this->itemsBoundingRect();
+        QRectF sceneRect = this->sceneRect();
+        //un point d'intersection ou un point de contrôle peut avoir un
+        //rectangle englobant dépassant du rectangle de la scène, donc on le
+        //prend en compte en agrandissant un peu le rectangle de la scène
+        //avant de vérifier qu'il entoure bien tous les objets
+        ControlPoint c(0,0,0,this); //TRES DANGEREUX / VERY DANGEROUS
+        BoundingPoint b(0,0,this);
+        qreal max = c.boundingRect().width();
+        if (max < b.boundingRect().width()){
+            max = b.boundingRect().width();
+        }
+        max/=2.0;
+
+        if(!sceneRect.adjusted(-max, -max, max, max).contains(itemRect)){
+            sceneRect = sceneRect.united(itemRect);
+            sceneRect.moveLeft(0);
+            QRect newSceneRect = sceneRect.toRect();
+            this->setSceneRect(newSceneRect);
+        }
+        //on réajuste l'axe de symétrie au cas où la taille de la scène
+        //aurait changé et on rafraichit la vue
+        _axis->setLine(0,0,this->width(), 0);
+        this->update(this->sceneRect());
+
+
+
+    }//end if size > 0
+
+    else{
+        //s'il n'y a aucun point à placer, on émet un signal indiquant que
+        //la scène est vide
         emit this->pointsOnScene(false);
     }
+
 
 }
 
@@ -527,13 +637,11 @@ void PaintingScene::keyPressEvent(QKeyEvent* event){
 
 //+
     }else if(event->key() == Qt::Key_Plus){
-        qDebug("plus");
         this->ajustSceneRect(20,20);
 
 
 //-
     }else if(event->key() == Qt::Key_Minus){
-        qDebug("minus");
         this->ajustSceneRect(-20,-20);
 
     }
@@ -547,8 +655,11 @@ void PaintingScene::keyReleaseEvent(QKeyEvent* event){
 
 void PaintingScene::mouseMoveEvent(QGraphicsSceneMouseEvent* event){
     //qDebug("(%f,%f)", event->scenePos().x(), event->scenePos().y());
-    BoundingPoint* bp;
-    _isOneSelection = false;
+    /*if(this->existIntersectionsBetweenLines()){
+        qDebug("intersect !!");
+    }else{
+        qDebug("intersect not...");
+    }*/
 
 //1. CREATE LINE
     if(_isCreateLineActivated){
@@ -563,6 +674,7 @@ void PaintingScene::mouseMoveEvent(QGraphicsSceneMouseEvent* event){
                     if(bl->intersect(templine)){
                         intersect = true;
                         qDebug("intersect");
+                        break;
                     }
                 }
             }
@@ -600,51 +712,38 @@ void PaintingScene::mouseMoveEvent(QGraphicsSceneMouseEvent* event){
     else{
   //3.1 Highlight points
 
-        if(!(_isAddControlActivated ||
+        /*if(!(_isAddControlActivated ||
              _isAddPointActivated ||
              _isRemoveControlPointActivated)){
 
             //QRectF r(event->scenePos().x(), event->scenePos().y(), 0.1, 0.1);
             foreach(bp, _pointList){
                 bp->setMouseOnPoint(false);
-                if(!_isOneSelection && bp->isUnderMouse()){
+                if(!__isAPointHighlighted && bp->isUnderMouse()){
                     bp->setMouseOnPoint(true);
-                    _isOneSelection = true;
+                    __isAPointHighlighted = true;
                     _itemUnderMouse = bp;
 
 
-                //Décommenter le bloc suivant rendra
-                //les points plus durs à attraper...
-                    /*
-                    QLineF l(bp->coord(), event->scenePos());
-                    if(l.dx() > 0){
-                        bp->moveTo(QPointF(bp->coord().x()-2, bp->coord().y()));
-                    }else{
-                        bp->moveTo(QPointF(bp->coord().x()+2, bp->coord().y()));
-                    }
-                    if(l.dy() > 0){
-                        bp->moveTo(QPointF(bp->coord().x(), bp->coord().y()-2));
-                    }else{
-                        bp->moveTo(QPointF(bp->coord().x(), bp->coord().y()+2));
-                    }
-                    */
 
 
 
                 }//if
             }//foreach
         }//if
-
+*/
    //3.2 Highlight lines
+        bool isOneSelection = false;
         if(_isAddControlActivated || _isAddPointActivated){
+            isOneSelection = false;
             QRectF r(event->scenePos().x() - 3, event->scenePos().y() - 3, 6, 6);
             BrLine* lf;
             foreach(lf, _lineList){
                 lf->setMouseOnLine(false);
-                if(!_isOneSelection){
+                if(!isOneSelection){
                     if(lf->intersects(r)){
                         lf->setMouseOnLine(true);
-                        _isOneSelection = true;
+                        isOneSelection = true;
                     }
                 }
             }//foreach
@@ -704,38 +803,38 @@ void PaintingScene::mousePressEvent(QGraphicsSceneMouseEvent* event){
                 this->addItem(rect);
                 _pointList.append(rect);
 
-                int key = BADKEY;
+                int key = Data::MONOFIN_SURFACE_NOT_CREATED_POINT;
                 key = _structure->addIntersectionPoint(rect->coord().x(), rect->coord().y());
                 qDebug("point's key : %d", key);
 
                 rect->setInternalKey(key);
 
-                if(_pointList.size() > 1){
+                if(_pointList.size() > 1 && _lastPlacedPoint != 0){
 
-                    BoundingPoint* p1;
-                    BoundingPoint* p2;
-                    p1 = _pointList.at(_pointList.size() - 2);
-                    p2 = _pointList.back();
-                    BrLine* newLine = this->createLine(p1, p2);
-
-                    int segmentKey = BADKEY;
+                    BrLine* newLine;
+                    newLine = this->createLine(_lastPlacedPoint, rect);
 
 
-                    /*int controlKey = BADKEY;
+                    int segmentKey = Data::MONOFIN_SURFACE_NOT_CREATED_SEGMENT;
+
+
+                    /*int controlKey = Data::MONOFIN_SURFACE_NO_CONTROL_POINT;
                     ControlPoint* cp = _controlPointsList.at(_lineList.indexOf(newLine));
                     controlKey = _structure->addControlPoint(cp->coord().x(),
                                                              cp->coord().y());
                     */
 
 
-                    segmentKey = _structure->addSegment(p1->internalKey(),
-                                                        p2->internalKey(),
+                    segmentKey = _structure->addSegment(_lastPlacedPoint->internalKey(),
+                                                        rect->internalKey(),
                                                         Data::MONOFIN_SURFACE_NO_CONTROL_POINT);
                     qDebug("line's key : %d", segmentKey);
 
                     newLine->setInternalKey(segmentKey);
 
                 }
+
+                _lastPlacedPoint = rect;
 
             //First and last points :
                 if(isFirstPoint){
@@ -744,10 +843,9 @@ void PaintingScene::mousePressEvent(QGraphicsSceneMouseEvent* event){
                     PaintingScene::mouseMoveEvent(event);
                 }else if(isLastPoint){
 
-                    //à ce moment là, les points sont présents dans
-                    //la liste DANS L'ORDRE
-                    _firstPointKey = _pointList.at(0)->internalKey();
-                    _lastPointKey = _pointList.back()->internalKey();
+                    foreach(BoundingPoint* bp, _pointList){
+                        bp->setFlag(QGraphicsItem::ItemIsSelectable, true);
+                    }
 
                     isLastPoint = false;
                     emit lineFinished(true);
@@ -755,6 +853,7 @@ void PaintingScene::mousePressEvent(QGraphicsSceneMouseEvent* event){
                     qDebug("last point created");
 
                     _structure->stopHistory(Data::MonofinSurface);
+                    emit this->somethingChanged(this->ActionCreateLine);
                 }
 
             }//end if (can be placed)
@@ -769,13 +868,14 @@ void PaintingScene::mousePressEvent(QGraphicsSceneMouseEvent* event){
                         l->setControlPoint(true);
 
                         _structure->startHistory(Data::MonofinSurface);
-                        ControlPoint* cp = _controlPointsList.at(l->lineId());
+                        ControlPoint* cp = l->controlPoint();
                         int controlKey = _structure->
                                          addControlPoint(cp->coord().x(),
                                                          cp->coord().y());
                         cp->setInternalKey(controlKey);
                         _structure->addControlPointToSegment(l->internalKey(), controlKey);
                         _structure->stopHistory(Data::MonofinSurface);
+                        emit this->somethingChanged(this->ActionInsertControlPoint);
 
                     }
                 }
@@ -790,14 +890,23 @@ void PaintingScene::mousePressEvent(QGraphicsSceneMouseEvent* event){
 
                     _structure->startHistory(Data::MonofinSurface);
 
-                    int i = lf->lineId();
                     int oldLineKey = lf->internalKey();
+                    BoundingPoint* p1 = lf->boundingPointP1();
+                    BoundingPoint* p2 = lf->boundingPointP2();
 
         // ! duplication de code, à revoir pour optimisation
 
-                    if(!lf->isControlPointActivated()){
+                    if(!lf->isControlPointActivated() || !_keepBezierCurve){
                     //si ce n'est pas une courbe de bézier
-                        _pointList.at(i)->removeRightLine();
+                        if(p1->rightLine() == lf){
+                            p1->removeRightLine();
+                        }else if(p1->leftLine() == lf){
+                            p1->removeLeftLine();
+                        }else{
+                            qDebug("Big problem while inserting a point");
+                        }
+
+                        //_pointList.at(i)->removeRightLine();
 
                         //on vérifie que le point est inséré dans la
                         //zone de déplacement des points
@@ -819,18 +928,23 @@ void PaintingScene::mousePressEvent(QGraphicsSceneMouseEvent* event){
                         int pointKey = _structure->addIntersectionPoint(pos.x(), pos.y());
                         bp->setInternalKey(pointKey);
                         this->addItem(bp);
-                        _pointList.insert(i+1, bp);
+                        _pointList.append(bp);
 
                         //on crée deux nouvelles lignes
 
                         int newLineKey = _structure->subdivideSegment(oldLineKey, pointKey);
 
-                        BrLine* l1 = this->createLine(_pointList.at(i), bp);
+                        qDebug("new line's key : %d ; old line's key : %d", newLineKey, oldLineKey);
+
+
+                        BrLine* l1 = this->createLine(p1, bp);
                         //celle-ci a la clef interne de l'ancienne ligne
                         l1->setInternalKey(oldLineKey);
 
-                        BrLine* l2 = this->createLine(bp, _pointList.at(i+2));
+                        BrLine* l2 = this->createLine(bp, p2);
                         l2->setInternalKey(newLineKey);
+
+                        bp->setFlag(QGraphicsItem::ItemIsSelectable, true);
 
                     }else{
                     //si c'est une courbe de bézier
@@ -852,24 +966,30 @@ void PaintingScene::mousePressEvent(QGraphicsSceneMouseEvent* event){
 
                         QPointF pos = lf->pointAt(t);
 
-                        _pointList.at(i)->removeRightLine();
+                        if(p1->rightLine() == lf){
+                            p1->removeRightLine();
+                        }else if(p1->leftLine() == lf){
+                            p1->removeLeftLine();
+                        }else{
+                            qDebug("Big problem while inserting a point");
+                        }
 
                         //on crée un nouveau point
                         BoundingPoint* bp = new BoundingPoint(pos, this);
                         int pointKey = _structure->addIntersectionPoint(pos.x(), pos.y());
                         bp->setInternalKey(pointKey);
                         this->addItem(bp);
-                        _pointList.insert(i+1, bp);
+                        _pointList.append(bp);
 
                         //on crée deux nouvelles lignes
 
                         int newLineKey = _structure->subdivideSegment(oldLineKey, pointKey);
 
-                        BrLine* l1 = this->createLine(_pointList.at(i), bp);
+                        BrLine* l1 = this->createLine(p1, bp);
                         //celle-ci a la clef interne de l'ancienne ligne
                         l1->setInternalKey(oldLineKey);
 
-                        BrLine* l2 = this->createLine(bp, _pointList.at(i+2));
+                        BrLine* l2 = this->createLine(bp, p2);
                         l2->setInternalKey(newLineKey);
 
                         //on place les points de contrôle aux emplacements calculés
@@ -878,34 +998,41 @@ void PaintingScene::mousePressEvent(QGraphicsSceneMouseEvent* event){
                         l1->moveControlPoint(contr1);
                         int controlKey1 = _structure->addControlPoint(contr1.x(), contr1.y());
                         _structure->addControlPointToSegment(l1->internalKey(), controlKey1);
-                        ControlPoint* cp1 = _controlPointsList.at(i);
-                        cp1->setInternalKey(controlKey1);
+                        //ControlPoint* cp1 = _controlPointsList.at(i);
+                        l1->controlPoint()->setInternalKey(controlKey1);
 
                         QPointF contr2(tangent2.pointAt(1-t));
                         l2->setControlPoint(true);
                         l2->moveControlPoint(tangent2.pointAt(1-t));
                         int controlKey2 = _structure->addControlPoint(contr2.x(), contr2.y());
                         _structure->addControlPointToSegment(l2->internalKey(), controlKey2);
-                        ControlPoint* cp2 = _controlPointsList.at(i+1);
-                        cp2->setInternalKey(controlKey2);
+                        //ControlPoint* cp2 = _controlPointsList.at(i+1);
+                        l2->controlPoint()->setInternalKey(controlKey2);
+
+                        bp->setFlag(QGraphicsItem::ItemIsSelectable, true);
+
                     }
-                    this->updateLinesId();
+                    //this->updateLinesId();
 
                     _structure->stopHistory(Data::MonofinSurface);
+                    emit this->somethingChanged(this->ActionInsertBoundingPoint);
 
                     break;
                 }
             }//foreach
+
 
 //4. REMOVE CONTROL POINT
         }else if(_isRemoveControlPointActivated){}
 
 //5. OTHER
 //5.1 Something is highlighted
-        else if(_isOneSelection){
+        else if(_isAPointHighlighted){
             if(!_isMultiSelectionKeyActivated){
-                this->clearSelection();
-                _itemUnderMouse->setSelected(true);
+                if(!this->selectedItems().contains(_itemUnderMouse)){
+                    this->clearSelection();
+                    _itemUnderMouse->setSelected(true);
+                }
             }else{
                 _itemUnderMouse->setSelected(!_itemUnderMouse->isSelected());
             }
@@ -929,9 +1056,7 @@ void PaintingScene::mousePressEvent(QGraphicsSceneMouseEvent* event){
         if(!_isCreatingSelectionRect){
             QGraphicsScene::mousePressEvent(event);
         }
-        /*if(_isOneSelection){
-            _itemUnderMouse->setSelected(true);
-        }*/
+
     }//end if event->button == leftButton
 }
 
@@ -953,16 +1078,22 @@ void PaintingScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event){
         this->removeItem(_selectionRect);
         delete _selectionRect;
     }else{
-        QGraphicsScene::mouseReleaseEvent(event);
-    }
-}
 
-void PaintingScene::updateLinesId(){
-    BrLine* bl;
-    int j = 0;
-    foreach(bl, _lineList){
-        bl->setLineId(j);
-        j++;
+        QGraphicsScene::mouseReleaseEvent(event);
+
+        if(_hasABoundingPointMoved){
+            _hasABoundingPointMoved = false;
+        }else{
+
+            if(_isAPointHighlighted){
+                if(!_isMultiSelectionKeyActivated){
+                    this->clearSelection();
+                    _itemUnderMouse->setSelected(true);
+                }
+            }
+        }
+
+
     }
 }
 

@@ -74,19 +74,22 @@ public:
     /**
     * Returns the key of the point in the internal structure of the monofin.
     * Make sure the internal key has been set by setInternalKey before,
-    * or verify that the value is not the default value : PaintingScene::BADKEY.
+    * or verify that the value is not the default value :
+    * Data::MONOFIN_SURFACE_NO_CONTROL_POINT.
     *@return the internal key of the point
     **/
-    int internalKey(){return _internalKey;}
+    int internalKey() const{return _internalKey;}
+
+    bool isAllowedToMoveAtPosX(qreal posX);
+    bool isAllowedToMoveAtPosY(qreal posY);
 
     /**
-    * Makes the control point moving to the coordinates of the given QPointF.
+    * Makes the control point moving to the coordinates of the given QPointF,
+    * but ONLY in the zone where control points can move, which is the scene
+    * rectangle. It also updates the position of the two tangents.
     * @param p the new coordinates of the control point as a QPointF
     **/
-    void moveTo(const QPointF& p){
-        _pos->setX(p.x());
-        _pos->setY(p.y());
-    }
+    void moveTo(const QPointF& p);
 
     /**
     * Paints the item as a black circle when it's not under the mouse
@@ -98,6 +101,12 @@ public:
     *@param widget not used here, see the documentation of QGraphicsItem
     **/
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
+
+    /**
+    *@return the size of the bounding rectangle of the circle painted in
+    * the view
+    **/
+    qreal rectangleSize() const{return CONTRPOINTHEIGHT;}
 
     /**
     * Sets the internal key of the point with the given key
@@ -119,6 +128,9 @@ public:
     *@param t a pointer to the second tangent controlled by the control point
     **/
     void setTangent2(Tangent* t);
+
+    bool willMoveToGoCloseToPosX(qreal posX);
+    bool willMoveToGoCloseToPosY(qreal posY);
 
 protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent* event);

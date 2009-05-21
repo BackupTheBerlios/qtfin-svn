@@ -8,12 +8,12 @@ BoundingPoint::BoundingPoint(qreal x, qreal y, PaintingScene* scene):
         QGraphicsItem(), _atLeastOneClick(false), _canMove(false),
       /*_canBeSelected(true),*/
      _color(Qt::black), _hasLeftLine(false), _hasRightLine(false),
-     _internalKey(PaintingScene::BADKEY),
+     _internalKey(Data::MONOFIN_SURFACE_NOT_CREATED_POINT),
      _isMouseOnPoint(false),  _isMoving(false),
      _scene(scene){
 
     this->setAcceptHoverEvents(true);
-    this->setFlag(QGraphicsItem::ItemIsSelectable, true);
+    //this->setFlag(QGraphicsItem::ItemIsSelectable, true);
 
     _pos = new QPointF(x, y);
 
@@ -23,12 +23,12 @@ BoundingPoint::BoundingPoint(const QPointF& coord, PaintingScene* scene):
         QGraphicsItem(), _atLeastOneClick(false), _canMove(false),
       /*_canBeSelected(true),*/
      _color(Qt::black), _hasLeftLine(false), _hasRightLine(false),
-     _internalKey(PaintingScene::BADKEY),
+     _internalKey(Data::MONOFIN_SURFACE_NOT_CREATED_POINT),
      _isMouseOnPoint(false),  _isMoving(false),
      _scene(scene){
 
     this->setAcceptHoverEvents(true);
-    this->setFlag(QGraphicsItem::ItemIsSelectable, true);
+    //this->setFlag(QGraphicsItem::ItemIsSelectable, true);
 
     _pos = new QPointF(coord);
 }
@@ -40,7 +40,7 @@ BoundingPoint::BoundingPoint(const BoundingPoint& p):
      _scene(p._scene){
 
     this->setAcceptHoverEvents(true);
-    this->setFlag(QGraphicsItem::ItemIsSelectable, true);
+    //this->setFlag(QGraphicsItem::ItemIsSelectable, true);
 
     _pos = new QPointF(p.coord());
 
@@ -118,18 +118,34 @@ QRectF BoundingPoint::boundingRect() const{
 
 }
 
-int BoundingPoint::internalKeyLeftLine(){
-    if(_hasLeftLine){
-        return _leftLine->internalKey();
-    }else{
-        return PaintingScene::BADKEY;
-    }
+bool BoundingPoint::isAllowedToMoveAtPosX(qreal posX){
+    QRectF zone = _scene->pointsBoundingZone();
+    return (posX > zone.left() && posX < zone.right());
+}
+
+bool BoundingPoint::isAllowedToMoveAtPosY(qreal posY){
+    QRectF zone = _scene->pointsBoundingZone();
+    return (posY > 0 && posY < zone.bottom());
 }
 
 void BoundingPoint::moveTo(const QPointF& p){
     this->prepareGeometryChange();
-    _pos->setX(p.x());
-    _pos->setY(p.y());
+    QPointF pos = p;
+
+    QRectF zone = _scene->pointsBoundingZone();
+    if(pos.x() < zone.bottomLeft().x()){
+        pos.setX(zone.bottomLeft().x());
+    }else if(pos.x() > zone.bottomRight().x()){
+        pos.setX(zone.bottomRight().x());
+    }
+    if(pos.y() < 0){
+        pos.setY(0);
+    }else if(pos.y() > zone.bottomLeft().y()){
+        pos.setY(zone.bottomLeft().y());
+    }
+
+    _pos->setX(pos.x());
+    _pos->setY(pos.y());
 
     if(_hasLeftLine) {_leftLine->move();}
     if(_hasRightLine) {_rightLine->move();}
@@ -173,6 +189,7 @@ void BoundingPoint::paint(QPainter* painter, const QStyleOptionGraphicsItem* opt
     }
 }
 
+
 void BoundingPoint::removeLeftLine(){
     if(_hasLeftLine){
         _hasLeftLine = false;
@@ -215,25 +232,107 @@ void BoundingPoint::setRightLine(BrLine* l){
 
 }
 
+bool BoundingPoint::willMoveToGoCloseToPosX(qreal posX){
+    QRectF zone = _scene->pointsBoundingZone();
+    if(posX < zone.left()){
+        return _pos->x() != zone.left();
+    }else if(posX > zone.right()){
+        return _pos->x() != zone.right();
+    }else{
+        return _pos->x() != posX;
+    }
+}
+
+bool BoundingPoint::willMoveToGoCloseToPosY(qreal posY){
+    QRectF zone = _scene->pointsBoundingZone();
+    if(posY < 0){
+        return _pos->y() != 0;
+    }else if(posY > zone.bottom()){
+        return _pos->y() != zone.bottom();
+    }else{
+        return _pos->y() != posY;
+    }
+}
+
 //PROTECTED
 
 void BoundingPoint::mouseMoveEvent(QGraphicsSceneMouseEvent* event){
     if(_canMove){
-        _isMoving = true;
-        QRectF zone = _scene->pointsBoundingZone();
         QPointF pos(event->scenePos().x(), event->scenePos().y());
-        if(pos.x() < zone.bottomLeft().x()){
-            pos.setX(zone.bottomLeft().x());
-        }else if(pos.x() > zone.bottomRight().x()){
-            pos.setX(zone.bottomRight().x());
+
+        bool canMoveOnX = true;
+        bool canMoveOnY = true;
+
+        QList<QGraphicsItem*> si = _scene->selectedItems();
+        BoundingPoint* bp;
+        ExtremityPoint* ep;
+        //ControlPoint* cp;
+        foreach(QGraphicsItem* item, si){
+            if(item->type() == BoundingPoint::Type){
+                bp = qgraphicsitem_cast<BoundingPoint*>(item);
+                QLineF l(bp->coord(), this->coord());
+                canMoveOnX = canMoveOnX &&
+                             bp->isAllowedToMoveAtPosX(pos.x() - l.dx());
+                canMoveOnY = canMoveOnY &&
+                             bp->isAllowedToMoveAtPosY(pos.y() - l.dy());
+
+            }else if(item->type() == ExtremityPoint::Type){
+                ep = qgraphicsitem_cast<ExtremityPoint*>(item);
+                QLineF l(ep->coord(), this->coord());
+                canMoveOnX = canMoveOnX &&
+                             ep->isAllowedToMoveAtPosX(pos.x() - l.dx());
+                canMoveOnY = false;
+            }
+        }//foreach
+
+        foreach(ControlPoint* cp, _movingControlPoints){
+            QLineF l(cp->coord(), this->coord());
+            canMoveOnX = canMoveOnX &&
+                         cp->isAllowedToMoveAtPosX(pos.x() - l.dx());
+            canMoveOnY = canMoveOnY &&
+                         cp->isAllowedToMoveAtPosY(pos.y() - l.dy());
+        }//foreach
+
+
+        if(!canMoveOnY){
+            pos.setY(_pos->y());
         }
-        if(pos.y() < 0){
-            pos.setY(0);
-        }else if(pos.y() > zone.bottomLeft().y()){
-            pos.setY(zone.bottomLeft().y());
+        if(!canMoveOnX){
+            pos.setX(_pos->x());
+        }
+
+        if(canMoveOnX || canMoveOnY){
+            //QList<QGraphicsItem*> si = _scene->selectedItems();
+            foreach(QGraphicsItem* item, si){
+                if(item->type() == BoundingPoint::Type && item != this){
+                    QLineF l(qgraphicsitem_cast<BoundingPoint*>(item)->coord(),
+                             this->coord());
+                    qgraphicsitem_cast<BoundingPoint*>(item)->
+                            moveTo(pos - QPointF(l.dx(), l.dy()));
+
+                }else if(item->type() == ExtremityPoint::Type){
+                    QLineF l(qgraphicsitem_cast<ExtremityPoint*>(item)->coord(),
+                             this->coord());
+                    qgraphicsitem_cast<ExtremityPoint*>(item)->
+                            moveTo(pos - QPointF(l.dx(), l.dy()));
+                }
+            }//foreach
+
+            foreach(ControlPoint* c, _movingControlPoints){
+                QLineF l(c->coord(), this->coord());
+                c->moveTo(pos - QPointF(l.dx(), l.dy()));
+            }//foreach
+
+        }//if
+
+        //qDebug("number of selected items : %d", si.size());
+
+        if(pos != *_pos){
+            _isMoving = true;
         }
 
         this->moveTo(pos);
+
 
     }else{
         //QGraphicsItem::mousePressEvent(event);
@@ -243,9 +342,18 @@ void BoundingPoint::mouseMoveEvent(QGraphicsSceneMouseEvent* event){
 
 void BoundingPoint::mousePressEvent(QGraphicsSceneMouseEvent* event){
     if(event->button() == Qt::LeftButton){
-        qDebug("click on bounding point");
-        if(!this->isSelected()){_canMove = false;}//!_atLeastOneClick;}
-        else{_canMove = true;}
+        if(!this->isSelected()){
+            //_scene->clearSelection();
+            //this->setSelected(true);
+            _canMove = false;
+            //QGraphicsItem::mousePressEvent(event);
+        }
+        else{
+            _canMove = true;
+
+            _movingControlPoints.clear();
+            _movingControlPoints = _scene->controlPointsSurroundedBySelectedPoints();
+        }
 
     }else{
         _canMove = false;
@@ -255,42 +363,32 @@ void BoundingPoint::mousePressEvent(QGraphicsSceneMouseEvent* event){
 
 void BoundingPoint::mouseReleaseEvent(QGraphicsSceneMouseEvent* event){
     if(event->button() == Qt::LeftButton){
-        qDebug("mouse released of bounding point");
         _canMove = false;
 
         if(_isMoving){
             _isMoving = false;
-            _scene->boundingPointHasMoved(this);
+
+            _scene->startModifications();
+
+            QList<QGraphicsItem*> si = _scene->selectedItems();
+            foreach(QGraphicsItem* item, si){
+                if(item->type() == BoundingPoint::Type){
+                    _scene->boundingPointHasMoved(
+                            qgraphicsitem_cast<BoundingPoint*>(item), false);
+                }else if(item->type() == ExtremityPoint::Type){
+                    _scene->boundingPointHasMoved(
+                            qgraphicsitem_cast<ExtremityPoint*>(item), false);
+                }
+            }
+            foreach(ControlPoint* c, _movingControlPoints){
+                _scene->controlPointHasMoved(c, false);
+            }
+            _movingControlPoints.clear();
+
+            _scene->stopModifications();
         }
 
-        if(_atLeastOneClick){
-
-            /*if(_canBeSelected){
-                this->setSelected(true);
-                qDebug("point selected");
-                _scene->addSelectedPoint(this);
-                _color = Qt::red;
-                _canBeSelected = false;
-            }else{
-                if(this->isSelected() && !_isMoving){
-                    this->setSelected(false);
-                    qDebug("point unselected");
-                    _scene->removeSelectedPoint(this);
-                    _color = Qt::black;
-                    _canBeSelected = true;
-                }
-                if(_isMoving){
-                    _canBeSelected = true;
-                }
-            }*/
-            /*if(this->isSelected()){
-                this->setSelected(false);
-                _color = Qt::black;
-            }else{
-                this->setSelected(true);
-                _color = Qt::red;
-            }*/
-        }else{
+        if(_atLeastOneClick){}else{
             //this->setSelected(false);
             _atLeastOneClick = true;
         }
@@ -303,19 +401,48 @@ void BoundingPoint::mouseReleaseEvent(QGraphicsSceneMouseEvent* event){
     _scene->update(_scene->sceneRect());
 }
 
-inline qreal BoundingPoint::rectangleSize() const{
-    return BOUNDINGPOINTSIZE;// / _scene->scaleFactor();
-}
-
-/*void BoundingPoint::hoverEnterEvent(QGraphicsSceneHoverEvent* event){
+void BoundingPoint::hoverEnterEvent(QGraphicsSceneHoverEvent* event){
     //qDebug("enter hover");
 
+    if(!(_scene->isAddControlActivated()||
+         _scene->isAddPointActivated()||
+         _scene->isRemoveControlPointActivated())){
+
+        _scene->setCanCreateSelectionRect(false);
+        //if(!this->isSelected()){
+            this->setMouseOnPoint(true);
+            _scene->boundingPointIsHighlighted(this, true);
+        //}
+
+        //Décommenter le bloc suivant rendra
+        //les points plus durs à attraper...
+
+            /*QLineF l(this->coord(), event->scenePos());
+            if(l.dx() > 0){
+                this->moveTo(QPointF(this->coord().x()-10, this->coord().y()));
+            }else{
+                this->moveTo(QPointF(this->coord().x()+10, this->coord().y()));
+            }
+            if(l.dy() > 0){
+                this->moveTo(QPointF(this->coord().x(), this->coord().y()-10));
+            }else{
+                this->moveTo(QPointF(this->coord().x(), this->coord().y()+10));
+            }*/
+
+
+        }//if
+
 }
+
+
 void BoundingPoint::hoverLeaveEvent(QGraphicsSceneHoverEvent* event){
-    //qDebug("leave hover");
+    this->setMouseOnPoint(false);
+    _scene->boundingPointIsHighlighted(this, false);
+    _scene->setCanCreateSelectionRect(true);
 
 }
 
+/*
 void BoundingPoint::dragEnterEvent(QGraphicsSceneDragDropEvent *event){
     qDebug("enter drag");
     event->setAccepted(true);

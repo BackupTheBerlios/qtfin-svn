@@ -25,22 +25,36 @@ public:
     /**
     * Constructs a straight line between the two given bounding points. The id
     * is the index of the line in the list in the scene. The internal key is
-    * set to PaintingScene::BADKEY ; to set it, use setInternalKey(key).
+    * set to Data::MONOFIN_SURFACE_NOT_CREATED_SEGMENT ; to set it, use
+    * setInternalKey(key).
     * A control point and two tangents are created, but not added to the scene.
     * Until the function setControlPoint(true) is called, the control point
     * will remain invisible and will move with the line to stay at the center.
     *@param p1 the left bounding point of the line
     *@param p2 the right bounding point of the line
     *@param scene a pointer to the main PaintingScene
-    *@param id the index of the line in the sorted list of BrLine in the scene
     **/
-    BrLine(BoundingPoint* p1, BoundingPoint* p2, PaintingScene* scene, int id);
+    BrLine(BoundingPoint* p1, BoundingPoint* p2, PaintingScene* scene);
 
     /**
     * Delete the QLineF object and the QPainter path.
     **/
     ~BrLine();
 
+    /**
+    *@return the bezier curve as a path after having updated it
+    **/
+    QPainterPath bezierCurve();
+
+    /**
+    *@return a pointer to the left point of the line as a bounding point
+    **/
+    BoundingPoint* boundingPointP1(){return this->_p1;}
+
+    /**
+    *@return a pointer to the right point of the line as a bounding point
+    **/
+    BoundingPoint* boundingPointP2(){return this->_p2;}
 
     /**
     * Return the bounding rectangle of the line, which is a big rectangle
@@ -50,6 +64,11 @@ public:
     *@return the bounding rectangle of the item
     **/
     virtual QRectF boundingRect() const;
+
+    /**
+    *@return a pointer to the control point of the line
+    **/
+    ControlPoint* controlPoint(){return this->_contr;}
 
     /**
     @return the coordinates of the control point as a QPointF
@@ -80,7 +99,8 @@ public:
     /**
     * Returns the key of the line in the internal structure of the monofin.
     * Make sure the internal key has been set by setInternalKey before,
-    * or verify that the value is not the default value : PaintingScene::BADKEY.
+    * or verify that the value is not the default value :
+    * Data::MONOFIN_SURFACE_NOT_CREATED_SEGMENT.
     *@return the internal key of the line
     **/
     int internalKey(){return _internalKey;}
@@ -118,6 +138,17 @@ public:
     bool intersects(const QRectF& rect)const{return _path->intersects(rect);}
 
     /**
+    * Returns true if there is an intersection between the given line and this
+    * line (as BEZIER CURVES). Note that the function bezierCurve is applied to
+    * the given line, then its paths is updated and it can not be const.
+    *@param line a reference to the BrLine which intersects or not with
+    * this line
+    *@return true if the current bezier curve intersects with the other line's
+    * bezier curve ; otherwise returns false
+    **/
+    bool intersects(BrLine& line) const;
+
+    /**
     *@return true if the control point of this line is activated ;
     * otherwise, returns false
     **/
@@ -142,13 +173,6 @@ public:
     *@return the line as a QLineF (a STRAIGHT LINE)
     **/
     QLineF line(){return *_line;}
-
-    /**
-    * Returns the index of the line in the list in the PaintingScene.
-    * It's NOT the same as the internal key.
-    *@return the id of the line
-    **/
-    int lineId(){return _lineId;}
 
     /**
     * Updates the position of the line by moving its extremity points
@@ -221,13 +245,6 @@ public:
     void setInternalKey(int key){_internalKey = key;}
 
     /**
-    * Sets the line id (NOT the internal key) to the given value.
-    * This function is called by the scene to update the ids of all the lines.
-    *@param i the new value of the line id
-    **/
-    void setLineId(int i);
-
-    /**
     * Function called by the scene to indicates that the mouse is near the
     * line or not anymore.
     *@param on true means that the line will consider that the mouse is on it,
@@ -285,8 +302,6 @@ protected:
 
     QLineF* _line;  //the straight line which extremity points are regularly
                 //updated to be at the same positions as the two bounding points
-
-    int _lineId;  //the index of the line in the line list of the PaintingScene
 
     BoundingPoint* _p1; //the bounding point at the left of the line
 

@@ -26,6 +26,15 @@ public:
     ExtremityPoint(const QPointF& coord, PaintingScene* scene);
 
     /**
+    * Makes the extremity point moving to the coordinates of the given QPointF,
+    * but ONLY along the extremity axis of the scene in the zone where points
+    * can move (see PaintingScene::pointsBoundingZone).
+    * It also calls the function move() of the lines if they exist.
+    * @param p the new coordinates of the bounding point as a QPointF
+    **/
+    void moveTo(const QPointF& p);
+
+    /**
     * Returns the type of the extremity point as an int. This int is different
     * of UserType. It is used by the scene to make a difference between
     * a BoundingPoint and an ExtremityPoint.

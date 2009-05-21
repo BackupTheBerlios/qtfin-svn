@@ -28,6 +28,10 @@ ToolBar::ToolBar(PaintingScene* scene, QWidget* parent)
     _toolButtonAddPoint->setDisabled(true);
     _vlayout->addWidget(_toolButtonAddPoint);
 
+    _keepBezierCheckBox = new QCheckBox("Keep bezier curves", this);
+    _keepBezierCheckBox->click();
+    _vlayout->addWidget(_keepBezierCheckBox);
+
     _toolButtonAlignTangents = new QPushButton("Align tangents",this);
     _toolButtonAlignTangents->setDisabled(true);
     _vlayout->addWidget(_toolButtonAlignTangents);
@@ -72,6 +76,7 @@ ToolBar::ToolBar(PaintingScene* scene, QWidget* parent)
     QObject::connect(_undoButton, SIGNAL(clicked()), _scene, SLOT(undo()));
     QObject::connect(_redoButton, SIGNAL(clicked()), _scene, SLOT(redo()));
     QObject::connect(_scene, SIGNAL(pointsOnScene(bool)), this, SLOT(pointsOnScene(bool)));
+    QObject::connect(_keepBezierCheckBox, SIGNAL(clicked(bool)), _scene, SLOT(keepBezierCurve(bool)));
     //QObject::connect(viewCoords, SIGNAL(clicked()), _scene, SLOT(showCoords()));
 }
 
@@ -82,6 +87,8 @@ void ToolBar::activeAddControl(bool a){
     _toolButtonAlignTangents->setDisabled(a);
     _toolButtonClean->setDisabled(a);
     _toolButtonRemoveControl->setDisabled(a);
+    _undoButton->setDisabled(a);
+    _redoButton->setDisabled(a);
 }
 
 void ToolBar::activeAddPoint(bool a){
@@ -89,6 +96,8 @@ void ToolBar::activeAddPoint(bool a){
     _toolButtonAlignTangents->setDisabled(a);
     _toolButtonClean->setDisabled(a);
     _toolButtonRemoveControl->setDisabled(a);
+    _undoButton->setDisabled(a);
+    _redoButton->setDisabled(a);
 }
 
 void ToolBar::activateRemoveControl(bool a){
@@ -96,6 +105,8 @@ void ToolBar::activateRemoveControl(bool a){
     _toolButtonAddControl->setDisabled(a);
     _toolButtonAlignTangents->setDisabled(a);
     _toolButtonClean->setDisabled(a);
+    _undoButton->setDisabled(a);
+    _redoButton->setDisabled(a);
 }
 
 void ToolBar::beginLine(bool a){
@@ -105,6 +116,8 @@ void ToolBar::beginLine(bool a){
     _toolButtonAlignTangents->setDisabled(a);
     _toolButtonClean->setDisabled(a);
     _toolButtonRemoveControl->setDisabled(a);
+    _undoButton->setDisabled(a);
+    _redoButton->setDisabled(a);
 }
 
 void ToolBar::clean(){
@@ -114,6 +127,8 @@ void ToolBar::clean(){
     _toolButtonAlignTangents->setDisabled(true);
     _toolButtonClean->setDisabled(true);
     _toolButtonRemoveControl->setDisabled(true);
+    _undoButton->setEnabled(true);
+    _redoButton->setEnabled(true);
 }
 
 void ToolBar::finishedLine(bool a){

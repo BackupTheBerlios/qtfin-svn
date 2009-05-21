@@ -3,9 +3,9 @@
 
 //PUBLIC
 
-BrLine::BrLine(BoundingPoint* p1, BoundingPoint* p2, PaintingScene* scene, int id)
-    : QGraphicsItem(), _color(Qt::black), _internalKey(PaintingScene::BADKEY),
-    _isControlPointActivated(false), _isMouseOnLine(false), _lineId(id),
+BrLine::BrLine(BoundingPoint* p1, BoundingPoint* p2, PaintingScene* scene)
+    : QGraphicsItem(), _color(Qt::black), _internalKey(Data::MONOFIN_SURFACE_NOT_CREATED_SEGMENT),
+    _isControlPointActivated(false), _isMouseOnLine(false),
     _p1(p1), _p2(p2), _scene(scene){
 
     _line = new QLineF(_p1->coord(), _p2->coord());
@@ -13,7 +13,7 @@ BrLine::BrLine(BoundingPoint* p1, BoundingPoint* p2, PaintingScene* scene, int i
                   (_p2->coord().y()+_p1->coord().y())/2.0);
     _contr = new ControlPoint(contr, this, _scene);
 
-    _scene->addControlPoint(_contr,_lineId);
+    _scene->addControlPoint(_contr);
 
     _tangent1 = new Tangent(_line->p1(), _contr->coord(), _scene);
     _tangent2 = new Tangent(_line->p2(), _contr->coord(), _scene);
@@ -32,8 +32,39 @@ BrLine::~BrLine(){
     delete _path;
 
     //on cache la ligne à ses points d'extrémité avant de la supprimer
-    if(_p1 != 0){_p1->hideRightLine();}
-    if(_p2 != 0){_p2->hideLeftLine();}
+
+    //on vérifie laquelle des lignes de p1 est celle que l'on supprime
+    if(_p1 != 0){
+        if(_p1->hasRightLine()){
+            if(_p1->rightLine() == this){
+                _p1->hideRightLine();
+            }
+        }
+        if(_p1->hasLeftLine()){
+            if(_p1->leftLine() == this){
+                _p1->hideLeftLine();
+            }
+        }
+    }//end if p1 != 0
+
+    //on fait la même chose pour p2
+    if(_p2 != 0){
+        if(_p2->hasLeftLine()){
+            if(_p2->leftLine() == this){
+                _p2->hideLeftLine();
+            }
+        }
+        if(_p2->hasRightLine()){
+            if(_p2->rightLine() == this){
+                _p2->hideRightLine();
+            }
+        }
+    }//end if p2 != 0
+}
+
+QPainterPath BrLine::bezierCurve(){
+    this->updatePath();
+    return *_path;
 }
 
 QRectF BrLine::boundingRect() const{
@@ -78,6 +109,15 @@ bool BrLine::intersect(QLineF& line){
     bool res = (_line->intersect(line, p) == QLineF::BoundedIntersection);
     delete p;
     return res;
+}
+
+bool BrLine::intersects(BrLine& line) const{
+    //il y a une intersection entre deux lignes si elles sont reliées au même
+    //point, du coup, on teste l'intersection avec une courbe de bezier sans
+    //les deux points extrêmes
+    QPainterPath* withoutPoints = new QPainterPath(_line->pointAt(0.000000001));
+    withoutPoints->cubicTo(_contr->coord(), _contr->coord(), _line->pointAt(0.999999999));
+    return withoutPoints->intersects(line.bezierCurve());
 }
 
 void BrLine::move(){
@@ -130,6 +170,8 @@ void BrLine::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QW
         path.moveTo(_line->p1());
         path.cubicTo(_contr->coord(),_contr->coord(), _line->p2());
         painter->drawPath(path);
+
+
     }else{
         painter->drawLine(*_line);
     }
@@ -174,10 +216,6 @@ void BrLine::setControlPoint(bool on){
         _contr->moveTo(_line->pointAt(0.5));
     }
     _scene->update(_scene->sceneRect());
-}
-
-void BrLine::setLineId(int i){
-    if(i >= 0){_lineId = i;}
 }
 
 //PROTECTED

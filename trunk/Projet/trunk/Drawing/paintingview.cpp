@@ -29,6 +29,9 @@ void PaintingView::zoomOut(){
 //PROTECTED
 
 void PaintingView::drawBackground(QPainter* painter, const QRectF& rect){
+
+    //painter->drawRect(_scene->itemsBoundingRect());
+
     painter->setPen(Qt::DashDotLine);
     painter->drawRect(_scene->sceneRect());
     painter->drawRect(_scene->pointsBoundingZone());
@@ -39,7 +42,10 @@ void PaintingView::drawBackground(QPainter* painter, const QRectF& rect){
     for(int i = 0; i < r.bottomRight().x(); i+=20){
         painter->drawLine(i, r.bottomLeft().y(), i, r.topLeft().y());
     }
-    for(int i = r.bottomLeft().y(); i > r.topLeft().y(); i-=20){
+    for(int i = 0; i > r.topLeft().y(); i-=20){
+        painter->drawLine(r.bottomLeft().x(), i, r.bottomRight().x(), i);
+    }
+    for(int i = 0; i < r.bottomLeft().y(); i+=20){
         painter->drawLine(r.bottomLeft().x(), i, r.bottomRight().x(), i);
     }
 

@@ -30,7 +30,17 @@ class PaintingScene: public QGraphicsScene{
 
 public:
 
-    static const int BADKEY = -1;
+    enum DrawingAction{ActionCreateLine,
+                       ActionInsertBoundingPoint,
+                       ActionInsertControlPoint,
+                       ActionMoveBoundingPoint,
+                       ActionMoveControlPoint,
+                       ActionAlignTangents,
+                       ActionDeleteBoundingPoint,
+                       ActionDeleteControlPoint,
+                       ActionRemoveSomePoints,
+                       ActionNoAction
+                   };
 
     /**
     * Contructor with the size of the scene rectangle
@@ -48,9 +58,8 @@ public:
     * Only used by the lines to register their control points.
     * DO NOT add the point to the scene.
     *@param p the control point to be inserted in the list
-    *@param i the id of the line which insert the control point
     **/
-    void addControlPoint(ControlPoint* p, int i);
+    void addControlPoint(ControlPoint* p);
 
     /**
     * Notifies the internal structure that a bounding point has
@@ -64,6 +73,9 @@ public:
     **/
     void boundingPointHasMoved(BoundingPoint* p, bool isUniqueModification = true);
 
+    void boundingPointIsHighlighted(BoundingPoint* p, bool isHighlighted);
+
+
     /**
     * Notifies the internal structure that a control point has
     * moved and if it is a unique modification or if it is a
@@ -76,6 +88,15 @@ public:
     **/
     void controlPointHasMoved(ControlPoint* p, bool isUniqueModification = true);
 
+    void controlPointHasBeenHidden(ControlPoint* p, bool isUniqueModification = true);
+
+
+    /**
+    *@return the list of the control points which lines have two
+    * selected points
+    **/
+    QList<ControlPoint*> controlPointsSurroundedBySelectedPoints();
+
     /**
     * Creates a line between two bounding points, add it to the line list,
     * add it to the scene and SET THE RIGHT LINE of p1 and THE LEFT LINE o p2
@@ -85,12 +106,15 @@ public:
     **/
     BrLine* createLine(BoundingPoint* p1, BoundingPoint* p2);
 
+    bool existIntersectionsBetweenLines();
+
     /**
     *@return the height of the scene rectangle.
     **/
     qreal height(){return this->sceneRect().height();}
 
     bool isAddControlActivated(){return _isAddControlActivated;}
+    bool isAddPointActivated(){return _isAddPointActivated;}
     bool isCreateLineActivated(){return _isCreateLineActivated;}
     bool isRemoveControlPointActivated(){return _isRemoveControlPointActivated;}
     bool isSimplifyViewActivated(){return _isSimplifyViewActivated;}
@@ -154,6 +178,26 @@ public:
     void setCanCreateSelectionRect(bool c){_canCreateSelectionRect = c;}
 
     /**
+    * Indicates to the internal structure that the next modifications on the
+    * scene will be considered as one, until stopModifications is call.
+    * WARNING : be careful to use this function only when you precise that
+    * the modifications are NOT unique (see boundingPointHasMoved or
+    * controlPointHasMoved).
+    **/
+    void startModifications(){
+        _structure->startHistory(Data::MonofinSurface);
+    }
+
+    /**
+    * Indicates to the internal structure that the modifications considered
+    * as one are finished. Be careful to have only use functions with NOT
+    * unique modifications (see boundingPointHasMoved or controlPointHasMoved).
+    **/
+    void stopModifications(){
+        _structure->stopHistory(Data::MonofinSurface);
+    }
+
+    /**
     *@returns the width of the scene rectangle
     **/
     qreal width(){return this->sceneRect().width();}
@@ -215,6 +259,16 @@ public slots:
     **/
     void cleanPoints();
 
+
+    /**
+    * Determines if a bezier curve is kept when it is cut. It has no effect
+    * on straight lines.
+    *@param k if true, a bezier curve is cut into two bezier curve when
+    * inserting a point ; if false, a bezier curve is cut into two
+    * straight lines
+    **/
+    void keepBezierCurve(bool k);
+
     /**
     * Removes the selected points of the scene and of the internal structure.
     **/
@@ -268,6 +322,12 @@ public slots:
 signals:
 
     /**
+    * Signal emitted when an action which is in the undo/redo is made.
+    * The parameter indicates the type of the action.
+    **/
+    void somethingChanged(int);
+
+    /**
     * Signal emitted with the parameter true when the last point of the
     * monofin's outline has been placed.
     **/
@@ -298,7 +358,6 @@ protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent* event);
     void mousePressEvent(QGraphicsSceneMouseEvent* event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
-    void updateLinesId();
 
 
 //ATTRIBUTES
@@ -306,20 +365,21 @@ protected:
     SymmetryAxis* _axis;
     bool _canCreateSelectionRect;
     QList<ControlPoint*> _controlPointsList;
-    int _firstPointKey;
     GhostLine* _ghostLine;
     GhostPoint* _ghostPoint;
+    bool _hasABoundingPointMoved;
     bool _hasPlacedFirstPoint;
     bool _isAddControlActivated;
     bool _isAddPointActivated;
+    bool _isAPointHighlighted;
     bool _isCreateLineActivated;
     bool _isCreatingSelectionRect;
     bool _isMultiSelectionKeyActivated;
-    bool _isOneSelection;
     bool _isRemoveControlPointActivated;
     bool _isSimplifyViewActivated;
     BoundingPoint* _itemUnderMouse;
-    int _lastPointKey;
+    bool _keepBezierCurve;
+    BoundingPoint* _lastPlacedPoint;
     QList<BrLine*> _lineList;
     QList<BoundingPoint*> _pointList;
     qreal _scaleFactor;

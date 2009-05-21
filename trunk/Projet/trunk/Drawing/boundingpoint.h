@@ -18,6 +18,7 @@
 
 class BrLine;
 class PaintingScene;
+class ControlPoint;
 
 class BoundingPoint: public QGraphicsItem{
 
@@ -83,6 +84,9 @@ public:
     **/
     QPointF coord() const{return *_pos;}
 
+    bool hasLeftLine(){return _hasLeftLine;}
+    bool hasRightLine(){return _hasRightLine;}
+
     /**
     * Functions used when a line is deleted : the line first
     * hide itself to the point before being deleted.
@@ -96,17 +100,14 @@ public:
     /**
     * Returns the key of the point in the internal structure of the monofin.
     * Make sure the internal key has been set by setInternalKey before,
-    * or verify that the value is not the default value : PaintingScene::BADKEY.
+    * or verify that the value is not the default value :
+    * Data::MONOFIN_SURFACE_NOT_CREATED_POINT.
     *@return the internal key of the point
     **/
     int internalKey(){return _internalKey;}
 
-    /**
-    * Returns the key of the left line of the point or PaintingScene::BADKEY
-    * if it has no left line.
-    *@return the internal key of the left line of the point
-    **/
-    int internalKeyLeftLine();
+    bool isAllowedToMoveAtPosX(qreal posX);
+    bool isAllowedToMoveAtPosY(qreal posY);
 
     /**
     * If it's true, it means that the mouse is in a short zone
@@ -120,7 +121,18 @@ public:
     bool isMouseOnPoint(){return _isMouseOnPoint;}
 
     /**
-    * Makes the bounding point moving to the coordinates of the given QPointF.
+    *@return a pointer to the left line of the point if it has one,
+     else return 0
+    **/
+    BrLine* leftLine(){
+        if(this->_hasLeftLine){return _leftLine;}
+        else{return 0;}
+    }
+
+    /**
+    * Makes the bounding point moving to the coordinates of the given QPointF,
+    * but ONLY in the zone of the scene where points can move (see
+    * PaintingScene::pointsBoundingZone).
     * It also calls the function move() of the lines if they exist.
     * @param p the new coordinates of the bounding point as a QPointF
     **/
@@ -150,11 +162,28 @@ public:
                BOUNDINGPOINTSIZE);}
 
     /**
+    *@return the size of the rectangle painted in the view
+    **/
+    inline qreal rectangleSize() const{
+        return BOUNDINGPOINTSIZE;// / _scene->scaleFactor();
+    }
+
+
+    /**
     * Hides the line to the bounding point (set the boolean to false)
     * and calls the function removeLine of the scene.
     **/
     void removeLeftLine();
     void removeRightLine();
+
+    /**
+    *@return a pointer to the right line of the point if it has one,
+     else return 0
+    **/
+    BrLine* rightLine(){
+        if(this->_hasRightLine){return _rightLine;}
+        else{return 0;}
+    }
 
     /**
     * Allows or not the point to move. This function is called by the scene
@@ -180,8 +209,8 @@ public:
     void setLeftLine(BrLine* l);
 
     /**
-    * Function called by the scene to indicates that the mouse is in a
-    * short zone around the bounding point or not anymore.
+    * Indicates that the mouse is in a short zone around the bounding point
+    * or not anymore.
     *@param on true means that the point will consider that the mouse is on it,
     * false means that the point will no longer consider
     * that the mouse is on it, or it will do nothing if it was already on false
@@ -204,19 +233,17 @@ public:
     **/
     int type() const{return Type;}
 
+    bool willMoveToGoCloseToPosX(qreal posX);
+    bool willMoveToGoCloseToPosY(qreal posY);
 
 protected:
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* event);
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* event);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
-    //virtual void hoverEnterEvent(QGraphicsSceneHoverEvent* event);
-    //virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent* event);
+    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent* event);
+    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent* event);
     //void dragEnterEvent(QGraphicsSceneDragDropEvent *event);
 
-    /**
-    *@return the size of the rectangle painted in the view
-    **/
-    inline qreal rectangleSize() const;
 
 
 //ATTRIBUTES
@@ -245,6 +272,9 @@ protected:
                      //mouseReleaseEvent : if true, the position has changed
 
     BrLine* _leftLine;  //a pointer to the left BrLine of the point
+
+    QList<ControlPoint*> _movingControlPoints; //a list to remember which
+                        //control points are moving with the bounding point
 
     QPointF* _pos;  //The coordinates of the point
 

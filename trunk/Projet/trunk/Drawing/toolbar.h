@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QCheckBox>
 
 class PaintingScene;
 
@@ -25,6 +26,7 @@ public slots:
     void pointsOnScene(bool a);
 
 protected:
+    QCheckBox* _keepBezierCheckBox;
     PaintingScene* _scene;
     QPushButton* _redoButton;
     QPushButton* _toolButtonAddControl;

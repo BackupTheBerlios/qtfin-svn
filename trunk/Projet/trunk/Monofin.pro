@@ -29,14 +29,12 @@ SOURCES += main.cpp \
     Drawing/selectionrect.cpp \
     Drawing/symmetryaxis.cpp \
     Drawing/tangent.cpp \
-    Scripting/script.cpp \
-    Scripting/Comsol/comsolscript.cpp \
-    Scripting/Comsol/comsolscriptwriter.cpp \
-    Scripting/Comsol/dummywriter.cpp \
+    Scripting/basescript.cpp \
     Ui/layerparameters.cpp \
     Ui/mainwindow.cpp \
     Ui/parametersdialog.cpp \
-    Ui/startupdialog.cpp
+    Ui/startupdialog.cpp \
+    Scripting/comsolscript.cpp
 HEADERS += monofin.h \
     lib/qtwindowlistmenu.h \
     Data/DataConstants.h \
@@ -60,15 +58,12 @@ HEADERS += monofin.h \
     Drawing/selectionrect.h \
     Drawing/symmetryaxis.h \
     Drawing/tangent.h \
-    Scripting/script.h \
-    Scripting/scriptwriter.h \
-    Scripting/Comsol/comsolscript.h \
-    Scripting/Comsol/comsolscriptwriter.h \
-    Scripting/Comsol/dummywriter.h \
+    Scripting/basescript.h \
     Ui/layerparameters.h \
     Ui/mainwindow.h \
     Ui/parametersdialog.h \
-    Ui/startupdialog.h
+    Ui/startupdialog.h \
+    Scripting/comsolscript.h
 FORMS += Ui/layerParameters.ui \
     Ui/parametersDialog.ui \
     Ui/startupDialog.ui

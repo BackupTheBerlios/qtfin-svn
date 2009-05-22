@@ -379,8 +379,10 @@ namespace Data{
     }
 
     void Surface::startHistory(Modification t){
-        if (t==MonofinSurface)
+        if (t==MonofinSurface){
             _makedHistory = NULL;
+        }
+
     }
 
     HistoryHolder<Modification> * Surface::retrieveHistory(Modification t){

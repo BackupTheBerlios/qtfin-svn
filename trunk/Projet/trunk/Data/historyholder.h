@@ -24,85 +24,33 @@ namespace Data{
         QStack<AutomatedStorage> _toStore;
 
     public:
-        HistoryHolder(Type t): _next(NULL), _t(t) {
-            _first=this;
-        }
+        HistoryHolder(Type t);
 
-        ~HistoryHolder(){
-            while(!_toStore.isEmpty()){
-                AutomatedStorage toDelete = _toStore.pop();
-                if(toDelete.canBeDeleted){
-                    operator delete(toDelete.ptr);
-                }
-            }
-        }
+        ~HistoryHolder();
 
-        void pushInt(int data){
-            AutomatedStorage toPush;
-            toPush.canBeDeleted = false;
-            toPush.ptr = (void*) data;
-            toPush.size = 0;
-            _toStore.push(toPush);
-        }
+        void pushInt(int data);
 
         template<typename PtrType>
-        void pushPtr(PtrType * ptr){
-            AutomatedStorage toPush;
-            toPush.canBeDeleted = true;
-            toPush.ptr = (void *) ptr;
-            toPush.size = sizeof(PtrType);
-            _toStore.push(toPush);
-        }
+        void pushPtr(PtrType * ptr);
 
-        void * pop(){
-            if(!_toStore.isEmpty())
-                return _toStore.pop().ptr;
-            else
-                return NULL;
-        }
+        void * pop();
 
-        int getNumberOfStoredElements(){
-            return _toStore.size();
-        }
+        int getNumberOfStoredElements();
 
-        Type getType(){
-            return _t;
-        }
+        Type getType();
 
-        HistoryHolder<Type> * createNewAction(){
-            HistoryHolder<Type> * hh = new HistoryHolder<Type>(_t);
-            hh->setNextAction(this);
-            hh->setFirst(_first);
-            return hh;
-        }
+        HistoryHolder<Type> * createNewAction();
 
-        void setNextAction(HistoryHolder<Type> *next){
-            _next = next;
-        }
+        void setNextAction(HistoryHolder<Type> *next);
 
-        HistoryHolder<Type> * getNext(){
-            return _next;
-        }
+        HistoryHolder<Type> * getNext();
 
-        HistoryHolder<Type> * getFirst(){
-            return _first;
-        }
+        HistoryHolder<Type> * getFirst();
 
-        static void freeStructure(HistoryHolder<Type> * toFree){
-            if(toFree != NULL){
-                HistoryHolder<Type> * current = toFree;
-                while(current!=NULL){
-                    HistoryHolder<Type> * next = current->getNext();
-                    delete current;
-                    current = next;
-                }
-            }
-        }
+        static void freeStructure(HistoryHolder<Type> * toFree);
 
     private:
-        void setFirst(HistoryHolder<Type>* first){
-            _first = first;
-        }
+        void setFirst(HistoryHolder<Type>* first);
 
     };
 
@@ -112,29 +60,21 @@ namespace Data{
         HistoryHolder<Type> * _makedHistory;
     public:
 
+        HistoryMaker() : _makedHistory(NULL) {}
+
         virtual void startHistory(Type t) = 0;
 
-        virtual ~HistoryMaker() {
-            if(_makedHistory != NULL)
-                HistoryHolder<Type>::freeStructure(_makedHistory);
-        }
+        virtual ~HistoryMaker();
 
         virtual HistoryHolder<Type> * retrieveHistory(Type t) = 0;
 
         virtual void undo(HistoryHolder<Type> * history) = 0;
 
-        virtual HistoryHolder<Type> * getCurrentHistoryHolder(Type t){
-            if (_makedHistory == NULL)
-                _makedHistory = new HistoryHolder<Type>(t);
-            else
-                _makedHistory = _makedHistory->createNewAction();
-
-            return _makedHistory;
-        }
+        virtual HistoryHolder<Type> * getCurrentHistoryHolder(Type t);
     };
 
     template <class Type>
-    class HistoryTakeCarer{
+    class HistoryCareTaker{
     protected:
         QList<HistoryMaker<Type> *> _historyMakers;
         QMap<Type,bool> _isStarted;
@@ -143,139 +83,24 @@ namespace Data{
 
     public:
 
-        virtual ~HistoryTakeCarer() {
-            // if historic are started but not ended we must stop them
-            // in order to de-allocate them correctly
-            foreach(Type key,_isStarted.keys())
-                if(_isStarted[key])
-                    stopHistory(key);
+        virtual ~HistoryCareTaker();
 
-            //de-allocation of all HistoryHolders.
-            foreach(Type key,_passedHistory.keys())
-                while(!_passedHistory.value(key)->isEmpty())
-                    HistoryHolder<Type>::freeStructure(_passedHistory.value(key)->pop());
+        virtual void undo(Type t);
 
-            foreach(Type key,_futureHistory.keys())
-                while(!_passedHistory.value(key)->isEmpty())
-                    HistoryHolder<Type>::freeStructure(_futureHistory.value(key)->pop());
-        }
+        virtual void redo(Type t);
 
-        virtual void undo(Type t){
-            if(_passedHistory.contains(t))
-                if(_passedHistory.value(t)->size()!=0){
-                    HistoryHolder<Type> * toUndo = (_passedHistory.value(t))->pop();
-                    HistoryHolder<Type> * globalHistory=NULL;
-                    foreach(HistoryMaker<Type> * hM, _historyMakers){
-                        hM->startHistory(t);
-                        hM->undo(toUndo);
-                        HistoryHolder<Type> * localHistory;
-                        if( (localHistory = hM->retrieveHistory(t)) != NULL){
-                            if (globalHistory==NULL){
-                                globalHistory = localHistory;
-                            }else{
-                                globalHistory->getFirst()->setNextAction(localHistory);
-                            }
-                        }
-                    }
-                    if(_futureHistory.contains(t)){
-                        _futureHistory.value(t)->push_back(globalHistory);
-                    }else{
-                        QStack<HistoryHolder<Type> *> * toFill = new QStack<HistoryHolder<Type> *>();
-                        toFill->push(globalHistory);
-                        _futureHistory.insert(t,toFill);
-                    }
-                }
-        }
+        virtual void addHistoryMaker(HistoryMaker<Type> * hM);
 
-        virtual void redo(Type t){
-            if(_futureHistory.contains(t))
-                if(_futureHistory.value(t)->size()!=0){
-                    HistoryHolder<Type> * toRedo = (_futureHistory.value(t))->pop();
-                    HistoryHolder<Type> * globalHistory=NULL;
-                    foreach(HistoryMaker<Type> * hM, _historyMakers){
-                        hM->startHistory(t);
-                        hM->undo(toRedo);
-                        HistoryHolder<Type> * localHistory;
-                        if( (localHistory = hM->retrieveHistory(t)) != NULL){
-                            if (globalHistory==NULL){
-                                globalHistory = localHistory;
-                            }else{
-                                globalHistory->getFirst()->setNextAction(localHistory);
-                            }
-                        }
-                    }
-                    if(_passedHistory.contains(t)){
-                        _passedHistory.value(t)->push_back(globalHistory);
-                    }else{
-                        QStack<HistoryHolder<Type> *> * toFill = new QStack<HistoryHolder<Type> *>();
-                        toFill->push(globalHistory);
-                        _passedHistory.insert(t,toFill);
-                    }
-                }
-        }
+        virtual int numberOfUndo(Type t);
 
-        virtual void addHistoryMaker(HistoryMaker<Type> * hM){
-            _historyMakers.append(hM);
-        }
+        virtual int numberOfRedo(Type t);
 
-        virtual int numberOfUndo(Type t){
-            if(_passedHistory.contains(t))
-                return _passedHistory.value(t)->size();
-            else
-                return 0;
-        }
+        virtual void startHistory(Type t);
 
-        virtual int numberOfRedo(Type t){
-            if(_futureHistory.contains(t))
-                return _futureHistory.value(t)->size();
-            else
-                return 0;
-        }
-
-        virtual void startHistory(Type t){
-
-            if(_isStarted[t])
-                return;
-
-            _isStarted[t]=true;
-
-            if(_futureHistory.contains(t)){
-                _futureHistory.value(t)->clear();
-            }
-
-            foreach(HistoryMaker<Type> * hM, _historyMakers){
-                hM->startHistory(t);
-            }
-        }
-
-        virtual void stopHistory(Type t){
-
-            if(!_isStarted[t])
-                return;
-
-            HistoryHolder<Type> * globalHistory = NULL;
-
-            foreach(HistoryMaker<Type> * hM, _historyMakers){
-                HistoryHolder<Type> * localHistory;
-                if( (localHistory = hM->retrieveHistory(t)) != NULL){
-                    if (globalHistory==NULL){
-                        globalHistory = localHistory;
-                    }else{
-                        globalHistory->getFirst()->setNextAction(localHistory);
-                    }
-                }
-            }
-
-            if(_passedHistory.contains(t)){
-                _passedHistory.value(t)->push_back(globalHistory);
-            }else{
-                QStack<HistoryHolder<Type> *> * toFill = new QStack<HistoryHolder<Type> *>();
-                toFill->push(globalHistory);
-                _passedHistory.insert(t,toFill);
-            }
-            _isStarted[t] = false;
-        }
+        virtual void stopHistory(Type t);
     };
+
+#include "historyholder.imp"
 
 }
 

@@ -25,7 +25,7 @@ namespace Data{
 
         int _segmentKey, _intersectionKey, _controlKey;
     public:
-        Surface(): _segmentKey(0), _intersectionKey(0), _controlKey(0) {}
+        Surface(): HistoryMaker<Modification>(), _segmentKey(0), _intersectionKey(0), _controlKey(0) {}
 
         virtual ~Surface();
 

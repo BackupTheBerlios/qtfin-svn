@@ -24,46 +24,30 @@ namespace Data{
      **********/
 
     /**
-     * a setter on the length of the monofin
-     *@param length a float, the length of the monofin
-     */
-    void MonofinFile::setMonofinLength(float length){
-        _monofinProfil->setMonofinLength(length);
-    }
-
-    /**
-     * a setter on the height of the monofin
-     *@param height a float, the height of the monofin
-     */
-    void MonofinFile::setMonofinHeight(float height){
-        _monofinProfil->setMonofinHeight(height);
-    }
-
-    /**
      * insert a layer at the given rank (displace if necessary other layers), if the rank is outside the current number of layer it will be placed at the last rank
      *@param rank an integer, where we want to insert the new Layer, a negative rank will insert the layer at the begining, a bigger rank than that exist actually will place the layer at the end
-     *@param lengthRatio a float, the ratio (between 0 and 1) between the length of the layer and the length of the fin
-     *@param heightRatio a float, the ratio (between 0 and 1) between the height if the layer and the height of the fin
+     *@param length a float, the  (between 0 and 1) between the length of the layer and the length of the fin
+     *@param height a float, the  (between 0 and 1) between the height if the layer and the height of the fin
      */
-    void MonofinFile::addLayer(int rank, float lengthRatio, float heightRatio){
-        _monofinProfil->addLayer(rank,new Layer(lengthRatio,heightRatio));
+    void MonofinFile::addLayer(int rank, float length, float height){
+        _monofinProfil->addLayer(rank,new Layer(length,height));
     }
 
     /**
-     * a setter on the length ratio of the layer at the given rank
+     * a setter on the length  of the layer at the given rank
      *@param rank an integer, the rank of the layer to modify, if it's an incorrect rank, nothing will be done
-     *@param lengthRatio a float, the new length ratio
+     *@param length a float, the new length
      */
-    void MonofinFile::setLayerLengthRatio(int rank, float lengthRatio){
-        _monofinProfil->setLayerLengthRatio(rank, lengthRatio);
+    void MonofinFile::setLayerLength(int rank, float length){
+        _monofinProfil->setLayerLength(rank, length);
     }
 
     /**
-     * a setter on the heigth ratio of the layer at the given rank
-     *@param heightRatio a float, the new heigtht ratio
+     * a setter on the heigth  of the layer at the given rank
+     *@param height a float, the new heigtht
      */
-    void MonofinFile::setLayerHeightRatio(int rank, float heightRatio){
-        _monofinProfil->setLayerHeightRatio(rank, heightRatio);
+    void MonofinFile::setLayerHeight(int rank, float height){
+        _monofinProfil->setLayerHeight(rank, height);
     }
 
     /**
@@ -181,21 +165,21 @@ namespace Data{
      **********/
 
     /**
-     * a getter on the length ratio of the ranked layer
+     * a getter on the length  of the ranked layer
      *@param rank an integer, the rank of the layer we want the length
-     *@return a float, the length ratio of the layer, MONOFIN_PROFIL_BAD_RANK if rank don't exist
+     *@return a float, the length  of the layer, MONOFIN_PROFIL_BAD_RANK if rank don't exist
      */
-    float MonofinFile::getLayerLengthRatio(int rank){
-        return _monofinProfil->getLayerLengthRatio(rank);
+    float MonofinFile::getLayerLength(int rank){
+        return _monofinProfil->getLayerLength(rank);
     }
 
     /**
-     * a getter on the height ratio of the ranked layer
+     * a getter on the height  of the ranked layer
      *@param rank an integer, the rank of the layer we want the height
-     *@return a float, the height ratio of the layer, MONOFIN_PROFIL_BAD_RANK if rank don't exist
+     *@return a float, the height  of the layer, MONOFIN_PROFIL_BAD_RANK if rank don't exist
      */
-    float MonofinFile::getLayerHeightRatio(int rank){
-        return _monofinProfil->getLayerHeightRatio(rank);
+    float MonofinFile::getLayerHeight(int rank){
+        return _monofinProfil->getLayerHeight(rank);
     }
 
     /**
@@ -204,22 +188,6 @@ namespace Data{
      */
     int MonofinFile::getHowManyLayers(){
         return _monofinProfil->getHowManyLayers();
-    }
-
-    /**
-     * a getter on the length of the monofin
-     *@return a float, the length of the monofin
-     */
-    float MonofinFile::getMonofinLength(){
-        return _monofinProfil->getMonofinLength();
-    }
-
-    /**
-     * a getter on the height of the monofin
-     *@return a float, the height of the monofin
-     */
-    float MonofinFile::getMonofinHeight(){
-        return _monofinProfil->getMonofinHeight();
     }
 
     /***********
@@ -297,6 +265,19 @@ namespace Data{
     QList<int> MonofinFile::getAllControlPointKeys(){
         return _monofinSurface->getAllControlPointKeys();
     }
+
+    /**
+      * return all IntersectionPoint only linked to one segment
+      *@return QList<int>, key's list
+      */
+    QList<int> MonofinFile::getExtremityPoint(){
+        return _monofinSurface->getExtremityPoint();
+    }
+
+    QList<int> MonofinFile::getSegmentKeysLinkedToPoint(int pointKey){
+        return _monofinSurface->getSegmentKeysLinkedToPoint(pointKey);
+    }
+
 
 }// namespace Data
 

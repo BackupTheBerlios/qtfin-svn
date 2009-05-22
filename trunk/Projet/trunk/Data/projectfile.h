@@ -11,30 +11,26 @@ namespace Data{
     class ConfigFile;
     class Action;
 
-    class ProjectFile : public HistoryTakeCarer<Modification>
+    class ProjectFile : public HistoryCareTaker<Modification>
     {
     private:
         MonofinFile *_monofinGeometry;
         ConfigFile *_monofinPhysicalProperties;
 
-        bool _geometryModification;
-        bool _layerModification;
-        bool _layerConfigModification;
-
     public:
         ProjectFile();
 
-        //~ProjectFile();
+        ~ProjectFile();
 
         /****************************
          * Modification des donnees *
          ****************************/
 
         //modifications possibles sur les strates
-        void addLayer(int rank, float lengthRatio, float heightRatio);
+        void addLayer(int rank, float length, float height);
 
-        void setLayerLengthRatio(int rank, float lengthRatio);
-        void setLayerHeightRatio(int rank, float heightRatio);
+        void setLayerLength(int rank, float length);
+        void setLayerHeight(int rank, float height);
 
         void removeLayer(int rank);
 
@@ -68,21 +64,12 @@ namespace Data{
         void clearSurface();
 
         /****************************
-         *         Undo Redo        *
-         ****************************/
-
-        //void undo(Modification);
-
-        //void redo(Modification);
-
-
-        /****************************
          * Consultation des donnes *
          ****************************/
 
         //consultations possible sur les strates
-        float getLayerLengthRatio(int rank) const;
-        float getLayerHeightRatio(int rank) const;
+        float getLayerLength(int rank) const;
+        float getLayerHeight(int rank) const;
 
         int getHowManyLayers() const;
 
@@ -98,6 +85,13 @@ namespace Data{
         QList<int> getAllSegmentKeys();
         QList<int> getAllIntersectionPointKeys();
         QList<int> getAllControlPointKeys();
+        /**
+          * return all IntersectionPoint only linked to one segment
+          *@return QList<int>, key's list
+          */
+        QList<int> getExtremityPoint();
+
+        QList<int> getSegmentKeysLinkedToPoint(int pointKey);
     };
 
 } // namespace Data

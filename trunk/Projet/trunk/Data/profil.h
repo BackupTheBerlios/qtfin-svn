@@ -4,6 +4,7 @@
 #include "layer.h"
 #include "DataConstants.h"
 #include "historyholder.h"
+#include "SaveVisitor.h"
 #include <QVector>
 
 namespace Data{
@@ -20,7 +21,6 @@ namespace Data{
 
         ConfigFile * _linkedConfigFile;
 
-        float _monofinLength, _monofinHeight;
 
     public:
         Profil(ConfigFile * link);
@@ -46,56 +46,33 @@ namespace Data{
          */
         void remLayer(int rank);
 
-        /**
-         * a setter on the length of the monofin
-         *@param length a float, the length of the monofin
-         */
-         void setMonofinLength(float length);
 
-        /**
-         * a setter on the height of the monofin
-         *@param height a float, the height of the monofin
-         */
-         void setMonofinHeight(float height);
-
-        /**
-         * a getter on the length of the monofin
-         *@return a float, the length of the monofin
-         */
-         float getMonofinLength();
-
-        /**
-         * a getter on the height of the monofin
-         *@return a float, the height of the monofin
-         */
-        float getMonofinHeight();
-        
          /**
-         * a setter on the length ratio of the layer at the given rank
+         * a setter on the length  of the layer at the given rank
          *@param rank an integer, the rank of the layer to modify, if it's an incorrect rank, nothing will be done
-         *@param lengthRatio a float, the new length ratio
+         *@param length a float, the new length
          */
-        void setLayerLengthRatio(int rank, float lengthRatio);
+        void setLayerLength(int rank, float length);
 
         /**
-         * a setter on the heigth ratio of the layer at the given rank
-         *@param heightRatio a float, the new heigtht ratio
+         * a setter on the heigth  of the layer at the given rank
+         *@param height a float, the new heigtht
          */
-        void setLayerHeightRatio(int rank, float heightRatio);
+        void setLayerHeight(int rank, float height);
 
         /**
-         * a getter on the length ratio of the ranked layer
+         * a getter on the length  of the ranked layer
          *@param rank an integer, the rank of the layer we want the length
-         *@return a float, the length ratio of the layer, MONOFIN_PROFIL_BAD_RANK if rank don't exist
+         *@return a float, the length  of the layer, MONOFIN_PROFIL_BAD_RANK if rank don't exist
          */
-        float getLayerLengthRatio(int rank);
+        float getLayerLength(int rank);
 
         /**
-         * a getter on the height ratio of the ranked layer
+         * a getter on the height  of the ranked layer
          *@param rank an integer, the rank of the layer we want the height
-         *@return a float, the height ratio of the layer, MONOFIN_PROFIL_BAD_RANK if rank don't exist
+         *@return a float, the height  of the layer, MONOFIN_PROFIL_BAD_RANK if rank don't exist
          */
-        float getLayerHeightRatio(int rank);
+        float getLayerHeight(int rank);
 
 
         void startHistory(Modification t);
@@ -104,7 +81,7 @@ namespace Data{
 
         void undo(HistoryHolder<Modification> * history);
 
-        //void acceptVisitor(Visitor* v);
+        void acceptVisitor(SaveVisitor * v);
 
     private:
 
@@ -132,6 +109,7 @@ namespace Data{
          *@param toLink a pointer to ConfigFile, the address of the current ConfigFile
          */
         // void link(ConfigFile* toLink);
+
     };
 
 } // namespace Data

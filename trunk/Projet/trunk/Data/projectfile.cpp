@@ -11,16 +11,21 @@ namespace Data{
         addHistoryMaker(_monofinPhysicalProperties);
     }
 
-    void ProjectFile::addLayer(int rank, float lengthRatio, float heightRatio){
-        _monofinGeometry->addLayer(rank,lengthRatio,heightRatio);
+    ProjectFile::~ProjectFile(){
+        delete _monofinGeometry;
+        delete _monofinPhysicalProperties;
     }
 
-    void ProjectFile::setLayerLengthRatio(int rank, float lengthRatio){
-        _monofinGeometry->setLayerLengthRatio(rank,lengthRatio);
+    void ProjectFile::addLayer(int rank, float length, float height){
+        _monofinGeometry->addLayer(rank,length,height);
     }
 
-    void ProjectFile::setLayerHeightRatio(int rank, float heightRatio){
-        _monofinGeometry->setLayerHeightRatio(rank,heightRatio);
+    void ProjectFile::setLayerLength(int rank, float length){
+        _monofinGeometry->setLayerLength(rank,length);
+    }
+
+    void ProjectFile::setLayerHeight(int rank, float height){
+        _monofinGeometry->setLayerHeight(rank,height);
     }
 
     void ProjectFile::removeLayer(int rank){
@@ -87,28 +92,28 @@ namespace Data{
         _monofinGeometry->clearSurface();
     }
 
-    float ProjectFile::getLayerLengthRatio(int rank) const{
-        return 0;
+    float ProjectFile::getLayerLength(int rank) const{
+        return _monofinGeometry->getLayerLength(rank);
     }
 
-    float ProjectFile::getLayerHeightRatio(int rank) const{
-        return 0;
+    float ProjectFile::getLayerHeight(int rank) const{
+        return _monofinGeometry->getLayerHeight(rank);
     }
 
     int ProjectFile::getHowManyLayers() const{
-        return 0;
+        return _monofinGeometry->getHowManyLayers();
     }
 
     float ProjectFile::getLayerConfigRho(int rank) const{
-        return 0;
+        return _monofinPhysicalProperties->getRho(rank);
     }
 
     float ProjectFile::getLayerConfigYoung(int rank) const{
-        return 0;
+        return _monofinPhysicalProperties->getYoung(rank);
     }
 
     float ProjectFile::getLayerConfigPoisson(int rank) const{
-        return 0;
+        return _monofinPhysicalProperties->getPoisson(rank);
     }
 
     void ProjectFile::getIntersectionPoint(int intersectionPointKey, float &x, float &y){
@@ -133,6 +138,18 @@ namespace Data{
 
     QList<int> ProjectFile::getAllControlPointKeys(){
         return _monofinGeometry->getAllControlPointKeys();
+    }
+
+    /**
+      * return all IntersectionPoint only linked to one segment
+      *@return QList<int>, key's list
+      */
+    QList<int> ProjectFile::getExtremityPoint(){
+        return _monofinGeometry->getExtremityPoint();
+    }
+
+    QList<int> ProjectFile::getSegmentKeysLinkedToPoint(int pointKey){
+        return _monofinGeometry->getSegmentKeysLinkedToPoint(pointKey);
     }
 
 } // namespace Data

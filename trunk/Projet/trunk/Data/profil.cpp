@@ -1,8 +1,13 @@
 #include "configfile.h"
 #include "layerconfig.h"
 #include "profil.h"
+#include <iostream>
 
 namespace Data{
+
+
+    enum ProfilUndoRedoCode{AddLayer, RemLayer, SetLayerLength, SetLayerHeight};
+
 
     Profil::Profil(ConfigFile * link) : _linkedConfigFile(link) {}
 
@@ -41,8 +46,24 @@ namespace Data{
      *@param newLayer a Layer pointer, the layer to insert
      */
     void Profil::addLayer(int rank, Layer *newLayer){
+
+
+
         rank = rank<0 ? 0:rank;
+
         rank = rank>=_monofinLayers.size() ? _monofinLayers.size():rank;
+
+
+
+        HistoryHolder<Modification> * current = getCurrentHistoryHolder(MonofinLayer);
+
+
+
+        current->pushInt(rank);
+
+        current->pushInt(AddLayer);
+
+
         _monofinLayers.insert(rank,newLayer);
         notifyCreate(rank);
     }
@@ -55,9 +76,22 @@ namespace Data{
         if (rank<0 || rank>=_monofinLayers.size())
             return;
 
-        Layer * toDelete = _monofinLayers.value(rank);
+        Layer * exlayer = _monofinLayers.value(rank);
+
+
+
+        HistoryHolder<Modification> * current = getCurrentHistoryHolder(MonofinLayer);
+
+
+
+        current->pushPtr(exlayer);
+
+        current->pushInt(rank);
+
+        current->pushInt(RemLayer);
+
+
         _monofinLayers.remove(rank);
-        delete toDelete;
         notifyDelete(rank);
     }
 
@@ -65,37 +99,6 @@ namespace Data{
 
     }*/
 
-    /**
-     * a setter on the length of the monofin
-     *@param length a float, the length of the monofin
-     */
-    inline void Profil::setMonofinLength(float length){
-        _monofinLength = length;
-    }
-
-    /**
-     * a setter on the height of the monofin
-     *@param height a float, the height of the monofin
-     */
-    void Profil::setMonofinHeight(float height){
-        _monofinHeight = height;
-    }
-
-    /**
-     * a getter on the length of the monofin
-     *@return a float, the length of the monofin
-     */
-    float Profil::getMonofinLength() {
-        return _monofinLength;
-    }
-
-    /**
-     * a getter on the height of the monofin
-     *@return a float, the height of the monofin
-     */
-    float Profil::getMonofinHeight(){
-        return _monofinHeight;
-    }
 
     /**
      * this function is called by addLayer to inform ConfigFile that a new layer has been created
@@ -114,70 +117,228 @@ namespace Data{
     }
 
     /**
-     * a setter on the length ratio of the layer at the given rank
+     * a setter on the length  of the layer at the given rank
      *@param rank an integer, the rank of the layer to modify, if it's an incorrect rank, nothing will be done
-     *@param lengthRatio a float, the new length ratio
+     *@param length a float, the new length
      */
-    void Profil::setLayerLengthRatio(int rank, float lengthRatio){
+    void Profil::setLayerLength(int rank, float length){
         if(getLayer(rank)!=NULL){
-            getLayer(rank)->setLengthRatio(lengthRatio);
+
+
+
+            float * exvalue = new float;
+            *exvalue = getLayer(rank)->getLength();
+
+
+
+            HistoryHolder<Modification> * current = getCurrentHistoryHolder(MonofinLayer);
+
+
+
+
+            current->pushPtr(exvalue);
+
+            current->pushInt(rank);
+
+            current->pushInt(SetLayerLength);
+
+
+            getLayer(rank)->setLength(length);
         }
     }
 
     /**
-     * a setter on the heigth ratio of the layer at the given rank
-     *@param heightRatio a float, the new heigtht ratio
+     * a setter on the heigth  of the layer at the given rank
+     *@param height a float, the new heigtht
      */
-    void Profil::setLayerHeightRatio(int rank, float heightRatio){
+    void Profil::setLayerHeight(int rank, float height){
         if(getLayer(rank)!=NULL){
-            getLayer(rank)->setHeightRatio(heightRatio);
+
+
+
+            float *exvalue = new float;
+            *exvalue = getLayer(rank)->getHeight();
+
+
+
+            HistoryHolder<Modification> * current = getCurrentHistoryHolder(MonofinLayer);
+
+
+
+            current->pushPtr(exvalue);
+
+            current->pushInt(rank);
+
+            current->pushInt(SetLayerHeight);
+
+
+            getLayer(rank)->setHeight(height);
         }
     }
 
     /**
-     * a getter on the length ratio of the ranked layer
+     * a getter on the length  of the ranked layer
      *@param rank an integer, the rank of the layer we want the length
-     *@return a float, the length ratio of the layer, MONOFIN_PROFIL_BAD_RANK if rank don't exist
+     *@return a float, the length  of the layer, MONOFIN_PROFIL_BAD_RANK if rank don't exist
      */
-    float Profil::getLayerLengthRatio(int rank){
+    float Profil::getLayerLength(int rank){
         if (getLayer(rank)==NULL)
             return MONOFIN_PROFIL_BAD_LAYER;
 
-        return getLayer(rank)->getLengthRatio();
+        return getLayer(rank)->getLength();
     }
 
     /**
-     * a getter on the height ratio of the ranked layer
+     * a getter on the height  of the ranked layer
      *@param rank an integer, the rank of the layer we want the height
-     *@return a float, the height ratio of the layer, MONOFIN_PROFIL_BAD_RANK if rank don't exist
+     *@return a float, the height  of the layer, MONOFIN_PROFIL_BAD_RANK if rank don't exist
      */
-    float Profil::getLayerHeightRatio(int rank){
+    float Profil::getLayerHeight(int rank){
         if (getLayer(rank)==NULL)
             return MONOFIN_PROFIL_BAD_LAYER;
 
-        return getLayer(rank)->getHeightRatio();
+        return getLayer(rank)->getHeight();
     }
 
 
     void Profil::startHistory(Modification t){
 
+        if (t==MonofinLayer)
+
+            _makedHistory = NULL;
     }
 
     HistoryHolder<Modification> * Profil::retrieveHistory(Modification t){
-        return NULL;
+        if (t==MonofinLayer)
 
+            return _makedHistory;
+
+        else
+
+            return NULL;
     }
 
     void Profil::undo(HistoryHolder<Modification> * history){
+        if(history == NULL)
+
+            return;
+
+
+
+        if (history->getType()==MonofinLayer){
+
+        // if actions to undo are from us
+
+            HistoryHolder<Modification> * historyReader = history;
+
+            while(historyReader!=NULL){
+
+
+
+                int code_action = (int)(historyReader->pop());
+
+                switch(code_action){
+
+
+
+
+
+                case AddLayer:{
+
+                    remLayer((int)(historyReader->pop()));
+
+                    break;
+
+                }
+
+
+
+                case RemLayer:{
+
+
+
+                    int rank = (int)(historyReader->pop());
+
+                    Layer * lay = (Layer *)historyReader->pop();
+
+
+
+                    addLayer(rank, lay);
+
+                    addLayer(rank, lay);
+
+                    break;
+
+                }
+
+
+
+                case SetLayerLength:{
+
+
+
+                    int rank = (int)(historyReader->pop());
+
+                    float * value = (float *) (historyReader->pop());
+
+
+
+                    setLayerLength(rank,*value);
+                    delete value;
+
+                    break;
+
+                }
+
+
+
+                case SetLayerHeight:{
+
+
+
+                    int rank = (int)(historyReader->pop());
+
+                    float * value = (float *) (historyReader->pop());
+
+
+
+                    setLayerHeight(rank,*value);
+                    delete value;
+
+                    break;
+
+                }
+
+
+
+                default:
+
+                    std::cout << "default : code : " << code_action << std::endl;
+
+                    break;
+
+                }
+
+
+
+                //next action to undo
+
+                HistoryHolder<Modification> * toDelete = historyReader;
+
+                historyReader = historyReader->getNext();
+
+                delete toDelete;
+
+            }
+
+        }
 
     }
 
-    /**
-     * a function called at the initialisation of the structure to linkthe profil and the configfile (which also manage layers)
-     *@param toLink a pointer to ConfigFile, the address of the current ConfigFile
-     */
-    /*void Profil::link(ConfigFile* toLink){
-        _linkedConfigFile = toLink;
-    }*/
+   void Profil::acceptVisitor(SaveVisitor * v){
+
+        v->visitProfil(this);
+
+    }
 
 } // namespace Data

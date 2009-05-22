@@ -5,6 +5,7 @@
 #include "LayerConfig.h"
 #include "DataConstants.h"
 #include "historyholder.h"
+#include "SaveVisitor.h"
 
 namespace Data{
 
@@ -18,6 +19,10 @@ namespace Data{
         QVector<LayerConfig*> _monofinLayerConfig;
     public:
         ConfigFile();
+
+
+        int getHowManyLayers();
+
 
         virtual ~ConfigFile();
 
@@ -39,6 +44,10 @@ namespace Data{
 
         void undo(HistoryHolder<Modification> * history);
 
+
+
+        void acceptVisitor(SaveVisitor * v);
+
     private:
 
         void updateCreate(int rank);
@@ -47,7 +56,7 @@ namespace Data{
 
         void addLayerConfig(LayerConfig * s, int rank);
 
-        void removeStrateConfig(int rank);
+        void removeLayerConfig(int rank);
     };
 
 } // namespace Data

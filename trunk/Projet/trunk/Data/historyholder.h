@@ -4,6 +4,7 @@
 #include <QStack>
 #include <QList>
 #include <QMap>
+#include <iostream>
 
 namespace Data{
 
@@ -11,8 +12,6 @@ namespace Data{
     class HistoryHolder
     {
     private:
-        HistoryHolder * _next;
-        HistoryHolder * _first;
         Type _t;
 
         struct AutomatedStorage{
@@ -38,37 +37,21 @@ namespace Data{
         int getNumberOfStoredElements();
 
         Type getType();
-
-        HistoryHolder<Type> * createNewAction();
-
-        void setNextAction(HistoryHolder<Type> *next);
-
-        HistoryHolder<Type> * getNext();
-
-        HistoryHolder<Type> * getFirst();
-
-        static void freeStructure(HistoryHolder<Type> * toFree);
-
-    private:
-        void setFirst(HistoryHolder<Type>* first);
-
     };
 
     template <class Type>
     class HistoryMaker{
     protected:
-        HistoryHolder<Type> * _makedHistory;
+        QList<HistoryHolder<Type> *> _makedHistory;
     public:
-
-        HistoryMaker() : _makedHistory(NULL) {}
 
         virtual void startHistory(Type t) = 0;
 
         virtual ~HistoryMaker();
 
-        virtual HistoryHolder<Type> * retrieveHistory(Type t) = 0;
+        virtual QList<HistoryHolder<Type> *> retrieveHistory(Type t) = 0;
 
-        virtual void undo(HistoryHolder<Type> * history) = 0;
+        virtual void undo(QList<HistoryHolder<Type> *> history) = 0;
 
         virtual HistoryHolder<Type> * getCurrentHistoryHolder(Type t);
     };
@@ -78,9 +61,8 @@ namespace Data{
     protected:
         QList<HistoryMaker<Type> *> _historyMakers;
         QMap<Type,bool> _isStarted;
-        QMap< Type, QStack<HistoryHolder<Type> *> *> _passedHistory;
-        QMap< Type, QStack<HistoryHolder<Type> *> *> _futureHistory;
-
+        QMap< Type, QStack< QList<HistoryHolder<Type> *> > > _passedHistory;
+        QMap< Type, QStack< QList<HistoryHolder<Type> *> > > _futureHistory;
     public:
 
         virtual ~HistoryCareTaker();

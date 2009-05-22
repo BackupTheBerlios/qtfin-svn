@@ -1,6 +1,7 @@
 #include "configfile.h"
 #include "monofinfile.h"
 #include "projectfile.h"
+#include "xmlsavevisitor.h"
 
 namespace Data{
 
@@ -150,6 +151,18 @@ namespace Data{
 
     QList<int> ProjectFile::getSegmentKeysLinkedToPoint(int pointKey){
         return _monofinGeometry->getSegmentKeysLinkedToPoint(pointKey);
+    }
+
+
+    void ProjectFile::saveProject(QString path, QString projectName){
+        XMLSaveVisitor save;
+        _monofinGeometry->accept(&save);
+        _monofinPhysicalProperties->accept(&save);
+        save.save(path.toStdString(),projectName.toStdString());
+    }
+
+    QString loadProject(QString path){
+        return (QString("None"));
     }
 
 } // namespace Data

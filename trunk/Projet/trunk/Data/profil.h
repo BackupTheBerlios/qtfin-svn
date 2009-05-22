@@ -77,11 +77,11 @@ namespace Data{
 
         void startHistory(Modification t);
 
-        HistoryHolder<Modification> * retrieveHistory(Modification t);
+        QList<HistoryHolder<Modification> *> retrieveHistory(Modification t);
 
-        void undo(HistoryHolder<Modification> * history);
+        void undo(QList<HistoryHolder<Modification> *> history);
 
-        void acceptVisitor(SaveVisitor * v);
+        void accept(SaveVisitor * v);
 
     private:
 

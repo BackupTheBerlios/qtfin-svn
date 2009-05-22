@@ -3,7 +3,7 @@
 
 #include "DataConstants.h"
 #include "historyholder.h"
-#include <QStack>
+#include <QString>
 
 namespace Data{
 
@@ -92,6 +92,14 @@ namespace Data{
         QList<int> getExtremityPoint();
 
         QList<int> getSegmentKeysLinkedToPoint(int pointKey);
+
+        /***************
+         * Load & Save *
+         ***************/
+
+        void saveProject(QString path, QString projectName);
+
+        QString loadProject(QString path);
     };
 
 } // namespace Data

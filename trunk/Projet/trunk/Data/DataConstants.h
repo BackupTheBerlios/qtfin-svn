@@ -8,7 +8,7 @@ namespace Data{
     const int MONOFIN_SURFACE_NO_SEGMENT_ERASED = -4;
     const float MONOFIN_PROFIL_BAD_LAYER = -1.0f;
     const float MONOFIN_CONFIGFILE_BAD_LAYER = -2.0f;
-    enum Modification {MonofinSurface,MonofinLayer,MonofinLayerConfig};
+    enum Modification {MonofinSurface=1,MonofinLayer=2,MonofinLayerConfig=4};
 }
 
 #endif // DATACONSTANTS_H

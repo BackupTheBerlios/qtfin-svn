@@ -2,6 +2,7 @@
 #include "surface.h"
 #include "layer.h"
 #include "monofinfile.h"
+#include <iostream>
 
 namespace Data{
 
@@ -239,17 +240,11 @@ namespace Data{
         _monofinProfil->startHistory(t);
     }
 
-    HistoryHolder<Modification> * MonofinFile::retrieveHistory(Modification t){
-        HistoryHolder<Modification> * globalHistory = NULL;
-        globalHistory = _monofinProfil->retrieveHistory(t);
-        if (globalHistory!=NULL)
-            globalHistory->getFirst()->setNextAction(_monofinSurface->retrieveHistory(t));
-        else
-            globalHistory = _monofinSurface->retrieveHistory(t);
-        return globalHistory;
+    QList<HistoryHolder<Modification> *> MonofinFile::retrieveHistory(Modification t){
+        return _monofinSurface->retrieveHistory(t)+_monofinProfil->retrieveHistory(t);;
     }
 
-    void MonofinFile::undo(HistoryHolder<Modification> * history){
+    void MonofinFile::undo(QList<HistoryHolder<Modification> *> history){
         _monofinSurface->undo(history);
         _monofinProfil->undo(history);
     }
@@ -276,6 +271,11 @@ namespace Data{
 
     QList<int> MonofinFile::getSegmentKeysLinkedToPoint(int pointKey){
         return _monofinSurface->getSegmentKeysLinkedToPoint(pointKey);
+    }
+
+    void MonofinFile::accept(SaveVisitor *sv){
+        _monofinProfil->accept(sv);
+        _monofinSurface->accept(sv);
     }
 
 

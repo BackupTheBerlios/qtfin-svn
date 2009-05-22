@@ -13,7 +13,7 @@ namespace Data{
 
         virtual ~SaveVisitor(){}
 
-        virtual void save(std::string path) = 0;
+        virtual void save(std::string path, std::string projectName) = 0;
 
         virtual void visitSurface(Surface * s) = 0;
         virtual void visitProfil(Profil * p) = 0;

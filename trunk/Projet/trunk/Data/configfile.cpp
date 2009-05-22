@@ -126,25 +126,29 @@ namespace Data{
 
     void ConfigFile::startHistory(Modification t){
         if (t==MonofinLayerConfig){
-            _makedHistory = NULL;
+            _makedHistory.clear();
         }
     }
 
-    HistoryHolder<Modification> * ConfigFile::retrieveHistory(Modification t){
-        if (t==MonofinLayerConfig)
-            return _makedHistory;
-        else
-            return NULL;
+    QList<HistoryHolder<Modification> *> ConfigFile::retrieveHistory(Modification t){
+        if (t==MonofinLayerConfig){
+            QList<HistoryHolder<Modification> *> elReturn = _makedHistory;
+            _makedHistory = QList<HistoryHolder<Modification> *>();
+            return elReturn;
+        }else{
+            return QList<HistoryHolder<Modification> *>();
+        }
     }
 
-    void ConfigFile::undo(HistoryHolder<Modification> * history){
-        if(history == NULL)
+    void ConfigFile::undo(QList<HistoryHolder<Modification> *> history){
+        if(history.isEmpty())
             return;
 
-        if (history->getType()==MonofinLayerConfig){
+        if (history.first()->getType()==MonofinLayerConfig){
         // if actions to undo are from us
-            HistoryHolder<Modification> * historyReader = history;
-            while(historyReader!=NULL){
+            while(!history.isEmpty()){
+                HistoryHolder<Modification> * historyReader = history.first();
+                history.removeFirst();
 
                 int code_action = (int)(historyReader->pop());
 
@@ -177,18 +181,14 @@ namespace Data{
                     std::cout << "default : code : " << code_action << std::endl;
                     break;
                 }
-
-                //next action to undo
-                HistoryHolder<Modification> * toDelete = historyReader;
-                historyReader = historyReader->getNext();
-                delete toDelete;
+                delete historyReader;
             }
         }
     }
 
 
 
-    void ConfigFile::acceptVisitor(SaveVisitor * v){
+    void ConfigFile::accept(SaveVisitor * v){
         v->visitConfigFile(this);
     }
 } // namespace Data

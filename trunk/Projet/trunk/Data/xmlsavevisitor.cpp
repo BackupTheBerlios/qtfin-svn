@@ -7,10 +7,11 @@
 
 namespace Data{
 
-    void XMLSaveVisitor::save(std::string path){
+    void XMLSaveVisitor::save(std::string path, std::string projectName){
+        std::stringstream os;
         std::fstream file(path.c_str(),std::fstream::out);
 
-        file << "<project name=\"none\" ver=\"1.0\">" << std::endl;
+        file << "<project name=\""<< projectName << "\" ver=\"1.0\">" << std::endl;
         file << "<monofin>" << std::endl;
         file << _surface;
         file << _profil;

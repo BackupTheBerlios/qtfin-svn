@@ -204,138 +204,69 @@ namespace Data{
     void Profil::startHistory(Modification t){
 
         if (t==MonofinLayer)
-
-            _makedHistory = NULL;
+            _makedHistory.clear();
     }
 
-    HistoryHolder<Modification> * Profil::retrieveHistory(Modification t){
-        if (t==MonofinLayer)
-
-            return _makedHistory;
-
-        else
-
-            return NULL;
+    QList<HistoryHolder<Modification> *> Profil::retrieveHistory(Modification t){
+        if (t==MonofinLayer){
+            QList<HistoryHolder<Modification> *> elReturn = _makedHistory;
+            _makedHistory = QList<HistoryHolder<Modification> *>();
+            return elReturn;
+        }else{
+            return QList<HistoryHolder<Modification> *>();
+        }
     }
 
-    void Profil::undo(HistoryHolder<Modification> * history){
-        if(history == NULL)
-
+    void Profil::undo(QList<HistoryHolder<Modification> *> history){
+        if(history.isEmpty())
             return;
 
-
-
-        if (history->getType()==MonofinLayer){
-
+        if (history.first()->getType()==MonofinLayer){
         // if actions to undo are from us
-
-            HistoryHolder<Modification> * historyReader = history;
-
-            while(historyReader!=NULL){
-
-
-
+            while(!history.isEmpty()){
+                HistoryHolder<Modification> * historyReader = history.first();
+                history.removeFirst();
                 int code_action = (int)(historyReader->pop());
-
                 switch(code_action){
-
-
-
-
-
                 case AddLayer:{
-
                     remLayer((int)(historyReader->pop()));
-
                     break;
-
                 }
-
-
-
                 case RemLayer:{
-
-
-
                     int rank = (int)(historyReader->pop());
-
                     Layer * lay = (Layer *)historyReader->pop();
 
-
-
                     addLayer(rank, lay);
-
-                    addLayer(rank, lay);
-
                     break;
-
                 }
-
-
-
                 case SetLayerLength:{
-
-
-
                     int rank = (int)(historyReader->pop());
-
                     float * value = (float *) (historyReader->pop());
-
-
-
                     setLayerLength(rank,*value);
                     delete value;
-
                     break;
-
                 }
-
-
-
                 case SetLayerHeight:{
-
-
-
                     int rank = (int)(historyReader->pop());
-
                     float * value = (float *) (historyReader->pop());
-
-
 
                     setLayerHeight(rank,*value);
                     delete value;
-
                     break;
-
                 }
-
-
 
                 default:
-
                     std::cout << "default : code : " << code_action << std::endl;
-
                     break;
-
                 }
 
-
-
                 //next action to undo
-
-                HistoryHolder<Modification> * toDelete = historyReader;
-
-                historyReader = historyReader->getNext();
-
-                delete toDelete;
-
+                delete historyReader;
             }
-
         }
-
     }
 
-   void Profil::acceptVisitor(SaveVisitor * v){
+   void Profil::accept(SaveVisitor * v){
 
         v->visitProfil(this);
 

@@ -11,7 +11,7 @@ namespace Data{
         std::string _profil;
         std::string _configFile;
     public:
-        void save(std::string path);
+        void save(std::string path, std::string projectName);
 
         void visitSurface(Surface *s);
         void visitProfil(Profil *p);

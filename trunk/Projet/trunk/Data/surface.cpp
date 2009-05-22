@@ -380,27 +380,30 @@ namespace Data{
 
     void Surface::startHistory(Modification t){
         if (t==MonofinSurface){
-            _makedHistory = NULL;
+            _makedHistory.clear();
         }
 
     }
 
-    HistoryHolder<Modification> * Surface::retrieveHistory(Modification t){
-        if (t==MonofinSurface)
-            return _makedHistory;
-        else
-            return NULL;
+    QList<HistoryHolder<Modification> *> Surface::retrieveHistory(Modification t){
+        if (t==MonofinSurface){
+            QList<HistoryHolder<Modification> *> elReturn = _makedHistory;
+            _makedHistory = QList<HistoryHolder<Modification> *>();
+            return elReturn;
+        }else{
+            return QList<HistoryHolder<Modification> *>();
+        }
     }
 
-    void Surface::undo(HistoryHolder<Modification> * history){
-        if(history == NULL)
+    void Surface::undo(QList<HistoryHolder<Modification> *> history){
+        if(history.isEmpty())
             return;
 
-        if (history->getType()==MonofinSurface){
+        if (history.first()->getType()==MonofinSurface){
         // if actions to undo are from us
-            HistoryHolder<Modification> * historyReader = history;
-            while(historyReader!=NULL){
-
+            while(!history.isEmpty()){
+                HistoryHolder<Modification> * historyReader = history.first();
+                history.removeFirst();
                 int code_action = (int)(historyReader->pop());
                 switch(code_action){
                 case AddControlPoint:{
@@ -481,11 +484,7 @@ namespace Data{
                     cout << "default : code : " << code_action << endl;
                     break;
                 }
-
-                //next action to undo
-                HistoryHolder<Modification> * toDelete = historyReader;
-                historyReader = historyReader->getNext();
-                delete toDelete;
+                delete historyReader;
             }
         }
     }
@@ -497,14 +496,13 @@ namespace Data{
         current->pushInt(key);
         current->pushInt(AddControlPoint);
 
+         _controlPointTable.insert(key,controlPoint);
         //verify that the control point wasn't attached to a segment before deletion
         if (!controlPoint->whereUsed.isEmpty()){
             int segKey = controlPoint->whereUsed.at(0);
             controlPoint->whereUsed.clear();
             addControlPointToSegment(segKey,key);
         }
-        
-        _controlPointTable.insert(key,controlPoint);
     }
 
     void Surface::insertIntersectionPoint(int key, Point *intersectionPoint){
@@ -655,5 +653,9 @@ namespace Data{
         foreach(int key, keys){
             removeIntersectionPoint(key);
         }
+    }
+
+    void Surface::accept(SaveVisitor *sv){
+        sv->visitSurface(this);
     }
 } // namespace Data

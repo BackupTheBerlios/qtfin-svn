@@ -34,7 +34,10 @@ SOURCES += main.cpp \
     Ui/mainwindow.cpp \
     Ui/parametersdialog.cpp \
     Ui/startupdialog.cpp \
-    Scripting/comsolscript.cpp
+    Scripting/comsolscript.cpp \
+    Data/xmlparser/xmlParser.cpp \
+    Data/xmlloadvisitor.cpp \
+    Data/xmlsavevisitor.cpp
 HEADERS += monofin.h \
     lib/qtwindowlistmenu.h \
     Data/DataConstants.h \
@@ -63,7 +66,12 @@ HEADERS += monofin.h \
     Ui/mainwindow.h \
     Ui/parametersdialog.h \
     Ui/startupdialog.h \
-    Scripting/comsolscript.h
+    Scripting/comsolscript.h \
+    Data/xmlparser/xmlParser.h \
+    Data/xmlloadvisitor.h \
+    Data/LoadVisitor.h \
+    Data/xmlsavevisitor.h \
+    Data/SaveVisitor.h
 FORMS += Ui/layerParameters.ui \
     Ui/parametersDialog.ui \
     Ui/startupDialog.ui

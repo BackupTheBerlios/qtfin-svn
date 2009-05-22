@@ -1,21 +1,25 @@
-#ifndef COMSOLSCRIPT_H
-#define COMSOLSCRIPT_H
+#ifndef SCRIPT_H
+#define SCRIPT_H
 
-#include "basescript.h"
+#include "../Data/projectfile.h"
+
+#include <QTextStream>
+#include <QString>
 
 namespace Scripting {
 
-	class ComsolScript : public BaseScript
-	{
-	public:
-		ComsolScript(Data::MonofinFile& monofin, QTextStream& script);
-		virtual void build() const;
+  class ComsolScript {
+  public:
+	ComsolScript(QString name);
+	virtual ~ComsolScript();
 
-	private:
-		void writeSegments() const;
-		void writeLayers() const;
-		void writeSettings() const;
-	};
+	QString getName() const { return name; }
+
+	virtual void write(QTextStream& script, Data::ProjectFile& data) const = 0;
+  private:
+	QString name;
+  };
 
 }
+
 #endif

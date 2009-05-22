@@ -1,5 +1,5 @@
-function main(data);
-% Point d'entrée du script généré par l'interface graphique MonoFin.
+function default_main(data);
+% Point d'entrée du script généré par l'interface graphique MonoFin pour lancer une analyse modale.
 %
 % Paramètre(s)
 %		data : la structure de données générées par l'interface graphique MonoFin

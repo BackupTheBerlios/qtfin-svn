@@ -1,5 +1,5 @@
 % Déclaration du dossier contenant les scripts utilisés.
-path('D:\Projects\PSurfaceDesigner\Release\Scripts', path);
+path('C:\Monofin\Projet\trunk\debug\scripts', path);
 
 % Initialisation d'une variable.
 clear monofin;
@@ -36,9 +36,9 @@ monofin.layers = [ ...
 %		mesh_sizes		: si le problème est à résoudre, indique la finesse du maillage (1 : fin, 9 : grossier, 5 : valeur par défaut)
 %		output_path 	: chemin du fichier COMSOL (au format mph) que le script va générer
 monofin.settings = struct( ...
-  'solve_problem', true, ...
+  'solve_problem', false, ...
   'mesh_sizes', 5, ...
-  'output_path', 'D:\Projects\PSurfaceDesigner\Release\Scripts\temp');
+  'output_path', 'C:\Monofin\Projet\trunk\debug\scripts\toto');
 
 % Appel du point d'entrée du script.
-main(monofin);
+default_main(monofin);

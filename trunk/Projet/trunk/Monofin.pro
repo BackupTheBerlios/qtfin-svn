@@ -7,6 +7,7 @@ CONFIG += debug_and_release
 CONFIG(debug, debug|release):CONFIG += console
 else:DEFINES += QT_NO_DEBUG_OUTPUT \
     QT_NO_WARNING_OUTPUT
+DEFINES += WIN
 SOURCES += main.cpp \
     monofin.cpp \
     lib/qtwindowlistmenu.cpp \
@@ -18,6 +19,9 @@ SOURCES += main.cpp \
     Data/projectfile.cpp \
     Data/segment.cpp \
     Data/surface.cpp \
+	Data/xmlparser/xmlParser.cpp \
+	Data/xmlloadvisitor.cpp \
+	Data/xmlsavevisitor.cpp \
     Drawing/boundingpoint.cpp \
     Drawing/brline.cpp \
     Drawing/controlpoint.cpp \
@@ -29,15 +33,17 @@ SOURCES += main.cpp \
     Drawing/selectionrect.cpp \
     Drawing/symmetryaxis.cpp \
     Drawing/tangent.cpp \
-    Scripting/basescript.cpp \
     Ui/layerparameters.cpp \
     Ui/mainwindow.cpp \
     Ui/parametersdialog.cpp \
-    Ui/startupdialog.cpp \
-    Scripting/comsolscript.cpp \
-    Data/xmlparser/xmlParser.cpp \
-    Data/xmlloadvisitor.cpp \
-    Data/xmlsavevisitor.cpp
+	Ui/startupdialog.cpp \
+	Scripting/comsolscript.cpp \
+	Scripting/defaultscript.cpp \
+	Scripting/defaultscriptmanager.cpp \
+	Scripting/scripthelper.cpp \
+	Scripting/scriptmanager.cpp \
+	Scripting/viewerscript.cpp \
+	Scripting/viewerscriptmanager.cpp
 HEADERS += monofin.h \
     lib/qtwindowlistmenu.h \
     Data/DataConstants.h \
@@ -50,6 +56,11 @@ HEADERS += monofin.h \
     Data/projectfile.h \
     Data/segment.h \
     Data/surface.h \
+	Data/xmlparser/xmlParser.h \
+	Data/xmlloadvisitor.h \
+	Data/LoadVisitor.h \
+	Data/xmlsavevisitor.h \
+	Data/SaveVisitor.h \
     Drawing/boundingpoint.h \
     Drawing/brline.h \
     Drawing/controlpoint.h \
@@ -61,17 +72,17 @@ HEADERS += monofin.h \
     Drawing/selectionrect.h \
     Drawing/symmetryaxis.h \
     Drawing/tangent.h \
-    Scripting/basescript.h \
     Ui/layerparameters.h \
     Ui/mainwindow.h \
     Ui/parametersdialog.h \
     Ui/startupdialog.h \
-    Scripting/comsolscript.h \
-    Data/xmlparser/xmlParser.h \
-    Data/xmlloadvisitor.h \
-    Data/LoadVisitor.h \
-    Data/xmlsavevisitor.h \
-    Data/SaveVisitor.h
+	Scripting/comsolscript.h \
+	Scripting/defaultscript.h \
+	Scripting/defaultscriptmanager.h \
+	Scripting/scripthelper.h \
+	Scripting/scriptmanager.h \
+	Scripting/viewerscript.h \
+	Scripting/viewerscriptmanager.h
 FORMS += Ui/layerParameters.ui \
     Ui/parametersDialog.ui \
     Ui/startupDialog.ui

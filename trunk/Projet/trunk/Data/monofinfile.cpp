@@ -278,6 +278,11 @@ namespace Data{
         _monofinSurface->accept(sv);
     }
 
+    void MonofinFile::accept(LoadVisitor *lv){
+        _monofinProfil->accept(lv);
+        _monofinSurface->accept(lv);
+    }
+
 
 }// namespace Data
 

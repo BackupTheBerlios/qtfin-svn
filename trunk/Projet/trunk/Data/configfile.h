@@ -6,6 +6,7 @@
 #include "DataConstants.h"
 #include "historyholder.h"
 #include "SaveVisitor.h"
+#include "LoadVisitor.h"
 
 namespace Data{
 
@@ -47,6 +48,9 @@ namespace Data{
 
 
         void accept(SaveVisitor * v);
+        void accept(LoadVisitor * v);
+
+        void loadLayerConfig(int rank, float young, float poisson, float rho);
 
     private:
 

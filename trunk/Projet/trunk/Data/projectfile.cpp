@@ -2,6 +2,7 @@
 #include "monofinfile.h"
 #include "projectfile.h"
 #include "xmlsavevisitor.h"
+#include "xmlloadvisitor.h"
 
 namespace Data{
 
@@ -161,7 +162,11 @@ namespace Data{
         save.save(path.toStdString(),projectName.toStdString());
     }
 
-    QString loadProject(QString path){
+    QString ProjectFile::loadProject(QString path){
+        XMLLoadVisitor load;
+        load.load(path.toStdString());
+        _monofinGeometry->accept(&load);
+        _monofinPhysicalProperties->accept(&load);
         return (QString("None"));
     }
 

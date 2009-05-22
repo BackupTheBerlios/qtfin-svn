@@ -269,7 +269,17 @@ namespace Data{
    void Profil::accept(SaveVisitor * v){
 
         v->visitProfil(this);
+    }
+
+   void Profil::accept(LoadVisitor * v){
+
+        v->visitProfil(this);
 
     }
+
+   void Profil::loadLayer(int rank, float length, float height){
+       Layer * newLayer = new Layer(length,height);
+       _monofinLayers.insert(rank,newLayer);
+   }
 
 } // namespace Data

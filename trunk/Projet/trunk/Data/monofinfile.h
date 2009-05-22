@@ -3,6 +3,8 @@
 
 #include "DataConstants.h"
 #include "historyholder.h"
+#include "SaveVisitor.h"
+#include "LoadVisitor.h"
 
 namespace Data{
 
@@ -214,6 +216,8 @@ namespace Data{
         void undo(QList<HistoryHolder<Modification> *> history);
 
         void accept(SaveVisitor * sv);
+
+        void accept(LoadVisitor *lv);
 
     private:
         /**

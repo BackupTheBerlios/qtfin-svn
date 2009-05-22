@@ -500,8 +500,7 @@ namespace Data{
         //verify that the control point wasn't attached to a segment before deletion
         if (!controlPoint->whereUsed.isEmpty()){
             int segKey = controlPoint->whereUsed.at(0);
-            controlPoint->whereUsed.clear();
-            addControlPointToSegment(segKey,key);
+            _segmentTable[segKey]->setControlPointKey(key);
         }
     }
 
@@ -657,5 +656,37 @@ namespace Data{
 
     void Surface::accept(SaveVisitor *sv){
         sv->visitSurface(this);
+    }
+
+    void Surface::accept(LoadVisitor *lv){
+        lv->visitSurface(this);
+    }
+
+    void Surface::loadIntersectionPoint(int key, float x, float y){
+        Point * toInsert = new Point;
+        toInsert->coordinates.setX(x);
+        toInsert->coordinates.setY(y);
+        toInsert->whereUsed.clear();
+        toInsert->countUsage = 0;
+        _intersectionPointTable.insert(key,toInsert);
+        if (key>=_intersectionKey)
+            _intersectionKey++;
+    }
+
+    void Surface::loadControlPoint(int key, float x, float y){
+        Point * toInsert = new Point;
+        toInsert->coordinates.setX(x);
+        toInsert->coordinates.setY(y);
+        toInsert->whereUsed.clear();
+        toInsert->countUsage = 0;
+        _controlPointTable.insert(key,toInsert);
+        if (key>=_controlKey)
+            _controlKey++;
+    }
+
+    void Surface::loadSegment(int segmentKey,int intersectionPointKey1, int intersectionPointKey2, int controlPointKey){
+        insertSegment(segmentKey,intersectionPointKey1, intersectionPointKey2,controlPointKey);
+        if(segmentKey>=_segmentKey)
+            _segmentKey++;
     }
 } // namespace Data

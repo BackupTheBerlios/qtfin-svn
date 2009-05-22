@@ -191,4 +191,17 @@ namespace Data{
     void ConfigFile::accept(SaveVisitor * v){
         v->visitConfigFile(this);
     }
+
+    void ConfigFile::accept(LoadVisitor * v){
+        v->visitConfigFile(this);
+    }
+
+    void ConfigFile::loadLayerConfig(int rank, float young, float poisson, float rho){
+        LayerConfig * newLayerConfig = new LayerConfig();
+        newLayerConfig->setPoisson(poisson);
+        newLayerConfig->setRho(rho);
+        newLayerConfig->setYoung(young);
+        _monofinLayerConfig.insert(rank,newLayerConfig);
+
+    }
 } // namespace Data

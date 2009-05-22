@@ -8,6 +8,7 @@
 #include "historyholder.h"
 #include "DataConstants.h"
 #include "SaveVisitor.h"
+#include "LoadVisitor.h"
 
 namespace Data{
 
@@ -175,6 +176,12 @@ namespace Data{
         void undo(QList<HistoryHolder<Modification> *> history);
 
         void accept(SaveVisitor *sv);
+
+        void accept(LoadVisitor *lv);
+
+        void loadIntersectionPoint(int key, float x, float y);
+        void loadControlPoint(int key, float x, float y);
+        void loadSegment(int segmentKey,int intersectionPointKey1, int intersectionPoint2, int controlPointKey);
 
     private:
 

@@ -5,6 +5,7 @@
 #include "DataConstants.h"
 #include "historyholder.h"
 #include "SaveVisitor.h"
+#include "LoadVisitor.h"
 #include <QVector>
 
 namespace Data{
@@ -82,6 +83,9 @@ namespace Data{
         void undo(QList<HistoryHolder<Modification> *> history);
 
         void accept(SaveVisitor * v);
+        void accept(LoadVisitor * v);
+
+        void loadLayer(int rank, float length, float height);
 
     private:
 

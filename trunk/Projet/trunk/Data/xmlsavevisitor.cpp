@@ -50,7 +50,7 @@ namespace Data{
 
             s->getIntersectionPoint(interKey,x,y);
 
-            os << "\t\t\t<point number=\"" << interKey << "\" X=\""<< x << "\" Y=\"" << y <<"\"/>" << std::endl;
+            os << "\t\t\t<point number=\"" << interKey << "\" X=\""<< std::fixed << x << "\" Y=\"" << std::fixed << y <<"\"/>" << std::endl;
         }
         os << "\t\t</intersection>" << std::endl;
 
@@ -60,7 +60,7 @@ namespace Data{
 
             s->getIntersectionPoint(controlKey,x,y);
 
-            os << "\t\t\t<point number=\"" << controlKey << "\" X=\""<< x << "\" Y=\"" << y <<"\"/>" << std::endl;
+            os << "\t\t\t<point number=\"" << controlKey << "\" X=\""<< std::fixed << x << "\" Y=\"" << std::fixed << y <<"\"/>" << std::endl;
         }
         os << "\t\t</control>" << std::endl;
 
@@ -78,62 +78,63 @@ namespace Data{
 
 
 
-    int pos;
+        int pos;
 
-    for(pos = 0; pos<prof->getHowManyLayers(); pos++){
+        for(pos = 0; pos<prof->getHowManyLayers(); pos++){
 
-        int height = prof->getLayerHeight(pos);
+            float height = prof->getLayerHeight(pos);
 
-        int length = prof->getLayerLength(pos);
-
-
-
-        os << "\t<layer position= \""<< pos << "\" height= \""<< height <<"\" length= \""<< length <<"\" />\n";
-
-    }
-
-    os << "<layers/>\n";
-
-    _profil = os.str();
-
-}
+            float length = prof->getLayerLength(pos);
 
 
 
-void  XMLSaveVisitor::visitConfigFile(ConfigFile * conf){
+            os << "\t<layer position= \""<< pos << "\" height= \""<< std::fixed << height <<"\" length= \""<< std::fixed << length <<"\" />\n";
 
-    std::stringstream os;
+        }
 
-    os << "<config>\n";
-    os << "\t<layerConfig>\n";
+        os << "</layers>\n";
 
-
-
-    int pos;
-
-    for(pos = 0; pos<conf->getHowManyLayers(); pos++){
-
-        int young = conf->getYoung(pos);
-
-        int poisson = conf->getPoisson(pos);
-
-        int rho = conf->getRho(pos);
-
-
-
-        os << "\t\t<layer position= \""<< pos <<"\" young= \""<< young <<"\" poisson= \""<< poisson <<"\" rho= \""<< rho <<"\" />\n";
+        _profil = os.str();
 
     }
 
-    os << "\t<layerConfig/>\n";
-
-    os << "<Config/>\n";
 
 
+    void  XMLSaveVisitor::visitConfigFile(ConfigFile * conf){
 
-    _configFile = os.str();
+        std::stringstream os;
+
+        os << "<config>\n";
+        os << "\t<layerConfig>\n";
 
 
 
-}
+        int pos;
+
+        for(pos = 0; pos<conf->getHowManyLayers(); pos++){
+
+            float young = conf->getYoung(pos);
+
+            float poisson = conf->getPoisson(pos);
+
+            float rho = conf->getRho(pos);
+
+
+
+            os << "\t\t<layer position= \""<< pos <<"\" young= \""<< std::fixed << young <<"\" poisson= \""<<
+                    std::fixed << poisson <<"\" rho= \""<< std::fixed << rho <<"\" />\n";
+
+        }
+
+        os << "\t</layerConfig>\n";
+
+        os << "</config>\n";
+
+
+
+        _configFile = os.str();
+
+
+
+    }
 }

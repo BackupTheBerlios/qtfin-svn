@@ -34,8 +34,8 @@ void SPoint::radToCarth(int N, const QPointF& center, qreal radius){
     _radius = radius;
 }
 
-QPointF SPoint::posRotate(int N, const QPointF& center, qreal angle){
-    return QPointF(center.x() + _radius * cos(2 * PI * _radPos / N + angle * PI / 180),
-                  center.y() + _radius * sin(2 * PI * _radPos / N + angle * PI / 180));
+QPointF SPoint::posRotate(int N, const QPointF& center, qreal angle, qreal scale){
+    return QPointF(center.x() + _radius * scale * cos(2 * PI * _radPos / N + angle * PI / 180),
+                  center.y() +  _radius * scale * sin(2 * PI * _radPos / N + angle * PI / 180));
 }
 

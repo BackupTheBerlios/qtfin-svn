@@ -66,7 +66,7 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal scale, qreal angle, 
      * Detection du premier point
      */
     QPointF* fp = new QPointF();
-    int np = _scircle->firstPoint(angle, offsetX, offsetY, fp);
+    int np = _scircle->firstPoint(angle, offsetX, offsetY, scale, fp);
     qDebug("Premier point : (%f, %f)", fp->x(), fp->y());
     qDebug("Prochain point : %d", np);
 
@@ -98,10 +98,10 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal scale, qreal angle, 
      */
     bool finish = false;
     for(int i = np; i < _scircle->getSPointNb() && !finish; i++){
-        QPointF cp = _scircle->getQPointRotate(i, angle);
+        QPointF cp = _scircle->getQPointRotate(i, angle, scale);
         if(cp.y() + offsetI.y() >= offsetY){
             QPointF* lp = new QPointF();
-            QLineF(0, offsetY, offsetX * 10, offsetY).intersect(QLineF(_scircle->getQPointRotate(i - 1, angle) + offsetI, cp),
+            QLineF(0, offsetY, offsetX * 10, offsetY).intersect(QLineF(_scircle->getQPointRotate(i - 1, angle, scale) + offsetI, cp),
                                                         lp);
             lastP = *lp;
             pointsToKeepInOrder.push_back(lastPoint);
@@ -114,10 +114,10 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal scale, qreal angle, 
         }
     }
     for(int i = 0; i < np && !finish; i++){
-        QPointF cp = _scircle->getQPointRotate(i, angle);
+        QPointF cp = _scircle->getQPointRotate(i, angle, scale);
         if(cp.y() + offsetI.y() >= offsetY){
             QPointF* lp = new QPointF();
-            QLineF(0, offsetY, offsetX * 10, offsetY).intersect(QLineF(_scircle->getQPointRotate(i - 1, angle) + offsetI, cp),
+            QLineF(0, offsetY, offsetX * 10, offsetY).intersect(QLineF(_scircle->getQPointRotate(i - 1, angle, scale) + offsetI, cp),
                                                         lp);
             lastP = *lp;
             pointsToKeepInOrder.push_back(lastPoint);
@@ -172,7 +172,7 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal scale, qreal angle, 
         /*
          * ajout du troisième point
          */
-        QPointF np1 = _scircle->getQPointRotate(np, angle) + offsetI; // np1 : next point 1
+        QPointF np1 = _scircle->getQPointRotate(np, angle, scale) + offsetI; // np1 : next point 1
         int npk1 = monofin->addIntersectionPoint(np1.x(), offsetY - np1.y());// npk1 : next point key 1
 
         /*
@@ -204,7 +204,7 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal scale, qreal angle, 
             /*
              * ajout du point courant
              */
-            QPointF np2 = _scircle->getQPointRotate(p2, angle) + offsetI;
+            QPointF np2 = _scircle->getQPointRotate(p2, angle, scale) + offsetI;
             npk2 = monofin->addIntersectionPoint(np2.x(), offsetY - np2.y());
             /*
              * calcul de la position du point de controle entre le point courant et le point précédent
@@ -214,6 +214,7 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal scale, qreal angle, 
              * ajout du point de controle courant dans monofin
              */
             fcpk = monofin->addControlPoint(cp->x(), offsetY - cp->y());
+             qDebug("point de controle : (%f, %f)", cp->x(), offsetY - cp->y());
             /*
              * ajout du segment courant dans monofin
              */
@@ -254,7 +255,7 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal scale, qreal angle, 
         /*
          * ajout du second point
          */
-        QPointF np1 = _scircle->getQPointRotate(np, angle) + offsetI;
+        QPointF np1 = _scircle->getQPointRotate(np, angle, scale) + offsetI;
         int npk1 = monofin->addIntersectionPoint(np1.x(), offsetY - np1.y());
 
         /*
@@ -285,7 +286,7 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal scale, qreal angle, 
             /*
              * ajout du point courant
              */
-            QPointF np2 = _scircle->getQPointRotate(p2, angle) + offsetI;
+            QPointF np2 = _scircle->getQPointRotate(p2, angle, scale) + offsetI;
             npk2 = monofin->addIntersectionPoint(np2.x(), offsetY - np2.y());
             /*
              * calcul de la position du point de controle entre le point courant et le point précédent

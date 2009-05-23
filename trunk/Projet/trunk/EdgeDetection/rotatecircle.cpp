@@ -17,10 +17,16 @@ RotateCircle::RotateCircle(PixmapItem * parent):
                         rect.height() * rect.height());
     _radiusInit = diameter / 2;
     _radius = _radiusInit;
-    this->setRect(center.x() - 10,
-                  center.y() - _radius - 8,
-                  20,
-                  20);
+    if(((PixmapItem*)(this->parentItem()))->isForAlgo())
+        this->setRect(center.x() - 10,
+                      center.y() - _radius - 8,
+                      20,
+                      20);
+    else
+        this->setRect(center.x() - 10,
+                      center.y() - _radius - 10,
+                      20,
+                      20);
     _enter = false;
     _isMoved = false;
     this->setAcceptHoverEvents(true);
@@ -88,6 +94,17 @@ void RotateCircle::mouseMoveEvent(QGraphicsSceneMouseEvent* event){
 
     this->setPosition(angle);
     ((PixmapItem*)(this->parentItem()))->rotate2(angle);
-    ((EdgesExtractionScene*)(this->scene()))->rotateCircleMoved(angle);
+    if(((PixmapItem*)(this->parentItem()))->isForAlgo())
+      ((EdgesExtractionScene*)(this->scene()))->rotateCircleMoved(angle);
     this->scene()->update();
+}
+
+void RotateCircle::setScale(qreal scale){
+    _scale = scale;
+    qreal radiusP = _radius;
+    _radius = _radiusInit * scale;
+    qreal angle = ((PixmapItem*)(this->parentItem()))->rotationAngle();
+    this->setPosition(0);
+    this->translate(0, radiusP - _radius);
+    this->setPosition(angle);
 }

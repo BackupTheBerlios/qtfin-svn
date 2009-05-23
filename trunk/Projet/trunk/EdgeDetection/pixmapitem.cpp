@@ -10,7 +10,7 @@
 PixmapItem::PixmapItem(QPixmap pix):
         QGraphicsPixmapItem(pix),
         _posMousePress(QPointF(0,0)), _posMouseMove(QPointF(0,0)),
-        _rotateAngl(0), _scale(1), enter(false), _isForAlgo(false)
+        _rotateAngl(0), _scale(1), _enter(false), _isForAlgo(false)
 {
     dimInitWidth = pixmap().width();
     dimInitHeight = pixmap().height();
@@ -39,33 +39,54 @@ void PixmapItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option
     Q_UNUSED(option);
     Q_UNUSED(widget);
     if(!this->pixmap().isNull()){
-        if(enter)
+        if(_enter)
             painter->setPen(QColor("red"));
         QPointF c = this->boundingRect().center();
         qreal x = offset().x() + dimInitWidth / 2;
         qreal y = offset().y() + dimInitHeight / 2;
         painter->translate(x, y);
-        painter->rotate(_rotateAngl);
-        painter->scale(_scale, _scale);
+        if(_isForAlgo){
+            painter->rotate(_rotateAngl);
+            painter->scale(_scale, _scale);
+        }
+        else{
+            painter->rotate(_rotateAngl + 180);
+            painter->scale(_scale, - _scale);
+        }
         painter->translate(-x, -y);
-        painter->drawPixmap(offset(), pixmap());
+        this->offset();
+        painter->drawPixmap(this->boundingRect().topLeft(), pixmap());
         painter->drawRect(this->boundingRect());
 
+        QPen pen(QBrush("black"), 1);
+        painter->setPen(pen);
+        QRectF rect = this->boundingRect();
+        qreal radius = sqrt(rect.width() * rect.width() +
+                            rect.height() * rect.height()) / 2;
+        painter->drawEllipse(rect.center() + QPointF(-0.5, -1), radius, radius);
 
-        QPen pen(QBrush("red"), 3);
+        pen = QPen(QBrush("red"), 3);
         painter->setPen(pen);
 
         if(_isForAlgo){
             qreal axeSymetry = ((EdgesExtractionScene*)this->scene())->symetryAxe();
             qreal heal = ((EdgesExtractionScene*)this->scene())->heal();
             QPointF point;
-            for(int i = 0; i < _scircle->getSPointNb() - 1; i++){
-                point = _scircle->getQPointRotate(i, _rotateAngl);
+
+            bool overAxe;
+            point = _scircle->getQPointRotate(0, _rotateAngl, _scale);
+            if(overAxe = point.x() + this->offset().x() >= heal  && point.y() + this->offset().y() <= axeSymetry)
+                painter->drawLine(*(_scircle->getQPoint(0)) + this->offset(),
+                                  *(_scircle->getQPoint(1)) + this->offset());
+
+            for(int i = 1; i < _scircle->getSPointNb() - 1; i++){
+                point = _scircle->getQPointRotate(i, _rotateAngl, _scale);
                 if(point.x() + this->offset().x() >= heal  && point.y() + this->offset().y() <= axeSymetry)
                     painter->drawLine(*(_scircle->getQPoint(i)) + this->offset(),
                                       *(_scircle->getQPoint(i+1)) + this->offset());
+
             }
-            point = _scircle->getQPointRotate(_scircle->getSPointNb()-1, _rotateAngl);
+            point = _scircle->getQPointRotate(_scircle->getSPointNb()-1, _rotateAngl, _scale);
             if(point.x() + this->offset().x() >= heal * _scale && point.y() + this->offset().y() <= axeSymetry * _scale)
                 painter->drawLine(*(_scircle->getQPoint(_scircle->getSPointNb()-1)) + this->offset(),
                                   *(_scircle->getQPoint(0)) + this->offset());
@@ -90,14 +111,6 @@ void PixmapItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option
                                _scircle->getQPoint(753)->y() + this->offset().y());*/
 
         }
-        else{
-            QPen pen(QBrush("black"), 1);
-            painter->setPen(pen);
-            QRectF rect = this->boundingRect();
-            qreal radius = sqrt(rect.width() * rect.width() +
-                            rect.height() * rect.height()) / 2;
-            painter->drawEllipse(rect.center(), radius, radius);
-        }
     }
 }
 
@@ -109,8 +122,9 @@ void PixmapItem::center(){
 }
 
 void PixmapItem::translate2(qreal x, qreal y){
-    setOffset(offset().x() + x, offset().y() + y);
-    this->childItems().first()->translate(x, y);
+    this->setOffset(offset().x() + x, offset().y() + y);
+    if(this->childItems().first() != NULL)
+        this->childItems().first()->translate(x, y);
 }
 
 void PixmapItem::rotate2(qreal angle){
@@ -126,9 +140,6 @@ void PixmapItem::scaled(qreal scale){
     qreal scaleW = dimInitWidth * scale / 100;
     qreal scaleH = dimInitHeight * scale / 100;
 
-    //this->scale(scaleW / X, scaleH / Y);
-
-    //this->scale(1 + scale / 100 - _scale, 1 + scale / 100 - _scale);
     _scale = scale / 100;
     ((RotateCircle*)(this->childItems().first()))->setScale(_scale);
     X = dimInitWidth * _scale;
@@ -137,7 +148,6 @@ void PixmapItem::scaled(qreal scale){
     qDebug("----------\nScale : %f\nwidth : %f\nheigth : %f\n----------", _scale, scaleW, scaleH);
     qDebug("Offset : (%f,%f)", this->offset().x(), this->offset().y());
     qDebug("Top left : (%f,%f)", this->boundingRect().topLeft().x(), this->boundingRect().topLeft().y());
-
 }
 
 
@@ -162,13 +172,26 @@ void PixmapItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event){
 
 
 void PixmapItem::hoverEnterEvent(QGraphicsSceneHoverEvent * event){
-    enter = true;
+    _enter = true;
     this->setCursor(QCursor(Qt::OpenHandCursor));
     this->scene()->update();
 }
 
  void PixmapItem::hoverLeaveEvent(QGraphicsSceneHoverEvent * event){
-    enter = false;
+    _enter = false;
     this->setCursor(QCursor(Qt::ArrowCursor));
     this->scene()->update();
+}
+
+void PixmapItem::wheelEvent ( QGraphicsSceneWheelEvent * event ){
+    if(_scale <= 2 && _scale >= 0.01){
+        event->accept();
+        if(event->delta() > 0 && _scale < 2)
+            this->scaled(_scale * 100 + 1);
+        else if(_scale > 0.01)
+            this->scaled(_scale * 100 - 1);
+        if(_isForAlgo)
+            ((EdgesExtractionScene*)this->scene())->itemScaleChanged();
+        this->scene()->update();
+    }
 }

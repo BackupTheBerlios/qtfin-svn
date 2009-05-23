@@ -26,8 +26,15 @@ public:
      * it is also the graphic's users interface and put the slots and signals in relation
      * @param parent : the parent of the graphic
      */
-    Graphic(QWidget *parent = 0, PaintingScene *paintingScene = 0);
+    Graphic(QWidget *parent = 0, Data::ProjectFile* monofin = 0, qreal width = 0, qreal height = 0);
     ~Graphic();
+
+    /**
+     * setter
+     * @param width : the width of the scene
+     * @param height : the height of the scene
+     */
+    void setSizes(qreal width, qreal height);
 
 
 public slots:
@@ -47,13 +54,19 @@ public slots:
      * changes the scale of the image when the value of spinBox "scale" is changing
      * @param scale : the value of the spinBox and so the sclae of the image (in %)
      */
-    void scaleChanged(double scale);
+    void setScale(double scale);
 
     /**
      * changes the value of the spinBox "positionX" and "positionY"
      * in function of the position of the image in the scene
      */
     void positionChanged();
+
+    /**
+     * changes the value of the spinBox scale
+     * in function of the scale of the image in the scene
+     */
+    void scaleChanged();
 
     /**
      * set the position of the "Pixmapitem" to (x,y) in the scene's coordinate
@@ -79,7 +92,6 @@ protected:
     AlgoSnake* _algo; // object wich contains the two algorithms working on the opened image
 
     Data::ProjectFile* _monofin;
-    PaintingScene* _paintingScene;
 
 };
 

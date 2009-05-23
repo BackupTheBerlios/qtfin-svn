@@ -51,6 +51,12 @@ public:
 
     /**
      * setter
+     * @param radius :  the new radius of the circle
+     */
+    void setRadius(qreal radius);
+
+    /**
+     * setter
      * @param v : the boolean that says if the point is fixed or not
      */
     void setRadiusFixed(bool v);
@@ -74,7 +80,7 @@ public:
      * @param angle : the angle of rotation of the "PixmapItem"
      * @return QPoint with the rotation of angle (in the scene coordinate)
      */
-    QPointF posRotate(int N, const QPointF& center, qreal angle);
+    QPointF posRotate(int N, const QPointF& center, qreal angle, qreal scale);
 
 protected:
     int _radPos; // the radial position
@@ -106,6 +112,10 @@ inline int SPoint::grayValue(){
 inline void SPoint::setGrayValue(int v){
         _grayValue = v;
     }
+
+inline void SPoint::setRadius(qreal radius){
+    _radius = radius;
+}
 
 inline bool SPoint::isRadiusFixed(){
         return _rayonFixe;

@@ -1,4 +1,5 @@
 #include <QPen>
+#include <math.h>
 #include "edgesextractionscene.h"
 
 EdgesExtractionScene::EdgesExtractionScene(QWidget* parent, qreal width, qreal height):
@@ -35,6 +36,15 @@ void EdgesExtractionScene::setPixmap(QPixmap pixmap){
     this->addItem(_pixItem);
     _pixItem->center();
 
+    qreal radius = sqrt(pixmap.width() * pixmap.width() +
+                        pixmap.height() * pixmap.height()) / 2;
+    SCircle* scircle = new SCircle(pixmap.rect().center().x(),
+                                   pixmap.rect().center().y(),
+                                   radius, _pixItem);
+
+    scircle->addSPoint(100);
+    _pixItem->setSCircle(scircle);
+
     _rotCircle = new RotateCircle(_pixItem);
     _rotCircle->setZValue(2);
     this->addItem(_rotCircle);
@@ -48,4 +58,8 @@ void EdgesExtractionScene::rotateCircleMoved(qreal angle){
 
 void EdgesExtractionScene::itemPositionChanged(){
     emit this->positionChanged();
+}
+
+void EdgesExtractionScene::itemScaleChanged(){
+    emit this->scaleChanged();
 }

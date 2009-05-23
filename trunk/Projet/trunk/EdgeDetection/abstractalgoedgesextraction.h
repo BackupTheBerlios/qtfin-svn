@@ -29,6 +29,7 @@ public:
      */
     virtual bool edgesExtraction(Data::ProjectFile* monofin, qreal scale, qreal angle, qreal offsetX, qreal offsetY) = 0;
 
+    virtual void reinitialize() = 0;
 };
 
 

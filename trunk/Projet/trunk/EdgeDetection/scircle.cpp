@@ -12,7 +12,7 @@
 using namespace std;
 
 SCircle::SCircle(qreal cX, qreal cY, qreal radius, PixmapItem* pixItem):
-        _radius(radius), _spointNb(0), _pixItem(pixItem){
+        _initRadius(radius), _radius(radius), _spointNb(0), _pixItem(pixItem){
     _circle = QList<SPoint*>();
     _center = QPointF(cX, cY);
 
@@ -29,10 +29,10 @@ QPointF* SCircle::getQPoint(int i){
     return &_circle.value(i)->carthPos();
 }
 
-QPointF SCircle::getQPointRotate(int i, qreal angle){
+QPointF SCircle::getQPointRotate(int i, qreal angle, qreal scale){
     if(i < 0 || i >= _spointNb)
         return QPointF(0, 0);
-    return _circle.value(i)->posRotate(_spointNb, _center, angle) ;
+    return _circle.value(i)->posRotate(_spointNb, _center, angle, scale) ;
 }
 
 SPoint* SCircle::getSPoint(int i){
@@ -78,24 +78,24 @@ void SCircle::setParam(qreal cX, qreal cY, qreal radius){
     }
 }
 
-int SCircle::firstPoint(qreal angle, qreal offsetX, qreal offsetY, QPointF* fPoint){
+int SCircle::firstPoint(qreal angle, qreal offsetX, qreal offsetY, qreal scale, QPointF* fPoint){
     fPoint->setX(0);
     fPoint->setY(0);
     int p = -1;
     QPointF offsetI = _pixItem->offset();
-    QPointF fp = this->getQPointRotate(0, angle) + offsetI;
+    QPointF fp = this->getQPointRotate(0, angle, scale) + offsetI;
     if(fp.y() >= offsetY || fp.x() <= offsetX){
         for(int i = 1; i < _spointNb && p == -1; i++){
             qDebug("passe 1 : %d", i);
-            QPointF cp = this->getQPointRotate(i, angle) + offsetI;
+            QPointF cp = this->getQPointRotate(i, angle, scale) + offsetI;
             if(cp.x() > offsetX || cp.y() < offsetY){
                 p = i;
-                int intersect = QLineF(offsetX, 0, offsetX, offsetY * 2).intersect(QLineF(this->getQPointRotate(i - 1, angle) + offsetI,
+                int intersect = QLineF(offsetX, 0, offsetX, offsetY * 2).intersect(QLineF(this->getQPointRotate(i - 1, angle, scale) + offsetI,
                                                                  cp),
                                                           fPoint);
                 if(intersect != QLineF::BoundedIntersection){
                     qDebug("bien1 : %d", i);
-                    intersect = QLineF(0, offsetY, offsetY * 10, offsetY).intersect(QLineF(this->getQPointRotate(i - 1, angle) + offsetI,
+                    intersect = QLineF(0, offsetY, offsetY * 10, offsetY).intersect(QLineF(this->getQPointRotate(i - 1, angle, scale) + offsetI,
                                                                  cp),
                                                           fPoint);
                     qDebug("intersect : %d", intersect);
@@ -109,15 +109,15 @@ int SCircle::firstPoint(qreal angle, qreal offsetX, qreal offsetY, QPointF* fPoi
     }else{
         for(int i = _spointNb - 1; i > 0 && p == -1; i--){
             qDebug("passe 2 : %d", i);
-            QPointF cp = this->getQPointRotate(i, angle) + offsetI;
+            QPointF cp = this->getQPointRotate(i, angle, scale) + offsetI;
             if(cp.x() <= offsetX || cp.y() >= offsetY){
                 p = i + 1;
                 int intersect = QLineF(offsetX, 0, offsetX, offsetY * 2).intersect(QLineF(cp,
-                                                                 this->getQPointRotate(i + 1, angle) + offsetI),
+                                                                 this->getQPointRotate(i + 1, angle, scale) + offsetI),
                                                           fPoint);
                 if(intersect != QLineF::BoundedIntersection){
                     intersect = QLineF(0, offsetY, offsetX * 10, offsetY).intersect(QLineF(cp,
-                                                                 this->getQPointRotate(i + 1, angle) + offsetI),
+                                                                 this->getQPointRotate(i + 1, angle, scale) + offsetI),
                                                           fPoint);
                     if(intersect != QLineF::BoundedIntersection)
                         p = -1;
@@ -237,4 +237,12 @@ qreal SCircle::valAbs(qreal v){
     if (v < 0)
         return - v;
     return v;
+}
+
+void SCircle::reinitialize(){
+    _radius = _initRadius;
+    for(int i = 0; i < _spointNb; i++){
+        _circle.value(i)->setRadiusFixed(false);
+        _circle.value(i)->radToCarth(_spointNb, _center, _radius);
+    }
 }

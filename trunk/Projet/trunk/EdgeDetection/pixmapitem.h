@@ -32,21 +32,39 @@ public:
 
     /**
      * getter
-     * @return the angle of rotation of the item
-     */
-    qreal rotateAngle();
-
-    /**
-     * getter
      * @return the "SCircle" created by the pixmapItem
      */
     SCircle* scircle();
+
+    /**
+     * getter
+     * @return the scale of the "pixmapItem"
+     */
+    qreal getScale();
+
+    /**
+     * getter
+     * @return the angle of rotation of the pixmap
+     */
+    qreal rotationAngle();
 
     /**
      * setter
      * @param scircle : the "SCircle" of the pixmap
      */
     void setSCircle(SCircle* scircle);
+
+    /**
+     * getter
+     * @return true if the mouse is in the bounding rectangle of the item else return false
+     */
+    bool isEnter();
+
+    /**
+     * getter
+     * @return true if the pixmapItem is used for an algo
+     */
+    bool isForAlgo();
 
     /**
      * overloards the function paint of the class QGraphicsItem
@@ -97,7 +115,7 @@ protected:
     qreal _rotateAngl; // the angle of rotation of the image
     qreal _scale; // the scale of rotation of the image
 
-    bool enter; // boolean that is true when the mouse is in the bounding rectangle of the item
+    bool _enter; // boolean that is true when the mouse is in the bounding rectangle of the item
 
     bool _isForAlgo;
 
@@ -108,9 +126,10 @@ protected:
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* event);
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent * event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent * event);
+    virtual void wheelEvent ( QGraphicsSceneWheelEvent * event );
 };
 
-inline qreal PixmapItem::rotateAngle(){
+inline qreal PixmapItem::rotationAngle(){
         return _rotateAngl;
 }
 
@@ -122,5 +141,18 @@ inline void PixmapItem::setSCircle(SCircle* scircle){
     _scircle = scircle;
     _isForAlgo = true;
 }
+
+inline bool PixmapItem::isEnter(){
+    return _enter;
+}
+
+inline bool PixmapItem::isForAlgo(){
+    return _isForAlgo;
+}
+
+inline qreal PixmapItem::getScale(){
+    return _scale;
+}
+
 
 #endif // PIXMAPITEM_H

@@ -14,7 +14,7 @@ public:
      * creates an object allowing to rotate a "pixmatItem"
      * @param parent : the "pixmapItem" that is rotated by the "rotateCircle"
      */
-    RotateCircle( PixmapItem * parent = 0);
+    RotateCircle( PixmapItem * parent);
 
     /**
      * setter
@@ -44,7 +44,7 @@ protected:
     qreal _radius; // the radius
     qreal _scale;
 
-     /**
+    /**
      * different overloaded functions that handle the mouse events
      */
 
@@ -56,11 +56,6 @@ protected:
 
 inline bool RotateCircle::isMoved(){
     return _isMoved;
-}
-
-inline void RotateCircle::setScale(qreal scale){
-    _scale = scale;
-    //_radius = _radiusInit * scale;
 }
 
 #endif // ROTATECIRCLE_H

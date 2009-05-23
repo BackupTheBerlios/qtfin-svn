@@ -55,7 +55,7 @@ public:
      * @param angle : the angle of rotation of the "PixmapItem"
      * @return the rank i QPoint with the rotation of angle (in the scene coordinate)
      */
-    QPointF getQPointRotate(int i, qreal angle);
+    QPointF getQPointRotate(int i, qreal angle, qreal scale);
 
     /**
      * getter
@@ -95,7 +95,7 @@ public:
      * @param offsetY : the offset Y
      * @return the rank of the point after the first point, if there is an error return -1
      */
-    int firstPoint(qreal angle, qreal offsetX, qreal offsetY, QPointF* fPoint);
+    int firstPoint(qreal angle, qreal offsetX, qreal offsetY, qreal scale, QPointF* fPoint);
 
     /**
      * give the coefficient of the tangent of a point
@@ -174,9 +174,15 @@ public:
      */
     void changeSPointNb(int nb);
 
+    /**
+     * reinitialize the circle
+     */
+    void reinitialize();
+
 protected:
     QList<SPoint*> _circle; // the list of the points of the circle
     QPointF _center; // the center of the circle
+    qreal _initRadius; // the initial radius of the circle
     qreal _radius; // the radius of the circle
     int _spointNb; // the number of points of the circle
 

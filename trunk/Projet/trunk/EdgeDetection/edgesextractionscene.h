@@ -49,6 +49,11 @@ public:
     void itemPositionChanged();
 
     /**
+     * function that emit a signal informing that the image is rescaling
+     */
+    void itemScaleChanged();
+
+    /**
      * getter
      * @return the image wich is in the scene
      */
@@ -71,6 +76,11 @@ signals:
      * signal informing that the image is moving
      */
     void positionChanged();
+
+    /**
+     * signal informing that the image is rescaling
+     */
+    void scaleChanged();
 
 
 protected:

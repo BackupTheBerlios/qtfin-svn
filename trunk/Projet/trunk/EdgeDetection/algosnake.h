@@ -38,6 +38,11 @@ public:
      */
     virtual bool edgesExtraction(Data::ProjectFile* monofin, qreal scale, qreal angle, qreal offsetX, qreal offsetY);
 
+    /**
+     * reinitialize the algorithms
+     */
+    virtual void reinitialize();
+
 protected:
 
     SCircle* _scircle; // the "snake circle" that be used to detect the form
@@ -51,5 +56,9 @@ protected:
     int valAbs(int v);
 
 };
+
+inline void AlgoSnake::reinitialize(){
+    _scircle->reinitialize();
+}
 
 #endif /* ALGOSNAKE_H_ */

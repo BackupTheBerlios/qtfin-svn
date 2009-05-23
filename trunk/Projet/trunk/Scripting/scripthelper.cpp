@@ -49,6 +49,13 @@ void ScriptHelper::writeMonofinSegments(QTextStream& script, Data::ProjectFile& 
 		data.getControlPoint(bKey, bX, bY);
 		data.getIntersectionPoint(cKey, cX, cY);
 
+		if (bKey == Data::MONOFIN_SURFACE_NO_CONTROL_POINT) {
+			// there is no control point on the segment
+			// so we need to compute a "virtual" control point in the middle of the segment
+			bX = (aX + cX) / 2;
+			bY = (aY + cY) / 2;
+		}
+
 		script <<
 				QString("struct('x', [%1 %2 %3], 'y', [%4 %5 %6])")
 					.arg(aX)

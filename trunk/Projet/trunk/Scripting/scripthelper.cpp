@@ -7,35 +7,34 @@
 
 using namespace Scripting;
 
-void ScriptHelper::writePath(QTextStream& script, Data::ProjectFile& data) {
-	script << "% Déclaration du dossier contenant les scripts utilisés." << endl;
-	script << QString("path('%1', path);").arg(QDir::toNativeSeparators(ScriptManager::ScriptDirectory)) << endl;
+void ScriptHelper::writePath(QTextStream& script, Data::ProjectFile& data)
+{
+	QString path = QString("path('%1', path);");
+	path = path
+		   .arg(QDir::toNativeSeparators(ScriptManager::ScriptDirectory));
+
+	script << path << endl;
 	script << endl;
 }
 
-void ScriptHelper::writeMonofinDeclaration(QTextStream& script, Data::ProjectFile& data) {
-	script << "% Initialisation de la variable 'monofin'." << endl;
+void ScriptHelper::writeMonofinDeclaration(QTextStream& script, Data::ProjectFile& data)
+{
 	script << "clear monofin;" << endl;
 	script << endl;
 }
 
-// TODO: récupérer la longueur dans la sdd
-void ScriptHelper::writeMonofinLength(QTextStream& script, Data::ProjectFile& data) {
-	script << "% Longueur de l'axe central de la palme en mètre." << endl;
-	script << QString("monofin.length = %1;").arg(0.025) << endl;
+void ScriptHelper::writeMonofinLength(QTextStream& script, Data::ProjectFile& data)
+{
+	QString length = QString("monofin.length = %1;");
+	length = length
+		   .arg(data.getMonofinLength());
+
+	script << length << endl;
 	script << endl;
 }
 
-void ScriptHelper::writeMonofinSegments(QTextStream& script, Data::ProjectFile& data) {
-	script << "% Courbes de Bézier cubiques (P0, P1, P1, P2)." << endl;
-	script << "%     x : [P0.x P1.x P2.x], vecteur des X des points P0, P1 et P2." << endl;
-	script << "%     y : [P0.y P1.y P2.y], vecteur des Y des points P0, P1 et P2." << endl;
-	script << "% " << endl;
-	script << "% Remarque" << endl;
-	script << "%     L'unité dans laquelle sont exprimées les coordonnées est irrévélante." << endl;
-	script << "%     Elle proviennent de l'interface graphique MonoFin et seront ramenées à des mètres" << endl;
-	script << "%     en respectant la longeur spécifiée dans monofin.length." << endl;
-
+void ScriptHelper::writeMonofinSegments(QTextStream& script, Data::ProjectFile& data)
+{
 	script << "monofin.segments = [ ..." << endl;
 	for (int i = 0; i < data.getAllSegmentKeys().count(); i++) {
 		// keys
@@ -64,24 +63,20 @@ void ScriptHelper::writeMonofinSegments(QTextStream& script, Data::ProjectFile& 
 		}
 	}
 
-	script << "];" << endl << endl;
+	script << " ];" << endl << endl;
 }
 
-void ScriptHelper::writeMonofinLayers(QTextStream& script, Data::ProjectFile& data) {
-	script << "% Strates constituant la palme. La première (resp. dernière) strate correspond au dessous (resp. dessus) de la palme." << endl;
-	script << "%     thickness : épaisseur de la strate exprimée en mètre" << endl;
-	script << "%     length    : longueur de la strate en % de monofin.length" << endl;
-	script << "%     E         : module de Young en Pa" << endl;
-	script << "%     nu        : coefficient de Poisson" << endl;
-	script << "%     rho       : densité en kg/m^3" << endl;
-
+void ScriptHelper::writeMonofinLayers(QTextStream& script, Data::ProjectFile& data)
+{
 	script << "monofin.layers = [ ..." << endl;
 
+	float monofinLength = data.getMonofinLength();
+
 	for (int i = 0; i < data.getHowManyLayers(); i++) {
-		script << QString(
-				"    struct('thickness', %1, 'length', %2, 'E', %3, 'nu', %4, 'rho', %5)")
+		script <<
+				QString("struct('thickness', %1, 'length', %2, 'E', %3, 'nu', %4, 'rho', %5)")
 					.arg(data.getLayerHeight(i))
-					.arg(data.getLayerLength(i))
+					.arg(data.getLayerLength(i) / monofinLength) // the script needs a ratio
 					.arg(data.getLayerConfigYoung(i))
 					.arg(data.getLayerConfigPoisson(i))
 					.arg(data.getLayerConfigRho(i));
@@ -91,5 +86,5 @@ void ScriptHelper::writeMonofinLayers(QTextStream& script, Data::ProjectFile& da
 		}
 	}
 
-	script << "];" << endl << endl;
+	script << " ];" << endl << endl;
 }

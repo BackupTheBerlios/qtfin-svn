@@ -2,8 +2,7 @@
 
 using namespace Scripting;
 
-ComsolScript::ComsolScript(QString name)
-	: name(name) {
+ComsolScript::ComsolScript() {
 }
 
 ComsolScript::~ComsolScript() {

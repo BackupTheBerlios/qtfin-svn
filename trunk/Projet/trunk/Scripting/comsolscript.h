@@ -18,18 +18,11 @@ namespace Scripting {
 
 		/**
 		  * Default constructor.
-		  * @param name
-		  *		The name of the script. This will be the filename given to the temporary file on disk.
 		  */
-		ComsolScript(QString name);
+		ComsolScript();
 
 		/** Destructor. */
 		virtual ~ComsolScript();
-
-		/**
-		  * Get the name of the script.
-		  */
-		QString getName() const { return name; }
 
 		/**
 		  * Abstract method used to write a script in a QTextStream.
@@ -40,10 +33,6 @@ namespace Scripting {
 		  *		It should contain all the needed informations necessary to build the script.
 		  */
 		virtual void write(QTextStream& script, Data::ProjectFile& data) const = 0;
-	private:
-
-		/** The script name. */
-		QString name;
 	};
 
 }

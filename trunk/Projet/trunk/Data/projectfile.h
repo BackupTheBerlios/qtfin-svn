@@ -68,7 +68,8 @@ namespace Data{
          ****************************/
 
         //consultations possible sur les strates
-        float getLayerLength(int rank) const;
+		float getMonofinLength() const;
+		float getLayerLength(int rank) const;
         float getLayerHeight(int rank) const;
 
         int getHowManyLayers() const;

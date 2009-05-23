@@ -29,23 +29,31 @@ namespace Scripting {
 		  */
 		ScriptManager(ComsolScript* script, Data::ProjectFile& data);
 
+		/** Destructor */
+		~ScriptManager();
+
+		/**
+		  * Get a flag indicating if the process responsible for the script execution is running.
+		  * When the process is running, any call to execute will return false.
+		  */
+		bool isRunning() const { return process->state() == QProcess::Running; }
+
 		/**
 		  * A local directory where the external COMSOL Scripts needed are stored.
 		  * Temporary scripts will be put in this same directory.
 		  */
 		const static QString ScriptDirectory;
 
-		/**
-		  * Write the script into a temporary file in the ScriptDirectory.
-		  * @return True if success, False otherwise.
-		  */
-		bool write();
-
 	public slots:
+
 		/**
 		  * Slot starting the execution of the script.
+		  * As soon as the method return true, the signals started() and ended(bool) will
+		  * be emited.
+		  * @return
+		  *		True if the script is executing, False otherwise.
 		  */
-		void execute();
+		bool execute();
 
 	signals:
 		/**
@@ -68,6 +76,7 @@ namespace Scripting {
 		void _started();
 		void _finished(int exitCode, QProcess::ExitStatus exitStatus);
 		void _error(QProcess::ProcessError error);
+		void _debug_output();
 
 	private:
 		/** The instance of ComsolScript to work with. */

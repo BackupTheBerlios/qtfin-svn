@@ -94,6 +94,18 @@ namespace Data{
         _monofinGeometry->clearSurface();
     }
 
+	/**
+	  * Return the length of the longest layer.
+	  * The longest layer is the monofin length.
+	  */
+	float ProjectFile::getMonofinLength() const {
+		float len = MONOFIN_PROFIL_BAD_LAYER;
+		for (int i = 0; i < getHowManyLayers(); i++)
+			if (getLayerLength(i) > len)
+				len = getLayerLength(i);
+		return len;
+	}
+
     float ProjectFile::getLayerLength(int rank) const{
         return _monofinGeometry->getLayerLength(rank);
     }

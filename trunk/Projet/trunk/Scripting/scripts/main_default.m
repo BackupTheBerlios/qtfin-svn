@@ -1,4 +1,4 @@
-function default_main(data);
+function main_default(data);
 % Point d'entrée du script généré par l'interface graphique MonoFin pour lancer une analyse modale.
 %
 % Paramètre(s)

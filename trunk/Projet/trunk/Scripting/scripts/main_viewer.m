@@ -1,4 +1,4 @@
-function viewer_main(data);
+function main_viewer(data);
 % Point d'entrée du script généré par l'interface graphique MonoFin pour générer une image de la géométrie.
 %
 % Paramètre(s)

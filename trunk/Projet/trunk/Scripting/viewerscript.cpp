@@ -7,11 +7,11 @@
 using namespace Scripting;
 
 ViewerScript::ViewerScript(QString output_path)
-		: ComsolScript("temp.viewer"),
-		  output_path(output_path) {
+		: output_path(output_path) {
 }
 
-void ViewerScript::write(QTextStream& script, Data::ProjectFile& data) const {
+void ViewerScript::write(QTextStream& script, Data::ProjectFile& data) const
+{
 	ScriptHelper::writePath(script, data);
 
 	ScriptHelper::writeMonofinDeclaration(script, data);
@@ -24,17 +24,17 @@ void ViewerScript::write(QTextStream& script, Data::ProjectFile& data) const {
 	writeMain(script, data);
 }
 
-void ViewerScript::writeMonofinSettings(QTextStream& script, Data::ProjectFile& data) const {
-	script << "% Paramètres de la palme." << endl;
-	script << "%     output_path   : chemin de l'image (au format png) à générer" << endl;
+void ViewerScript::writeMonofinSettings(QTextStream& script, Data::ProjectFile& data) const
+{
+	QString settings = QString("monofin.settings = struct('output_path', '%1');");
+	settings = settings
+			   .arg(QDir::toNativeSeparators(output_path));
 
-	script << "monofin.settings = struct( ..." << endl;
-	script << QString("    'output_path', '%1');").arg(QDir::toNativeSeparators(output_path)) << endl;
-
+	script << settings << endl;
 	script << endl;
 }
 
-void ViewerScript::writeMain(QTextStream& script, Data::ProjectFile& data) const {
-	script << "% Appel du point d'entrée du script." << endl;
-	script << "viewer_main(monofin);" << endl;
+void ViewerScript::writeMain(QTextStream& script, Data::ProjectFile& data) const
+{
+	script << "main_viewer(monofin);" << endl;
 }

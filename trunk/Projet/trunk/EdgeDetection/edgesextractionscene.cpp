@@ -1,26 +1,19 @@
 #include <QPen>
 #include "edgesextractionscene.h"
 
-EdgesExtractionScene::EdgesExtractionScene(QWidget* parent):
+EdgesExtractionScene::EdgesExtractionScene(QWidget* parent, qreal width, qreal height):
         QGraphicsScene(parent), _pixItem(NULL)
 {
-    this->setSceneRect(QRectF(0,0,1000,700));
+    this->setSceneRect(QRectF(0,0,width,height));
 
-    /*_pixItem = new PixmapItem(QPixmap("Images/test"));
-    _pixItem = new PixmapItem();
-    _pixItem->setZValue(1);
-    this->addItem(_pixItem);
-    _pixItem->center();
+    _symetryAxe = height / 2;
+    _heal = width / 10;
 
-    _rotCircle = new RotateCircle(_pixItem);
-    _rotCircle->setZValue(2);
-    this->addItem(_rotCircle);*/
-
-    QGraphicsLineItem* ligne1 = this->addLine(0, 350, 1000, 350);
+    QGraphicsLineItem* ligne1 = this->addLine(0, _symetryAxe, width, _symetryAxe);
     ligne1->setPen(QPen(QBrush("red"), 3));
     ligne1->setZValue(3);
 
-    QGraphicsRectItem* rect1 = addRect(0, 0, 100, 700);
+    QGraphicsRectItem* rect1 = addRect(0, 0, _heal, height);
     rect1->setPen(QPen(QBrush("red"), 2));
     rect1->setBrush(QBrush("red",Qt::Dense4Pattern));
     rect1->setZValue(4);

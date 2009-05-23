@@ -9,6 +9,8 @@
 #ifndef ABSTRACTALGOEDGESEXTRACTION_H_
 #define ABSTRACTALGOEDGESEXTRACTION_H_
 
+#include "../Data/projectfile.h"
+
 /**
  * Abstract class that contains signatures of the edges detection and edges extration algorithmes
  */
@@ -18,14 +20,14 @@ public:
 
     /**
      * Detect the form's edges on a picture
-     * This form had to be unique
+     * This form has to be unique
      */
     virtual void edgesDetection() = 0;
 
     /**
-     * Extract the form previously detected and transform this form into a Monofin struture
+     * Extract the form detected previously and transform this form into a Monofin struture
      */
-    virtual void edgesExtraction() = 0;
+    virtual bool edgesExtraction(Data::ProjectFile* monofin, qreal scale, qreal angle, qreal offsetX, qreal offsetY) = 0;
 
 };
 

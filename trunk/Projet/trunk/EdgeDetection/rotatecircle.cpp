@@ -8,14 +8,15 @@
 #define PI 3.14159265358979323846
 
 RotateCircle::RotateCircle(PixmapItem * parent):
-        QGraphicsRectItem(parent)
+        QGraphicsRectItem(parent), _scale(1)
 
 {
     QRectF rect = parent->boundingRect();
     QPointF center = rect.center();
     qreal diameter = sqrt(rect.width() * rect.width() +
                         rect.height() * rect.height());
-    _radius = diameter / 2;
+    _radiusInit = diameter / 2;
+    _radius = _radiusInit;
     this->setRect(center.x() - 10,
                   center.y() - _radius - 8,
                   20,
@@ -29,6 +30,11 @@ RotateCircle::RotateCircle(PixmapItem * parent):
 
 void RotateCircle::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget){
     painter->setPen(Qt::NoPen);
+    qreal x = this->rect().x() + this->rect().width() / 2;
+    qreal y = this->rect().y() + this->rect().height() / 2;
+    painter->translate(x, y);
+    painter->scale(_scale, _scale);
+    painter->translate(-x, -y);
     if(_enter)
         painter->setBrush(QBrush(QColor("red")));
     else
@@ -52,7 +58,7 @@ void RotateCircle::hoverLeaveEvent(QGraphicsSceneHoverEvent * event){
 }
 
 void RotateCircle::setPosition(qreal angle){
-    this->setPos(cos((angle - 90) * PI / 180) * _radius - this->parentItem()->pos().x(),
+    this->setPos(cos((angle - 90) * PI / 180) * _radius,
                  sin((angle - 90) * PI / 180) * _radius + _radius);
 }
 

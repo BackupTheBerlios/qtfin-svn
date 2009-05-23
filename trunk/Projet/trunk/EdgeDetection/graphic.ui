@@ -125,14 +125,14 @@
        <item>
         <widget class="QPushButton" name="StartButton">
          <property name="text">
-          <string>Lancer Snake</string>
+          <string>Start Snake</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="OpenButton">
          <property name="text">
-          <string>Charger Image</string>
+          <string>Open Image</string>
          </property>
         </widget>
        </item>

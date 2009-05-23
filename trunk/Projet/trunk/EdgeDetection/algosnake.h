@@ -14,34 +14,41 @@
 
 class AlgoSnake : public AbstractAlgoEdgesExtraction{
 
-private:
+public:
+
+    /**
+     * constructor
+     * @param scircle : the algorithm works on this SCircle directly
+     */
+    AlgoSnake(SCircle* scircle = NULL);
+
+    /**
+     * setter
+     * @param image : the edges are detected on this image
+     */
+    void setImage(QImage* image);
+
+    /**
+     * implementation of the edges detection algorithm
+     */
+    virtual void edgesDetection();
+
+    /**
+     * implementation of the edges extraction algorithm
+     */
+    virtual bool edgesExtraction(Data::ProjectFile* monofin, qreal scale, qreal angle, qreal offsetX, qreal offsetY);
+
+protected:
 
     SCircle* _scircle; // the "snake circle" that be used to detect the form
     QImage* _image; // image that contains the form that will be detected
+
 
     /**
      * @param v integer
      * @return the absolute value of a signed integer
      */
     int valAbs(int v);
-
-public:
-
-    /**
-     * constructor
-     */
-    AlgoSnake(SCircle* scircle = NULL);
-
-    /**
-     * setter
-     * @param image
-     */
-    void setImage(QImage* image){
-        _image = image;
-    }
-
-    virtual void edgesDetection();
-    virtual void edgesExtraction();
 
 };
 

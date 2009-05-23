@@ -14,7 +14,7 @@ class AbstractAlgoEdgesExtraction {
 public:
 
     virtual void edgesDetection() = 0;
-    virtual void edgesExtraction() = 0;
+    virtual bool edgesExtraction() = 0;
 
 };
 

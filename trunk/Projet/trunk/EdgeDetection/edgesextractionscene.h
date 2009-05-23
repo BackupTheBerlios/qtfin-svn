@@ -13,28 +13,87 @@ class EdgesExtractionScene : public QGraphicsScene
    Q_OBJECT
 
 public:
-    EdgesExtractionScene(QWidget* parent);
+    /**
+     * constructor
+     * @param parent : the parent of the scene
+     */
+    EdgesExtractionScene(QWidget* parent, qreal width, qreal height);
 
-    void setPixmap(QPixmap);
+    /**
+     * getter
+     * @return the coordinate Y of the axe of symetry
+     */
+    qreal symetryAxe();
 
-    void rotateCircleMoved(qreal);
+    /**
+     * getter
+     * @return the coordinate of the heal
+     */
+    qreal heal();
+
+    /**
+     * setter
+     * @param pixmap : the image (.png or .bmp) wich is integrated into the scene
+     */
+    void setPixmap(QPixmap pixmap);
+
+    /**
+     * function that rotate the image along the "rotate circle"
+     * @param angle : the angle of rotation
+     */
+    void rotateCircleMoved(qreal angle);
+
+    /**
+     * function that emit a signal informing that the image is moving
+     */
     void itemPositionChanged();
 
-    PixmapItem* pixItem(){
-        return _pixItem;
-    }
+    /**
+     * getter
+     * @return the image wich is in the scene
+     */
+    PixmapItem* pixItem();
 
-    RotateCircle* rotCircle(){
-        return _rotCircle;
-    }
+    /**
+     * getter
+     * @return a pointer on the "rotate circle"
+     */
+    RotateCircle* rotCircle();
 
 signals:
-    void rotateAngleChanged(double);
+    /**
+     * signal informing that the image is rotating
+     * param angle : the angle of rotation
+     */
+    void rotateAngleChanged(double angle);
+
+    /**
+     * signal informing that the image is moving
+     */
     void positionChanged();
 
-private:
-    PixmapItem* _pixItem;
-    RotateCircle* _rotCircle;
+
+protected:
+    PixmapItem* _pixItem; // the image of the scene
+    RotateCircle* _rotCircle; // an item allowing to rotate the image
+    qreal _symetryAxe;
+    qreal _heal;
 };
+
+inline PixmapItem* EdgesExtractionScene::pixItem(){
+        return _pixItem;
+}
+
+inline RotateCircle* EdgesExtractionScene::rotCircle(){
+        return _rotCircle;
+}
+
+inline qreal EdgesExtractionScene::symetryAxe(){
+    return _symetryAxe;
+}
+
+inline qreal EdgesExtractionScene::heal(){
+    return _heal;
+}
 
 #endif // EDGESEXTRACTIONSCENE_H

@@ -33,7 +33,7 @@ namespace Data{
             s->getSegment(segKey,interKey1,interKey2,controlKey);
             os << "\t\t<segment number=\"" << segKey << "\">" << std::endl;
             os << "\t\t\t<intersectionpoint number=\"" << interKey1 << "\"/>" << std::endl;
-            os << "\t\t\t<intersectionpoint number=\"" << interKey1 << "\"/>" << std::endl;
+            os << "\t\t\t<intersectionpoint number=\"" << interKey2 << "\"/>" << std::endl;
 
             if(controlKey != MONOFIN_SURFACE_NO_CONTROL_POINT)
                 os << "\t\t\t<controlpoint number=\"" << controlKey << "\"/>" << std::endl;
@@ -58,7 +58,7 @@ namespace Data{
         foreach(int controlKey, s->getAllControlPointKeys()){
             float x, y;
 
-            s->getIntersectionPoint(controlKey,x,y);
+            s->getControlPoint(controlKey,x,y);
 
             os << "\t\t\t<point number=\"" << controlKey << "\" X=\""<< std::fixed << x << "\" Y=\"" << std::fixed << y <<"\"/>" << std::endl;
         }

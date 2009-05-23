@@ -7,7 +7,6 @@ CONFIG += debug_and_release
 CONFIG(debug, debug|release):CONFIG += console
 else:DEFINES += QT_NO_DEBUG_OUTPUT \
     QT_NO_WARNING_OUTPUT
-DEFINES += WIN
 SOURCES += main.cpp \
     monofin.cpp \
     lib/qtwindowlistmenu.cpp \
@@ -19,20 +18,30 @@ SOURCES += main.cpp \
     Data/projectfile.cpp \
     Data/segment.cpp \
     Data/surface.cpp \
-	Data/xmlparser/xmlParser.cpp \
-	Data/xmlloadvisitor.cpp \
-	Data/xmlsavevisitor.cpp \
+    Data/xmlloadvisitor.cpp \
+    Data/xmlparser/xmlParser.cpp \
+    Data/xmlsavevisitor.cpp \
     Drawing/boundingpoint.cpp \
     Drawing/brline.cpp \
     Drawing/controlpoint.cpp \
     Drawing/extremitypoint.cpp \
     Drawing/ghostline.cpp \
     Drawing/ghostpoint.cpp \
+    Drawing/layeritem.cpp \
+    Drawing/layerview.cpp \
     Drawing/paintingscene.cpp \
     Drawing/paintingview.cpp \
     Drawing/selectionrect.cpp \
     Drawing/symmetryaxis.cpp \
     Drawing/tangent.cpp \
+    EdgeDetection/abstractalgoedgesextraction.cpp \
+    EdgeDetection/algosnake.cpp \
+    EdgeDetection/edgesextractionscene.cpp \
+    EdgeDetection/edgesextractionview.cpp \
+    EdgeDetection/pixmapitem.cpp \
+    EdgeDetection/rotatecircle.cpp \
+    EdgeDetection/scircle.cpp \
+    EdgeDetection/spoint.cpp \
     Ui/layerparameters.cpp \
     Ui/mainwindow.cpp \
     Ui/parametersdialog.cpp \
@@ -49,11 +58,14 @@ HEADERS += monofin.h \
     Data/DataConstants.h \
     Data/configfile.h \
     Data/historyholder.h \
+    Data/historyholder.imp \
     Data/layerconfig.h \
     Data/layer.h \
+    Data/LoadVisitor.h \
     Data/monofinfile.h \
     Data/profil.h \
     Data/projectfile.h \
+    Data/SaveVisitor.h \
     Data/segment.h \
     Data/surface.h \
 	Data/xmlparser/xmlParser.h \
@@ -67,11 +79,21 @@ HEADERS += monofin.h \
     Drawing/extremitypoint.h \
     Drawing/ghostline.h \
     Drawing/ghostpoint.h \
+    Drawing/layeritem.h \
+    Drawing/layerview.h \
     Drawing/paintingscene.h \
     Drawing/paintingview.h \
     Drawing/selectionrect.h \
     Drawing/symmetryaxis.h \
     Drawing/tangent.h \
+    EdgeDetection/abstractalgoedgesextraction.h \
+    EdgeDetection/algosnake.h \
+    EdgeDetection/edgesextractionscene.h \
+    EdgeDetection/edgesextractionview.h \
+    EdgeDetection/pixmapitem.h \
+    EdgeDetection/rotatecircle.h \
+    EdgeDetection/scircle.h \
+    EdgeDetection/spoint.h \
     Ui/layerparameters.h \
     Ui/mainwindow.h \
     Ui/parametersdialog.h \
@@ -92,3 +114,4 @@ TRANSLATIONS = translations/monofin_de.ts \
 target.path = .
 INSTALLS += target
 RESOURCES += resources/images.qrc
+mac:RESOURCES += resources/translations.qrc

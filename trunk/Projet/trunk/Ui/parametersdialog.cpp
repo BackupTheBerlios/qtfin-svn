@@ -11,10 +11,12 @@ ParametersDialog::ParametersDialog(QWidget *parent) :
     QDialog(parent)
 {
     setupUi(this);
+    // a refaire
     for(int i=0; i<4; ++i)
         m_strates.append(new Layer);
 
     layerTabWidget->clear();
+    // a refaire
     for(int i=0; i<m_strates.count(); ++i)
         layerTabWidget->addTab(new LayerParameters, tr("layer %1").arg(i));
 

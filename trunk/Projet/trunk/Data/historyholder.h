@@ -81,9 +81,8 @@ namespace Data{
 
         virtual void stopHistory(Type t);
     };
-
 #include "historyholder.imp"
-
 }
+
 
 #endif // HISTORYHOLDER_H

@@ -29,14 +29,14 @@
     <message>
         <location filename="../Ui/mainwindow.cpp" line="53"/>
         <location filename="../Ui/mainwindow.cpp" line="157"/>
-        <location filename="../Ui/mainwindow.cpp" line="305"/>
+        <location filename="../Ui/mainwindow.cpp" line="313"/>
         <source>English</source>
         <translation>Français</translation>
     </message>
     <message>
         <location filename="../Ui/mainwindow.cpp" line="68"/>
-        <location filename="../Ui/mainwindow.cpp" line="213"/>
-        <location filename="../Ui/mainwindow.cpp" line="216"/>
+        <location filename="../Ui/mainwindow.cpp" line="221"/>
+        <location filename="../Ui/mainwindow.cpp" line="224"/>
         <source>Monofin</source>
         <translation>Monopalme</translation>
     </message>
@@ -51,103 +51,108 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="186"/>
-        <location filename="../Ui/mainwindow.cpp" line="306"/>
+        <location filename="../Ui/mainwindow.cpp" line="194"/>
+        <location filename="../Ui/mainwindow.cpp" line="314"/>
         <source>&amp;%1 %2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="421"/>
+        <location filename="../Ui/mainwindow.cpp" line="433"/>
         <source>E&amp;xit</source>
         <translation>&amp;Quitter</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="422"/>
+        <location filename="../Ui/mainwindow.cpp" line="434"/>
         <source>Ctrl+Q</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="423"/>
+        <location filename="../Ui/mainwindow.cpp" line="435"/>
         <source>&amp;New...</source>
         <translation>&amp;Nouveau...</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="424"/>
+        <location filename="../Ui/mainwindow.cpp" line="436"/>
         <source>Ctrl+N</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="425"/>
+        <location filename="../Ui/mainwindow.cpp" line="437"/>
         <source>&amp;Open...</source>
         <translation>&amp;Ouvrir...</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="426"/>
+        <location filename="../Ui/mainwindow.cpp" line="438"/>
         <source>Ctrl+O</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="427"/>
+        <location filename="../Ui/mainwindow.cpp" line="439"/>
         <source>&amp;Save</source>
         <translation>&amp;Enregistrer</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="428"/>
+        <location filename="../Ui/mainwindow.cpp" line="440"/>
         <source>Ctrl+S</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="429"/>
+        <location filename="../Ui/mainwindow.cpp" line="441"/>
         <source>&amp;Save As...</source>
         <translation>Enregistrer &amp;sous...</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="436"/>
+        <location filename="../Ui/mainwindow.cpp" line="448"/>
         <source>&amp;Properties...</source>
         <translation>&amp;Propriétés...</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="437"/>
+        <location filename="../Ui/mainwindow.cpp" line="449"/>
         <source>&amp;About</source>
         <translation>&amp;A propos</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="438"/>
+        <location filename="../Ui/mainwindow.cpp" line="450"/>
         <source>About &amp;Qt</source>
         <translation>A propos de &amp;Qt</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="441"/>
+        <location filename="../Ui/mainwindow.cpp" line="453"/>
         <source>&amp;File</source>
         <translation>&amp;Fichier</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="442"/>
+        <location filename="../Ui/mainwindow.cpp" line="454"/>
         <source>&amp;Draw</source>
         <translation>&amp;Dessin</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="443"/>
+        <location filename="../Ui/mainwindow.cpp" line="455"/>
+        <source>&amp;Actions</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../Ui/mainwindow.cpp" line="456"/>
         <source>&amp;Simulation</source>
         <translation>&amp;Simulation</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="444"/>
+        <location filename="../Ui/mainwindow.cpp" line="457"/>
         <source>&amp;Language</source>
         <translation>&amp;Langue</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="445"/>
+        <location filename="../Ui/mainwindow.cpp" line="458"/>
         <source>&amp;Help</source>
         <translation>&amp;Aide</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="448"/>
+        <location filename="../Ui/mainwindow.cpp" line="461"/>
         <source>Form library</source>
         <translation>Bibliothèque</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="213"/>
+        <location filename="../Ui/mainwindow.cpp" line="221"/>
         <source>%1[*] - %2</source>
         <translation></translation>
     </message>
@@ -155,32 +160,32 @@
 <context>
     <name>Monofin</name>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="430"/>
+        <location filename="../Ui/mainwindow.cpp" line="442"/>
         <source>&amp;Show Grid</source>
         <translation>&amp;Afficher la grille</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="431"/>
+        <location filename="../Ui/mainwindow.cpp" line="443"/>
         <source>Ctrl+G</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="432"/>
+        <location filename="../Ui/mainwindow.cpp" line="444"/>
         <source>&amp;Configurate...</source>
         <translation>&amp;Configurer...</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="433"/>
+        <location filename="../Ui/mainwindow.cpp" line="445"/>
         <source>Ctrl+S</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="434"/>
+        <location filename="../Ui/mainwindow.cpp" line="446"/>
         <source>&amp;Launch</source>
         <translation>&amp;Lancer</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="435"/>
+        <location filename="../Ui/mainwindow.cpp" line="447"/>
         <source>Ctrl+L</source>
         <translation></translation>
     </message>

@@ -1,6 +1,6 @@
 #include "monofin.h"
 
-#include "Data/projectfile.h"
+#include "Drawing/layerview.h"
 #include "Drawing/paintingscene.h"
 #include "Drawing/paintingview.h"
 
@@ -24,19 +24,21 @@
     Constructs a Monofin Object. The \a parent parameter is
     passed to the QWidget constructor.
 */
-Monofin::Monofin(QWidget *parent)
-    : QWidget(parent)
+Monofin::Monofin(Data::ProjectFile *projectFile, QWidget *parent)
+    : QWidget(parent), _projectFile(projectFile)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     _curFile = QString();
     _isEmpty = true;
     _isUntitled = true;
-    _layout = new QVBoxLayout;
+    _layout = new QVBoxLayout(this);
 
-    _projectFile = new Data::ProjectFile();
+    //_projectFile = new Data::ProjectFile();
+    _layerView = new LayerView(_projectFile);
     _scene = new PaintingScene(1024, 768, _projectFile, this);
 
     _layout->addWidget(new PaintingView(_scene));
+    _layout->addWidget(_layerView);
     createToolBar();
     retranslateUi();
     setLayout(_layout);

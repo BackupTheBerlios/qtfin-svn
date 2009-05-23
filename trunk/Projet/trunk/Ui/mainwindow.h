@@ -78,6 +78,7 @@ private:
     QMenuBar *_menuBar;
     QMenu *_menuFile;
     QMenu *_menuDraw;
+    QMenu *_menuDrawExt;
     QMenu *_menuSimulation;
     QtWindowListMenu *_menuWin;
     QMenu *_menuLanguage;
@@ -94,7 +95,6 @@ private:
     QString _currentLanguage;
     QString _qmPath;
     QTranslator _appTranslator;
-    QTranslator _qtTranslator;
     QActionGroup *_actionGroupLanguage;
 
     QStringList _recentFiles;

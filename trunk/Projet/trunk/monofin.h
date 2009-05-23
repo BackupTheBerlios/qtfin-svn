@@ -3,21 +3,21 @@
 
 #include <QtGui/QWidget>
 
+#include "Data/projectfile.h"
+
 class QAction;
 class QActionGroup;
 class QToolBar;
 class QVBoxLayout;
 
-namespace Data {
-    class ProjectFile;
-}
+class LayerView;
 class PaintingScene;
 
 class Monofin : public QWidget
 {
     Q_OBJECT
 public:
-    Monofin(QWidget *parent = 0);
+    Monofin(Data::ProjectFile *projectFile = new Data::ProjectFile(), QWidget *parent = 0);
     virtual ~Monofin();
 
     QString currentFile() const { return _curFile; }
@@ -80,6 +80,7 @@ private:
     bool _isEmpty;
     bool _isUntitled;
     QVBoxLayout *_layout;
+    LayerView *_layerView;
     Data::ProjectFile *_projectFile;
     PaintingScene *_scene;
 

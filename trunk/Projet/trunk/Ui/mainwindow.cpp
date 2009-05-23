@@ -45,13 +45,15 @@ MainWindow::MainWindow(QWidget *parent)
 
     _paramDiag = new ParametersDialog(this);
 
+#ifdef QT_OS_MAC
+    _qmPath = qApp->applicationDirPath() + ":/translations";
+#else
     _qmPath = qApp->applicationDirPath() + "/translations";
+#endif // QT_OS_MAC
+
     _appTranslator.load("monofin_" + QLocale::system().name(),
                         _qmPath);
-    _qtTranslator.load("qt_" + QLocale::system().name(),
-                       _qmPath);
     _currentLanguage = _appTranslator.translate("MainWindow", "English");
-    qApp->installTranslator(&_qtTranslator);
     qApp->installTranslator(&_appTranslator);
 
     createActions();
@@ -153,7 +155,6 @@ void MainWindow::switchLanguage(QAction *action)
 {
     QString locale = action->data().toString();
     _appTranslator.load("monofin_" + locale, _qmPath);
-    _qtTranslator.load("qt_" + locale, _qmPath);
     _currentLanguage = _appTranslator.translate("MainWindow", "English");
     retranslateUi();
 }
@@ -163,6 +164,14 @@ void MainWindow::updateMenus()
     bool hasMonofin = (activeMonofin() != 0);
     _actionSave->setEnabled(hasMonofin);
     _actionSaveAs->setEnabled(hasMonofin);
+
+    if (hasMonofin) {
+        _menuDrawExt->clear();
+        _menuDrawExt->addActions(activeMonofin()->toolBar()->actions());
+        _menuDrawExt->setEnabled(true);
+    }
+    else
+        _menuDrawExt->setEnabled(false);
 }
 
 void MainWindow::updateRecentFileActions()
@@ -344,6 +353,10 @@ void MainWindow::createMenus()
     _menuDraw->setObjectName(QString::fromUtf8("menuDraw"));
     _menuDraw->addAction(_actionShowGrid);
     _menuDraw->addAction(_actionProperties);
+    _menuDrawExt = new QMenu;
+    _menuDrawExt->setObjectName(QString::fromUtf8("menuDrawExt"));
+    _menuDrawExt->setDisabled(true);
+    _menuDraw->addMenu(_menuDrawExt);
 
     // MENU SIMULATION
     _menuSimulation = new QMenu(_menuBar);
@@ -428,9 +441,8 @@ void MainWindow::retranslateUi()
     _actionSave->setShortcut(QApplication::translate("MainWindow", "Ctrl+S", 0, QApplication::UnicodeUTF8));
     _actionSaveAs->setText(QApplication::translate("MainWindow", "&Save As...", 0, QApplication::UnicodeUTF8));
     _actionShowGrid->setText(QApplication::translate("Monofin", "&Show Grid", 0, QApplication::UnicodeUTF8));
-    _actionShowGrid->setShortcut(QApplication::translate("Monofin", "Ctrl+G", 0, QApplication::UnicodeUTF8));
+    _actionShowGrid->setShortcut(QApplication::translate("Monofin", "Ctrl+Shift+G", 0, QApplication::UnicodeUTF8));
     _actionConfigurate->setText(QApplication::translate("Monofin", "&Configurate...", 0, QApplication::UnicodeUTF8));
-    _actionConfigurate->setShortcut(QApplication::translate("Monofin", "Ctrl+S", 0, QApplication::UnicodeUTF8));
     _actionLaunch->setText(QApplication::translate("Monofin", "&Launch", 0, QApplication::UnicodeUTF8));
     _actionLaunch->setShortcut(QApplication::translate("Monofin", "Ctrl+L", 0, QApplication::UnicodeUTF8));
     _actionProperties->setText(QApplication::translate("MainWindow", "&Properties...", 0, QApplication::UnicodeUTF8));
@@ -440,6 +452,7 @@ void MainWindow::retranslateUi()
     // menus
     _menuFile->setTitle(QApplication::translate("MainWindow", "&File", 0, QApplication::UnicodeUTF8));
     _menuDraw->setTitle(QApplication::translate("MainWindow", "&Draw", 0, QApplication::UnicodeUTF8));
+    _menuDrawExt->setTitle(QApplication::translate("MainWindow", "&Actions", 0, QApplication::UnicodeUTF8));
     _menuSimulation->setTitle(QApplication::translate("MainWindow", "&Simulation", 0, QApplication::UnicodeUTF8));
     _menuLanguage->setTitle(QApplication::translate("MainWindow", "&Language", 0, QApplication::UnicodeUTF8));
     _menuHelp->setTitle(QApplication::translate("MainWindow", "&Help", 0, QApplication::UnicodeUTF8));

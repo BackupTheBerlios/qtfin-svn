@@ -1,15 +1,14 @@
 #include "defaultscript.h"
 
-#include "scriptmanager.h"
 #include "scripthelper.h"
 
 #include <QDir>
-#include <QString>
 
 using namespace Scripting;
 
 DefaultScript::DefaultScript(bool solve_problem, int mesh_sizes, QString output_path)
-	: ComsolScript("temp.default"), solve_problem(solve_problem), mesh_sizes(mesh_sizes), output_path(output_path) {
+	: ComsolScript("temp.default"),
+	  solve_problem(solve_problem), mesh_sizes(mesh_sizes), output_path(output_path) {
 }
 
 void DefaultScript::write(QTextStream& script, Data::ProjectFile& data) const {

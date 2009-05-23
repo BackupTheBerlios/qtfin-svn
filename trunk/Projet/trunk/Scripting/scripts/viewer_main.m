@@ -16,4 +16,7 @@ data.geometry = build_geometry(data);
 geomplot(data.geometry);
 
 % Sauvegarde de l'image.
+% ATTENTION, le type de l'image (png) ne doit pas être modifié.
+% Si le type est changé, l'interface graphique Monofin ne sera plus en mesure
+% d'afficher les visualisation 3D de la palme.
 saveimage(data.settings.output_path, 'type', 'png', 'width', 800, 'height', 600, 'unit', 'pixel');

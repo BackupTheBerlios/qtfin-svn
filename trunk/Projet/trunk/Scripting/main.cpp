@@ -10,7 +10,6 @@
 #include "defaultscriptmanager.h"
 #include "viewerscriptmanager.h"
 
-
 using namespace Scripting;
 
 class ScriptingUI : public QWidget {
@@ -36,7 +35,9 @@ int main(int argc, char *argv[]) {
 	QApplication app(argc, argv);
 	//ScriptingUI widget(0, sm);
 	//widget.show();
-	sm->execute();
+	if (sm->write()) {
+		sm->execute();
+	}
 
 	return app.exec();
 }

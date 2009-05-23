@@ -1,5 +1,10 @@
 #include "scripthelper.h"
 
+#include "scriptmanager.h"
+
+#include <QDir>
+#include <QString>
+
 using namespace Scripting;
 
 void ScriptHelper::writePath(QTextStream& script, Data::ProjectFile& data) {

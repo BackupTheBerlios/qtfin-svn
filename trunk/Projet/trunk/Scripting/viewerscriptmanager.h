@@ -5,10 +5,17 @@
 
 namespace Scripting {
 
+	/**
+	  * Implementation of ScriptManager for the viewer script.
+	  */
 	class ViewerScriptManager : public ScriptManager
 	{
 	public:
-		ViewerScriptManager(QString output_path, Data::ProjectFile& data);
+		ViewerScriptManager(
+				// settings
+				QString output_path,
+				// data
+				Data::ProjectFile& data);
 	};
 
 }

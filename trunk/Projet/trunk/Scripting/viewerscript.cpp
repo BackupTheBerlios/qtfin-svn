@@ -1,10 +1,14 @@
 #include "viewerscript.h"
+
 #include "scripthelper.h"
+
+#include <QDir>
 
 using namespace Scripting;
 
 ViewerScript::ViewerScript(QString output_path)
-		: ComsolScript("temp.viewer"), output_path(output_path) {
+		: ComsolScript("temp.viewer"),
+		  output_path(output_path) {
 }
 
 void ViewerScript::write(QTextStream& script, Data::ProjectFile& data) const {

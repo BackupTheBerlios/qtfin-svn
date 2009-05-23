@@ -39,14 +39,15 @@ void PaintingView::drawBackground(QPainter* painter, const QRectF& rect){
     painter->setPen(Qt::DotLine);
     painter->setOpacity(0.2);
     QRect r = _scene->sceneRect().toRect();
-    for(int i = 0; i < r.bottomRight().x(); i+=20){
-        painter->drawLine(i, r.bottomLeft().y(), i, r.topLeft().y());
+    qreal gridUnit = _scene->gridUnit();
+    for(qreal i = 0; i < r.bottomRight().x(); i+=gridUnit){
+        painter->drawLine(QLineF(i, r.bottomLeft().y(), i, r.topLeft().y()));
     }
-    for(int i = 0; i > r.topLeft().y(); i-=20){
-        painter->drawLine(r.bottomLeft().x(), i, r.bottomRight().x(), i);
+    for(qreal i = 0; i > r.topLeft().y(); i-=gridUnit){
+        painter->drawLine(QLineF(r.bottomLeft().x(), i, r.bottomRight().x(), i));
     }
-    for(int i = 0; i < r.bottomLeft().y(); i+=20){
-        painter->drawLine(r.bottomLeft().x(), i, r.bottomRight().x(), i);
+    for(qreal i = 0; i < r.bottomLeft().y(); i+=gridUnit){
+        painter->drawLine(QLineF(r.bottomLeft().x(), i, r.bottomRight().x(), i));
     }
 
 }

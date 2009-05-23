@@ -190,6 +190,17 @@ public:
     void moveControlPoint(QPointF pos);
 
     /**
+    * Compares the given pointer with the pointers of the two points of the
+    * line. If the given point is one of those of the line, the function
+    * returns the other. If the given point is not an extremity of the line,
+    * IT WILL RETURN 0.
+    *@param p a pointer to an extremity point of the line
+    *@return a pointer to the other extremity point of the line as the
+    * given one
+    **/
+    BoundingPoint* otherPointAs(BoundingPoint* p);
+
+    /**
     * Paints the item as a black straight line when the control point is
     * not activated or as a black bezier curve else.
     * When the mouse is near the line (isMouseOnLine = true), the line
@@ -225,6 +236,23 @@ public:
     *@return the coordinates as a QPointF
     **/
     QPointF pointAt(qreal t){return _path->pointAtPercent(t/2.0);}
+
+    /**
+    * Changes the color in which the line is painted when it is highlighted.
+    * Note that the color must be valid, or it will do nothing.
+    *@param color a reference to the new valid color of the line when it
+    * is highlighted
+    **/
+    void setColorWhenHighlighted(const QColor& color);
+
+    /**
+    * Changes the color in which the line is painted when it is
+    * not highlighted.
+    * Note that the color must be valid, or it will do nothing.
+    *@param color a reference to the new valid color of the line when it
+    * is not highlighted
+    **/
+    void setColorWhenNormal(const QColor& color);
 
     /**
     * If true, activates the control point of the line : the line is no longer
@@ -287,7 +315,12 @@ protected:
 
 //ATTRIBUTES
 
-    QColor _color;  //the color used by the QPainter to draw the line
+
+    QColor _colorWhenHighlighted; //the color used by the QPainter to draw the
+                                  //line when it is highlighted
+
+    QColor _colorWhenNormal;  //the color used by the QPainter to draw the
+                              //line when it is not highlighted
 
     ControlPoint* _contr; //a pointer to the control point of the line
 

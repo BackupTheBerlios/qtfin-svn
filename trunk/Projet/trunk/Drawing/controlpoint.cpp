@@ -4,10 +4,16 @@
 //PUBLIC
 
 ControlPoint::ControlPoint(qreal x, qreal y, BrLine* line, PaintingScene* scene)
-    : QGraphicsItem(), _canMove(false), _color(Qt::black),
-    _hasFirstTangent(false), _hasSecondTangent(false),
-    _internalKey(Data::MONOFIN_SURFACE_NO_CONTROL_POINT), _isMoving(false),
+    : QGraphicsItem(), _canMove(false), _hasFirstTangent(false),
+    _hasSecondTangent(false),
+    _internalKey(Data::MONOFIN_SURFACE_NO_CONTROL_POINT),
+    _isHighlighted(false), _isMoving(false),
     _line(line), _scene(scene){
+
+    _colorWhenNormal = _scene->getColor(PaintingScene::ControlPointColor,
+                                        PaintingScene::NormalColor);
+    _colorWhenHighlighted = _scene->getColor(PaintingScene::ControlPointColor,
+                                        PaintingScene::HighlightingColor);
 
     this->setAcceptHoverEvents(true);
 
@@ -16,10 +22,16 @@ ControlPoint::ControlPoint(qreal x, qreal y, BrLine* line, PaintingScene* scene)
 }
 
 ControlPoint::ControlPoint(const QPointF& coord, BrLine* line, PaintingScene* scene)
-    : QGraphicsItem(), _canMove(false), _color(Qt::black),
-    _hasFirstTangent(false), _hasSecondTangent(false),
-    _internalKey(Data::MONOFIN_SURFACE_NO_CONTROL_POINT), _isMoving(false),
+    : QGraphicsItem(), _canMove(false), _hasFirstTangent(false),
+    _hasSecondTangent(false),
+    _internalKey(Data::MONOFIN_SURFACE_NO_CONTROL_POINT),
+    _isHighlighted(false), _isMoving(false),
     _line(line), _scene(scene){
+
+    _colorWhenNormal = _scene->getColor(PaintingScene::ControlPointColor,
+                                        PaintingScene::NormalColor);
+    _colorWhenHighlighted = _scene->getColor(PaintingScene::ControlPointColor,
+                                        PaintingScene::HighlightingColor);
 
     this->setAcceptHoverEvents(true);
 
@@ -77,9 +89,14 @@ void ControlPoint::paint(QPainter* painter,
                          QWidget* widget){
     Q_UNUSED(option);
     Q_UNUSED(widget);
+
     if(!_scene->isSimplifyViewActivated()){
-        painter->setPen(_color);
-        //painter->setRenderHint(QPainter::Antialiasing);
+
+        if(!_isHighlighted){
+            painter->setPen(_colorWhenNormal);
+        }else{
+            painter->setPen(_colorWhenHighlighted);
+        }
         painter->drawEllipse(*_pos, this->rectangleSize()/2.0,
                              this->rectangleSize()/2.0);
     }else{
@@ -87,9 +104,17 @@ void ControlPoint::paint(QPainter* painter,
     }
 }
 
-/*inline static qreal ControlPoint::rectangleSize(){
-    return CONTRPOINTHEIGHT;
-}*/
+void ControlPoint::setColorWhenHighlighted(const QColor& color){
+    if (color.isValid()){
+        _colorWhenHighlighted = color;
+    }
+}
+
+void ControlPoint::setColorWhenNormal(const QColor& color){
+    if (color.isValid()){
+        _colorWhenNormal = color;
+    }
+}
 
 void ControlPoint::setTangent1(Tangent* t){
     _hasFirstTangent = true;
@@ -129,13 +154,13 @@ bool ControlPoint::willMoveToGoCloseToPosY(qreal posY){
 void ControlPoint::hoverEnterEvent(QGraphicsSceneHoverEvent* event){
     qDebug("control hover");
     _scene->setCanCreateSelectionRect(false);
-    _color = Qt::green;
+    _isHighlighted = true;
     _scene->update(_scene->sceneRect());
 }
 
 void ControlPoint::hoverLeaveEvent(QGraphicsSceneHoverEvent* event){
     _scene->setCanCreateSelectionRect(true);
-    _color = Qt::black;
+    _isHighlighted = false;
     _scene->update(_scene->sceneRect());
 }
 
@@ -165,6 +190,8 @@ void ControlPoint::mousePressEvent(QGraphicsSceneMouseEvent* event){
             //si on supprime un point de contrôle, celui-ci ne peut pas rétablir
             //la variable _canCreateSelectionRect à true, il faut donc le faire ici :
             _scene->setCanCreateSelectionRect(true);
+
+            _isHighlighted = false;
 
 //MOVE POINT
 

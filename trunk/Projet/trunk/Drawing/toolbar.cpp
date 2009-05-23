@@ -51,11 +51,16 @@ ToolBar::ToolBar(PaintingScene* scene, QWidget* parent)
     _redoButton = new QPushButton("Redo",this);
     _vlayout->addWidget(_redoButton);
 
+    _magnetCheckBox = new QCheckBox("Activate magnet", this);
+    _magnetCheckBox->click();
+    _magnetCheckBox->click();
+    _vlayout->addWidget(_magnetCheckBox);
+
     /*QPushButton* viewCoords = new QPushButton("View coords", this);
     _vlayout->addWidget(viewCoords);*/
 
     QPushButton* koin = new QPushButton("Koin !",this);
-    koin->setDisabled(true);
+    koin->setEnabled(true);
     _vlayout->addWidget(koin);
 
 
@@ -77,6 +82,11 @@ ToolBar::ToolBar(PaintingScene* scene, QWidget* parent)
     QObject::connect(_redoButton, SIGNAL(clicked()), _scene, SLOT(redo()));
     QObject::connect(_scene, SIGNAL(pointsOnScene(bool)), this, SLOT(pointsOnScene(bool)));
     QObject::connect(_keepBezierCheckBox, SIGNAL(clicked(bool)), _scene, SLOT(keepBezierCurve(bool)));
+    QObject::connect(_magnetCheckBox, SIGNAL(clicked(bool)), _scene, SLOT(activateMagnet(bool)));
+
+    QObject::connect(koin, SIGNAL(clicked()), this, SLOT(changeColor()));
+    QObject::connect(this, SIGNAL(changeColor(int,int,QColor)), _scene, SLOT(changeColor(int,int,QColor)));
+
     //QObject::connect(viewCoords, SIGNAL(clicked()), _scene, SLOT(showCoords()));
 }
 
@@ -118,6 +128,47 @@ void ToolBar::beginLine(bool a){
     _toolButtonRemoveControl->setDisabled(a);
     _undoButton->setDisabled(a);
     _redoButton->setDisabled(a);
+}
+
+void ToolBar::changeColor(){
+    qsrand(QTime::currentTime().msec());
+
+    int r = qrand()% 256;
+    int g = qrand()% 256;
+    int b = qrand()% 256;
+    emit changeColor(PaintingScene::BoundingPointColor, PaintingScene::NormalColor, QColor(r,g,b));
+
+    r = qrand()% 256;
+    g = qrand()% 256;
+    b = qrand()% 256;
+    emit changeColor(PaintingScene::BoundingPointColor, PaintingScene::HighlightingColor, QColor(r,g,b));
+
+    r = qrand()% 256;
+    g = qrand()% 256;
+    b = qrand()% 256;
+    emit changeColor(PaintingScene::BoundingPointColor, PaintingScene::SelectionColor, QColor(r,g,b));
+
+    r = qrand()% 256;
+    g = qrand()% 256;
+    b = qrand()% 256;
+    emit changeColor(PaintingScene::ControlPointColor, PaintingScene::NormalColor, QColor(r,g,b));
+
+    r = qrand()% 256;
+    g = qrand()% 256;
+    b = qrand()% 256;
+    emit changeColor(PaintingScene::ControlPointColor, PaintingScene::HighlightingColor, QColor(r,g,b));
+
+    r = qrand()% 256;
+    g = qrand()% 256;
+    b = qrand()% 256;
+    emit changeColor(PaintingScene::LineColor, PaintingScene::NormalColor, QColor(r,g,b));
+
+    r = qrand()% 256;
+    g = qrand()% 256;
+    b = qrand()% 256;
+    emit changeColor(PaintingScene::LineColor, PaintingScene::HighlightingColor, QColor(r,g,b));
+
+
 }
 
 void ToolBar::clean(){

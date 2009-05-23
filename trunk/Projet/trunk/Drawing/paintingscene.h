@@ -3,6 +3,7 @@
 
 #include <QGraphicsScene>
 #include <QList>
+#include <QVector>
 #include <QPointF>
 #include <QPolygonF>
 #include <QKeyEvent>
@@ -30,6 +31,7 @@ class PaintingScene: public QGraphicsScene{
 
 public:
 
+    //the type of the action when a signal somethingChanged is emitted
     enum DrawingAction{ActionCreateLine,
                        ActionInsertBoundingPoint,
                        ActionInsertControlPoint,
@@ -41,6 +43,18 @@ public:
                        ActionRemoveSomePoints,
                        ActionNoAction
                    };
+
+    //the type of the item, which color is requested or must be changed
+    enum ColorItem{BoundingPointColor = 0,
+                   ControlPointColor = 1,
+                   LineColor = 2
+               };
+
+    //the type of the requested color or of the color which has to change
+    enum ColorType{NormalColor = 0,
+                   HighlightingColor = 1,
+                   SelectionColor = 2
+               };
 
     /**
     * Contructor with the size of the scene rectangle
@@ -73,6 +87,14 @@ public:
     **/
     void boundingPointHasMoved(BoundingPoint* p, bool isUniqueModification = true);
 
+    /**
+    * Notifies the scene that a bounding point is highlighted or not, which
+    * means that the mouse is near or on this point, or not anymore. Generally
+    * called by a point in hoverEnterEvent or hoverLeaveEvent.
+    *@param p a pointer to the point which is highlighted or not anymore
+    *@param isHighlighted a boolean : true if the point becomes highlighted,
+    * false if it is not highlighted anymore
+    **/
     void boundingPointIsHighlighted(BoundingPoint* p, bool isHighlighted);
 
 
@@ -88,6 +110,16 @@ public:
     **/
     void controlPointHasMoved(ControlPoint* p, bool isUniqueModification = true);
 
+    /**
+    * Notifies the internal structure that a control point has been hidden,
+    * which means deleted for the structure, and if it is a unique modification
+    * or if it is a part of many others modifications.
+    *@param p a pointer to the control point which has been hidden
+    *@param isUniqueModification if true, the structure will be notified that
+    * the destruction of the point must be considered alone in the modification
+    * stack ; if false, NO function to start or stop the modifications in
+    * the structure will be called
+    **/
     void controlPointHasBeenHidden(ControlPoint* p, bool isUniqueModification = true);
 
 
@@ -106,7 +138,34 @@ public:
     **/
     BrLine* createLine(BoundingPoint* p1, BoundingPoint* p2);
 
+    /**
+    *Returns true if there is at least an intersection between two lines
+    * (straight lines or bezier curves). Two lines linked to a same point are
+    * not considered as intersecting, and because Qt considers this situation
+    * as an intersection, the algorithm must appoximate the curves to calculate
+    * the intersections. But the approximation is pretty good.
+    *@return true if there is an intersection between lines, otherwise
+    * return false
+    **/
     bool existIntersectionsBetweenLines();
+
+    /**
+    *Gives the color of the requesting items for the given type. Item and type
+    * must be valids and the type must correspond to the requested item, or
+    * the returned color will be a non-valid color.
+    *@param item the valid type of item for which the color is requested
+    * as a ColorItem
+    *@param type the valid type of the requested color as a ColorType
+    *@return the color of the given for the given item type as a QColor
+    **/
+    QColor getColor(ColorItem item, ColorType type);
+
+    /**
+    *@return the unit of the grid (the length between two lines of the grid)
+    **/
+    qreal gridUnit(){
+        return _gridUnit;
+    }
 
     /**
     *@return the height of the scene rectangle.
@@ -116,6 +175,7 @@ public:
     bool isAddControlActivated(){return _isAddControlActivated;}
     bool isAddPointActivated(){return _isAddPointActivated;}
     bool isCreateLineActivated(){return _isCreateLineActivated;}
+    bool isMagnetActivated(){return _isMagnetActivated;}
     bool isRemoveControlPointActivated(){return _isRemoveControlPointActivated;}
     bool isSimplifyViewActivated(){return _isSimplifyViewActivated;}
 
@@ -226,6 +286,13 @@ public slots:
     void activateCreateLine(bool a);
 
     /**
+    * Activated or deactivates the magnet, which makes a point move only
+    * to the intersections of the grid lines.
+    *@param a if true, activates the magnet ; if false, deactivates the magnet
+    **/
+    void activateMagnet(bool a){ _isMagnetActivated = a;}
+
+    /**
     * Activates or deactivates the deletion of control points.
     *@param a if true, activates 'remove control point' ;
     * if false, deactivates 'remove control point'
@@ -253,6 +320,20 @@ public slots:
     * NOT align several points.
     **/
     void alignTangents();
+
+    /**
+    * Changes the color of the given type for the given items by the
+    * given color.
+    * The item must be one of the following ColorItem :
+    *   BoundingPointColor, ControlPointColor or LineColor.
+    * The type must be one of the following ColorType :
+    *   NormalColor, SelectionColor or HighlightingColor.
+    * If type or item is not valid, the function does nothing.
+    *@param item the items which color has to change, as a ColorItem
+    *@param type the type of the color which has to change, as a ColorType
+    *@param color a reference to the new color of the items
+    **/
+    void changeColor(int item, int type, const QColor& color);
 
     /**
     * Removes all points of the scene and of the internal structure.
@@ -289,7 +370,14 @@ public slots:
     **/
     void savePicture();
 
-    //void showCoords();
+    /**
+    * Sets the size of the unit of the grid (The length between two lines of
+    * the grid). It must be greater than zero.
+    *@param the new unit of the grid
+    **/
+    void setGridUnit(qreal unit){
+        if(unit > 0){_gridUnit = unit; this->update(this->sceneRect());}
+    }
 
     /**
     * Changes the way the items are painted.
@@ -352,6 +440,16 @@ signals:
 
 protected:
 
+    //the position of the colors in the color vector
+    enum VectorColor{BoundingPointNormalColor = 0,
+                    BoundingPointHighlightingColor = 1,
+                    BoundingPointSelectionColor = 2,
+                    ControlPointNormalColor = 3,
+                    ControlPointHighlightingColor = 4,
+                    LineNormalColor = 5,
+                    LineHighlightingColor = 6
+                };
+
     void getMonofinFromStructure();
     void keyPressEvent(QKeyEvent* event);
     void keyReleaseEvent(QKeyEvent* event);
@@ -364,9 +462,11 @@ protected:
 
     SymmetryAxis* _axis;
     bool _canCreateSelectionRect;
+    QVector<QColor> _colors;
     QList<ControlPoint*> _controlPointsList;
     GhostLine* _ghostLine;
     GhostPoint* _ghostPoint;
+    qreal _gridUnit;
     bool _hasABoundingPointMoved;
     bool _hasPlacedFirstPoint;
     bool _isAddControlActivated;
@@ -374,6 +474,7 @@ protected:
     bool _isAPointHighlighted;
     bool _isCreateLineActivated;
     bool _isCreatingSelectionRect;
+    bool _isMagnetActivated;
     bool _isMultiSelectionKeyActivated;
     bool _isRemoveControlPointActivated;
     bool _isSimplifyViewActivated;

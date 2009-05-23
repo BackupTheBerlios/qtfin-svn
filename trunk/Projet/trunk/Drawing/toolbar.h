@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QCheckBox>
+#include <QTime>
 
 class PaintingScene;
 
@@ -20,13 +21,18 @@ public slots:
     void activeAddPoint(bool a);
     void activateRemoveControl(bool a);
     void beginLine(bool a);
+    void changeColor();
     void clean();
     void finishedLine(bool a);
     void lineInterrupted();
     void pointsOnScene(bool a);
 
+signals:
+    void changeColor(int, int, QColor);
+
 protected:
     QCheckBox* _keepBezierCheckBox;
+    QCheckBox* _magnetCheckBox;
     PaintingScene* _scene;
     QPushButton* _redoButton;
     QPushButton* _toolButtonAddControl;

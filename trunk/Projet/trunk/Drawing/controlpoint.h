@@ -33,7 +33,6 @@ public:
     *@param y the coordinate y of the point
     *@param line a pointer to the bezier curve which has this control point
     *@param scene a pointer to the Painting scene
-    * in which the point will be placed
     **/
     ControlPoint(qreal x, qreal y, BrLine* line, PaintingScene* scene);
 
@@ -45,7 +44,6 @@ public:
     *@param coord the coordinate of the point as a QPointF
     *@param line a pointer to the bezier curve which has this control point
     *@param scene a pointer to the Painting scene
-    * in which the point will be placed
     **/
     ControlPoint(const QPointF& coord, BrLine* line, PaintingScene* scene);
 
@@ -109,6 +107,23 @@ public:
     qreal rectangleSize() const{return CONTRPOINTHEIGHT;}
 
     /**
+    * Changes the color in which the point is painted when it is highlighted.
+    * Note that the color must be valid, or it will do nothing.
+    *@param color a reference to the new valid color of the point when it
+    * is highlighted
+    **/
+    void setColorWhenHighlighted(const QColor& color);
+
+    /**
+    * Changes the color in which the point is painted when it is
+    * not highlighted.
+    * Note that the color must be valid, or it will do nothing.
+    *@param color a reference to the new valid color of the point when it
+    * is not highlighted
+    **/
+    void setColorWhenNormal(const QColor& color);
+
+    /**
     * Sets the internal key of the point with the given key
     * which comes from the internal strucure of the monofin.
     *@param key the new key of the point which has to come from the structure
@@ -145,7 +160,11 @@ protected:
     bool _canMove;  //if true, the point can move when it receives
                     //a mouseMoveEvent ; if false, it can not
 
-    QColor _color;  //the color used by the QPainter to draw the point
+    QColor _colorWhenHighlighted;  //the color used by the QPainter to draw
+                                   //the point when it is highlighted
+
+    QColor _colorWhenNormal; //color used by the QPainter to draw the point
+                             //when it is not highlighted
 
     bool _hasFirstTangent;  //a control boolean, to be sure that the first
                             //tangent has been set, before using the pointer
@@ -155,6 +174,9 @@ protected:
 
     int _internalKey;  //the key of the point in the internal
                        //structure of the monofin
+
+    bool _isHighlighted; //if true, it means that the mouse is near
+                         //or on the point
 
     bool _isMoving;  //boolean used to determine if the point has changed its
                      //position between a mousePressEvent and a

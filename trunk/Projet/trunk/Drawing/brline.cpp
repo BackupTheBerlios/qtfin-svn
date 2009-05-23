@@ -4,10 +4,16 @@
 //PUBLIC
 
 BrLine::BrLine(BoundingPoint* p1, BoundingPoint* p2, PaintingScene* scene)
-    : QGraphicsItem(), _color(Qt::black), _internalKey(Data::MONOFIN_SURFACE_NOT_CREATED_SEGMENT),
+    : QGraphicsItem(),
+    _internalKey(Data::MONOFIN_SURFACE_NOT_CREATED_SEGMENT),
     _isControlPointActivated(false), _isMouseOnLine(false),
     _p1(p1), _p2(p2), _scene(scene){
 
+    _colorWhenNormal = _scene->getColor(PaintingScene::LineColor,
+                                        PaintingScene::NormalColor);
+    _colorWhenHighlighted = _scene->getColor(PaintingScene::LineColor,
+                                        PaintingScene::HighlightingColor);
+    
     _line = new QLineF(_p1->coord(), _p2->coord());
     QPointF contr((_p2->coord().x()+_p1->coord().x())/2.0,
                   (_p2->coord().y()+_p1->coord().y())/2.0);
@@ -146,6 +152,16 @@ void BrLine::moveControlPoint(QPointF pos){
     _tangent2->setLine(_line->p2(), _contr->coord());
 }
 
+BoundingPoint* BrLine::otherPointAs(BoundingPoint* p){
+    if(p == this->_p1){
+        return _p2;
+    }else if(p == this->_p2){
+        return _p1;
+    }else{
+        return 0;
+    }
+}
+
 void BrLine::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget){
     Q_UNUSED(option);
     Q_UNUSED(widget);
@@ -157,11 +173,10 @@ void BrLine::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QW
     //qDebug("Pen Width : %d", pw);
     pen.setWidth(pw);
     if(_isMouseOnLine){
-        _color = Qt::blue;
+        pen.setColor(_colorWhenHighlighted);
     }else{
-        _color = Qt::black;
+        pen.setColor(_colorWhenNormal);
     }
-    pen.setColor(_color);
 
     painter->setPen(pen);
 
@@ -179,10 +194,10 @@ void BrLine::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QW
 
   //affichage du symétrique
     if(!_scene->isSimplifyViewActivated()){
-        painter->setPen(Qt::black);
+        painter->setPen(_colorWhenNormal);
         painter->setOpacity(0.5);
     }else{
-        pen.setColor(Qt::black);
+        pen.setColor(_colorWhenNormal);
         painter->setPen(pen);
     }
     if(_isControlPointActivated){
@@ -197,6 +212,18 @@ void BrLine::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QW
 
     }
 
+}
+
+void BrLine::setColorWhenHighlighted(const QColor& color){
+    if (color.isValid()){
+        _colorWhenHighlighted = color;
+    }
+}
+
+void BrLine::setColorWhenNormal(const QColor& color){
+    if (color.isValid()){
+        _colorWhenNormal = color;
+    }
 }
 
 void BrLine::setControlPoint(bool on){

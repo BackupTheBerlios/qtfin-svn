@@ -5,19 +5,21 @@
 #include "brline.h"
 #include "selectionrect.h"
 
-using namespace Data;
+//using namespace Data;
 
 //PUBLIC
 
 PaintingScene::PaintingScene(qreal width,
                              qreal height,
-                             ProjectFile* structure,
+                             Data::ProjectFile* structure,
                              QObject* parent)
     :QGraphicsScene(parent), _canCreateSelectionRect(true),
+    _gridUnit(20),
     _hasABoundingPointMoved(false), _hasPlacedFirstPoint(false),
     _isAddControlActivated(false), _isAddPointActivated(false),
     _isAPointHighlighted(false), _isCreateLineActivated(false),
-    _isCreatingSelectionRect(false), _isMultiSelectionKeyActivated(false),
+    _isCreatingSelectionRect(false), _isMagnetActivated(false),
+    _isMultiSelectionKeyActivated(false),
     _isRemoveControlPointActivated(false),
     _isSimplifyViewActivated(false), _keepBezierCurve(true),
     _lastPlacedPoint(0), _scaleFactor(1), _structure(structure){
@@ -29,6 +31,18 @@ PaintingScene::PaintingScene(qreal width,
 
     _axis = new SymmetryAxis(this);
     this->addItem(_axis);
+
+    _colors.resize(6);
+
+    _colors.insert(BoundingPointNormalColor, Qt::black);
+    _colors.insert(BoundingPointHighlightingColor, Qt::blue);
+    _colors.insert(BoundingPointSelectionColor, Qt::red);
+
+    _colors.insert(ControlPointNormalColor, Qt::black);
+    _colors.insert(ControlPointHighlightingColor, Qt::green);
+
+    _colors.insert(LineNormalColor, Qt::black);
+    _colors.insert(LineHighlightingColor, Qt::blue);
 
 }
 
@@ -69,18 +83,6 @@ void PaintingScene::boundingPointIsHighlighted(BoundingPoint* p, bool isHighligh
     _itemUnderMouse = p;
 }
 
-void PaintingScene::controlPointHasMoved(ControlPoint* p, bool isUniqueModification){
-    if(isUniqueModification){
-        _structure->startHistory(Data::MonofinSurface);
-    }
-
-    _structure->setControlPoint(p->internalKey(), p->coord().x(), p->coord().y());
-
-    if(isUniqueModification){
-        _structure->stopHistory(Data::MonofinSurface);
-        emit this->somethingChanged(this->ActionMoveControlPoint);
-    }
-}
 
 void PaintingScene::controlPointHasBeenHidden(ControlPoint* p, bool isUniqueModification){
     if(isUniqueModification){
@@ -141,6 +143,71 @@ bool PaintingScene::existIntersectionsBetweenLines(){
         }
     }
     return intersect;
+
+}
+
+QColor PaintingScene::getColor(ColorItem item, ColorType type){
+    switch(item){
+        case BoundingPointColor:
+            switch(type){
+                case NormalColor:
+                    return _colors.at(BoundingPointNormalColor);
+                    break;
+
+                case HighlightingColor:
+                    return _colors.at(BoundingPointHighlightingColor);
+                    break;
+
+                case SelectionColor:
+                    return _colors.at(BoundingPointSelectionColor);
+                    break;
+
+                default:
+                    qDebug("Bad type of color while requesting a color");
+                    return QColor();
+
+            }//switch
+        break;
+
+        case ControlPointColor:
+            switch(type){
+                case NormalColor:
+                    return _colors.at(ControlPointNormalColor);
+                    break;
+
+                case HighlightingColor:
+                    return _colors.at(ControlPointHighlightingColor);
+                    break;
+
+                default:
+                    qDebug("Bad type of color while requesting a color");
+                    return QColor();
+
+            }//switch
+        break;
+
+        case LineColor:
+            switch(type){
+                case NormalColor:
+                    return _colors.at(LineNormalColor);
+                    break;
+
+                case HighlightingColor:
+                    return _colors.at(LineHighlightingColor);
+                    break;
+
+                default:
+                    qDebug("Bad type of color while requesting a color");
+                    return QColor();
+
+            }//switch
+        break;
+
+        default:
+        qDebug("Bad item while requesting color");
+        return QColor();
+
+    }
 
 }
 
@@ -234,12 +301,6 @@ void PaintingScene::removePoint(BoundingPoint* p){
         BrLine* newLine;
         if(p1 !=0 && p2 !=0){
 
-///////////////////////////
-
-//PREVOIR UN TEST AVEC CREATELINE(p2,p1)
-
-///////////////////////////
-
             newLine = this->createLine(p2, p1);
         }else{
             qDebug("Problem with pointers while removing a point.");
@@ -319,18 +380,31 @@ void PaintingScene::ajustSceneRect(qreal dx, qreal dy){
 }
 
 void PaintingScene::alignTangents(){
+    //we get the list of the selected items
     QList<QGraphicsItem*> l = this->selectedItems();
-        QGraphicsItem* item;
-        _structure->startHistory(Data::MonofinSurface);
-        foreach(item, l){
-            if(item->type() == BoundingPoint::Type){
-                qgraphicsitem_cast<BoundingPoint*>(item)->alignTangents();
-            }else if(item->type() == ExtremityPoint::Type){
-                qgraphicsitem_cast<ExtremityPoint*>(item)->alignTangents();
-            }
-        }//foreach
-        _structure->stopHistory(Data::MonofinSurface);
-        emit this->somethingChanged(this->ActionAlignTangents);
+
+    //we begin the modifications on the internal structure
+    _structure->startHistory(Data::MonofinSurface);
+
+    //we call the function alignTangent on each item selected, depebding on its type
+    foreach(QGraphicsItem* item, l){
+        if(item->type() == BoundingPoint::Type){
+            qgraphicsitem_cast<BoundingPoint*>(item)->alignTangents();
+        }else if(item->type() == ExtremityPoint::Type){
+            qgraphicsitem_cast<ExtremityPoint*>(item)->alignTangents();
+        }
+    }//foreach
+
+    //we end the modifications on the internal structure
+    _structure->stopHistory(Data::MonofinSurface);
+
+    //we set the attribute hasABoundingPointMoved to false, to allow the
+    //user to select correctly a point when others are selected
+    //(see mouseReleaseEvent)
+    this->_hasABoundingPointMoved = false;
+
+    //we emit a signal because an action has been done
+    emit this->somethingChanged(this->ActionAlignTangents);
 }
 
 void PaintingScene::cleanPoints(){
@@ -341,6 +415,91 @@ void PaintingScene::cleanPoints(){
     emit this->somethingChanged(this->ActionRemoveSomePoints);
     this->update(this->sceneRect());
     _hasPlacedFirstPoint = false;
+}
+
+void PaintingScene::changeColor(int item, int type, const QColor& color){
+    qDebug("change color");
+    switch(item){
+
+        case BoundingPointColor:
+            foreach(BoundingPoint* bp, _pointList){
+                switch(type){
+                    case NormalColor:
+                        bp->setColorWhenNormal(color);
+                        _colors[BoundingPointNormalColor] = color;
+                        break;
+                    case SelectionColor:
+                        bp->setColorWhenSelected(color);
+                        _colors[BoundingPointSelectionColor] = color;
+                        break;
+                    case HighlightingColor:
+                        bp->setColorWhenHighlighted(color);
+                        _colors[BoundingPointHighlightingColor] = color;
+                        break;
+                    default:
+                        qDebug("Cannot change color of bounding points : bad type");
+                        return;
+                }//switch
+            }//foreach
+            break;
+
+
+        case ControlPointColor:
+            foreach(ControlPoint* cp, _controlPointsList){
+                switch(type){
+                    case NormalColor:
+                        cp->setColorWhenNormal(color);
+                        _colors[ControlPointNormalColor] = color;
+                        break;
+                    case HighlightingColor:
+                        cp->setColorWhenHighlighted(color);
+                        _colors[ControlPointHighlightingColor] = color;
+                        break;
+                    default:
+                        qDebug("Cannot change color of control points : bad type");
+                        return;
+                }//switch
+            }//foreach
+        break;
+
+        case LineColor:
+            foreach(BrLine* l, _lineList){
+                switch(type){
+                    case NormalColor:
+                        l->setColorWhenNormal(color);
+                        _colors[LineNormalColor] = color;
+                        break;
+                    case HighlightingColor:
+                        l->setColorWhenHighlighted(color);
+                        _colors[LineHighlightingColor] = color;
+                        break;
+                    default:
+                        qDebug("Cannot change color of lines : bad type");
+                        return;
+                }//switch
+            }//foreach
+        break;
+
+        default:
+            qDebug("Cannot change color : bad argument for the item");
+            return;
+    }//switch
+
+    this->update(this->sceneRect());
+
+}
+
+void PaintingScene::controlPointHasMoved(ControlPoint* p, bool isUniqueModification){
+    if(isUniqueModification){
+        _structure->startHistory(Data::MonofinSurface);
+    }
+
+    _structure->setControlPoint(p->internalKey(), p->coord().x(), p->coord().y());
+
+    if(isUniqueModification){
+        _structure->stopHistory(Data::MonofinSurface);
+        emit this->somethingChanged(this->ActionMoveControlPoint);
+    }
 }
 
 void PaintingScene::keepBezierCurve(bool k){
@@ -643,8 +802,18 @@ void PaintingScene::keyPressEvent(QKeyEvent* event){
 //-
     }else if(event->key() == Qt::Key_Minus){
         this->ajustSceneRect(-20,-20);
-
     }
+
+//UP
+    else if(event->key() == Qt::Key_Up){
+        this->setGridUnit(this->gridUnit() + 1);
+    }
+
+//DOWN
+    else if(event->key() == Qt::Key_Down){
+        this->setGridUnit(this->gridUnit() - 1);
+    }
+
 }
 
 void PaintingScene::keyReleaseEvent(QKeyEvent* event){
@@ -684,18 +853,7 @@ void PaintingScene::mouseMoveEvent(QGraphicsSceneMouseEvent* event){
 
         _ghostPoint->setCanBePlaced(!intersect);
 
-        QRectF zone = this->pointsBoundingZone();
         QPointF pos(event->scenePos());
-        if(pos.x() < zone.bottomLeft().x()){
-            pos.setX(zone.bottomLeft().x());
-        }else if(pos.x() > zone.bottomRight().x()){
-            pos.setX(zone.bottomRight().x());
-        }
-        if(pos.y() < 0){
-            pos.setY(0);
-        }else if(pos.y() > zone.bottomLeft().y()){
-            pos.setY(zone.bottomLeft().y());
-        }
         if(!_hasPlacedFirstPoint){
             pos.setY(0);
         }else{}

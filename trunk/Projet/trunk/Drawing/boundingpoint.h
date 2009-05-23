@@ -38,8 +38,7 @@ public:
     * must be set with setLeftLine or setRightLine.
     *@param x the coordinate x of the point
     *@param y the coordinate y of the point
-    *@param scene a pointer to the Painting scene
-    * in which the point is placed
+    *@param scene a pointer to the Painting scene in which the point is placed
     **/
     BoundingPoint(qreal x, qreal y, PaintingScene* scene);
 
@@ -49,8 +48,7 @@ public:
     * must be set with setLeftLine or setRightLine.
     *@param coord the QPointF which will give the coordinates (x,y)
     * to create the bounding point
-    *@param scene a pointer to the Painting scene
-    * in which the point is placed
+    *@param scene a pointer to the Painting scene in which the point is placed
     **/
     BoundingPoint(const QPointF& coord, PaintingScene* scene);
 
@@ -132,11 +130,26 @@ public:
     /**
     * Makes the bounding point moving to the coordinates of the given QPointF,
     * but ONLY in the zone of the scene where points can move (see
-    * PaintingScene::pointsBoundingZone).
+    * PaintingScene::pointsBoundingZone). If the magnet is activated in the
+    * scene, the function can use it to move the point only on the
+    * intersections of the grid, depending on the parameter.
     * It also calls the function move() of the lines if they exist.
-    * @param p the new coordinates of the bounding point as a QPointF
+    *@param p the new coordinates of the bounding point as a QPointF
+    *@param useMagnetIfActivated if true, the point will be placed on the
+    * intersections of the grid, but ONLY if the magnet is activated on the
+    * scene ; if false, the point is placed just as described before
     **/
-    void moveTo(const QPointF& p);
+    void moveTo(const QPointF& p, bool useMagnetIfActivated = true);
+
+    /**
+    * Compares the given pointer with the pointers of the two lines of the
+    * point if they exist. If the given line is one of those of the point, the function
+    * returns the other if it exists. If the given line is not linked to this
+    * point, or if the point has only one line, IT WILL RETURN 0.
+    *@param l a pointer to a line linked to this point
+    *@return a pointer to the other line linked to this point as the given one
+    **/
+    BrLine* otherLineAs(BrLine* l);
 
     /**
     * Paints the item as a black rectangle when it's not under the mouse
@@ -189,9 +202,34 @@ public:
     * Allows or not the point to move. This function is called by the scene
     * when the user activates or deactivates certain features.
     *@param c a boolean to say if the point is allowed to move
-    * (true : it allows it to move ; false : it firbids it to move)
+    * (true : it allows it to move ; false : it forbids it to move)
     **/
     void setCanMove(bool c){_canMove = c;}
+
+    /**
+    * Changes the color in which the point is painted when it is highlighted.
+    * Note that the color must be valid, or it will do nothing.
+    *@param color a reference to the new valid color of the point when it
+    * is highlighted
+    **/
+    void setColorWhenHighlighted(const QColor& color);
+
+    /**
+    * Changes the color in which the point is painted when it is not
+    * highlighted or selected.
+    * Note that the color must be valid, or it will do nothing.
+    *@param color a reference to the new valid color of the point when it
+    * is not highlighted or selected
+    **/
+    void setColorWhenNormal(const QColor& color);
+
+    /**
+    * Changes the color in which the point is painted when it is selected.
+    * Note that the color must be valid, or it will do nothing.
+    *@param color a reference to the new valid color of the point when it
+    * is selected
+    **/
+    void setColorWhenSelected(const QColor& color);
 
     /**
     * Sets the internal key of the point with the given key
@@ -253,7 +291,14 @@ protected:
 
     bool _canMove;  //used to determine if the item is allowed to move or not
 
-    QColor _color;  //the color used by the QPainter to draw the point
+    QColor _colorWhenNormal;  //the color used by the QPainter to draw the
+                            //point when it is not selected or highlighted
+
+    QColor _colorWhenSelected; //color used by the QPainter to draw the point
+                               //when it is selected
+
+    QColor _colorWhenHighlighted; //color used by the QPainter to draw the point
+                                  //when it is highlighted
 
     bool _hasLeftLine;  //a control boolean to be sure that the left line
                         //has been defined

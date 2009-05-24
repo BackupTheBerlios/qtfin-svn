@@ -8,7 +8,7 @@
 using namespace Data;
 
 Graphic::Graphic(QWidget *parent, ProjectFile* monofin, qreal width, qreal height) :
-    QWidget(parent), _monofin(monofin)
+    QWidget(parent), _monofin(monofin), _preview(NULL)
 {
     _graphic.setupUi(this);
     if(width == 0 || height == 0)
@@ -33,6 +33,13 @@ Graphic::Graphic(QWidget *parent, ProjectFile* monofin, qreal width, qreal heigh
 }
 
 Graphic::~Graphic(){}
+
+void Graphic::setSize(qreal width, qreal height){
+    EdgesExtractionScene* newScene = new EdgesExtractionScene(_graphic.graphicWidget, width, height);
+    _graphicsView->setScene(newScene);
+    delete _graphicsScene;
+    _graphicsScene = newScene;
+}
 
 void Graphic::setPixmap(){
 
@@ -61,15 +68,6 @@ void Graphic::setPixmap(){
     _graphic.posXSpinBox->setValue((int)_graphicsScene->pixItem()->boundingRect().center().x());
     _graphic.posYSpinBox->setValue((int)_graphicsScene->pixItem()->boundingRect().center().y());
     _graphic.scaleSpinBox->setValue(100);
-
-    /*qreal radius = sqrt(pix.width() * pix.width() +
-                        pix.height() * pix.height()) / 2;
-    SCircle* scircle = new SCircle(pix.rect().center().x(),
-                                   pix.rect().center().y(),
-                                   radius, _graphicsScene->pixItem());
-
-    scircle->addSPoint(100);
-    _graphicsScene->pixItem()->setSCircle(scircle);*/
 
     _graphic.posXSpinBox->setValue((int)_graphicsScene->pixItem()->boundingRect().center().x());
     _graphic.posYSpinBox->setValue((int)_graphicsScene->pixItem()->boundingRect().center().y());
@@ -108,7 +106,7 @@ void Graphic::rotate(double angle){
 void Graphic::setScale(double scale){
     PixmapItem* pi = _graphicsScene->pixItem();
     pi->translate(pi->boundingRect().center().x(), pi->boundingRect().center().y());
-    pi->scaled(scale);
+    pi->scaled(scale / 100);
     pi->translate(- pi->boundingRect().center().x(), - pi->boundingRect().center().y());
     _graphicsScene->update();
 }
@@ -147,11 +145,35 @@ void Graphic::setPixmapPositionY(int y){
 }
 
 void Graphic::startAlgo(){
-    _algo->edgesDetection();
-    bool ok =_algo->edgesExtraction(_monofin, _graphicsScene->pixItem()->getScale(), _graphicsScene->pixItem()->rotationAngle(),
-                           _graphicsScene->heal(), _graphicsScene->symetryAxe());
+    bool ok =_algo->edgesDetection(_graphicsScene->width());
     if(!ok){
-        QMessageBox::warning(this, "No detected edge", "Warning, the image is positionned badly !\nThe axe of symetry is not detected !");
+        QMessageBox::warning(this, "Over position", "Warning, the image is positionned badly !\nSome points detected are not in the scene !");
         _algo->reinitialize();
+    }else{
+        ok =_algo->edgesExtraction(_monofin, _graphicsScene->pixItem()->getScale(), _graphicsScene->pixItem()->rotationAngle(),
+                               _graphicsScene->heal(), _graphicsScene->symetryAxe());
+        if(!ok){
+            QMessageBox::warning(this, "No edge detected", "Warning, the image is positionned badly !\nThe axe of symetry is not detected !");
+            _algo->reinitialize();
+        }else{
+            _preview = new DrawPreview(this, _monofin, _graphicsScene->width(), _graphicsScene->height());
+            QObject::connect(_preview, SIGNAL(kept()), this, SLOT(kept()));
+            QObject::connect(_preview, SIGNAL(doNotKept()), this, SLOT(doNotKept()));
+            _preview->show();
+        }
     }
+    qDebug("quit");
+}
+
+void Graphic::kept(){
+    /**
+     * voir si on ferme la fenetre ou si on la cache
+     */
+    this->close();
+}
+
+void Graphic::doNotKept(){
+    QObject::disconnect(_preview, SIGNAL(kept()), this, SLOT(kept()));
+    QObject::disconnect(_preview, SIGNAL(doNotKept()), this, SLOT(doNotKept()));
+    _algo->reinitialize();
 }

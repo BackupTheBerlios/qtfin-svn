@@ -13,7 +13,9 @@
 using namespace Data;
 
 AlgoSnake::AlgoSnake(SCircle* scircle):
-        AbstractAlgoEdgesExtraction(), _scircle(scircle), _image(NULL){}
+        AbstractAlgoEdgesExtraction(), _scircle(scircle), _image(NULL){
+    _scircle->addSPoint(100);
+}
 
 int AlgoSnake::valAbs(int v){
     if (v < 0)
@@ -25,7 +27,8 @@ void AlgoSnake::setImage(QImage* image){
         _image = image;
 }
 
-void AlgoSnake::edgesDetection(){
+bool AlgoSnake::edgesDetection(qreal offsetX){
+    QPointF offsetI = _scircle->pixmapItem()->offset();
     if(_scircle != NULL && _image != NULL){
         for(qreal i = _scircle->radius(); i > 0  && !_scircle->isAllPointsFixed(); i--){
             _scircle->setRadius(i);
@@ -43,7 +46,14 @@ void AlgoSnake::edgesDetection(){
                 }
             }
         }
+        for(int i = 0; i < _scircle->getSPointNb(); i++){
+            QPointF point = _scircle->getQPointRotate(i, _scircle->pixmapItem()->rotationAngle(),
+                                         _scircle->pixmapItem()->getScale()) + offsetI;
+            if(point.y() < 0 || point.x() > offsetX)
+                return false;
+        }
     }
+    return true;
 }
 
 
@@ -179,7 +189,7 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal scale, qreal angle, 
          * calcul de la position du point de controle entre le second et le troisième point
          */
         QPointF* cp = new QPointF();// control point
-        _scircle->specialTangent(secondP, np).intersect(_scircle->tangent(np), cp);       
+        _scircle->specialTangent(secondP, np, angle, scale).intersect(_scircle->tangent(np, true, angle, scale), cp);
         /*
          * ajout point de controle entre le second et le troisième point
          */
@@ -209,7 +219,7 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal scale, qreal angle, 
             /*
              * calcul de la position du point de controle entre le point courant et le point précédent
              */
-            _scircle->tangent(p1).intersect(_scircle->tangent(p2), cp);
+            _scircle->tangent(p1, false, angle, scale).intersect(_scircle->tangent(p2, true, angle, scale), cp);
             /*
              * ajout du point de controle courant dans monofin
              */
@@ -235,7 +245,7 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal scale, qreal angle, 
         /*
          * calcul de la position du point de contrôle entre l'avant dernier et le dernier point
          */
-        _scircle->tangent(p1).intersect(_scircle->specialTangent(lastP, p1), cp);
+        _scircle->tangent(p1, false, angle, scale).intersect(_scircle->specialTangent(lastP, p1, angle, scale), cp);
 
         /*
          * ajout du point de contrôle entre l'avant dernier et le dernier point dans monofin
@@ -246,6 +256,7 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal scale, qreal angle, 
          * ajout du dernier segment
          */
         monofin->addSegment(npk1, npk2, fcpk);
+        delete cp;
     }// fin second point sur talon
     else{
         /*
@@ -262,7 +273,7 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal scale, qreal angle, 
          * calcul de la position du point de controle entre le premier et le second point
          */
         QPointF* cp = new QPointF();
-        _scircle->specialTangent(firstP, np).intersect(_scircle->tangent(np), cp);
+        _scircle->specialTangent(firstP, np, angle, scale).intersect(_scircle->tangent(np, true, angle, scale), cp);
         /*
          * ajout point de controle entre le premier et le second point
          */
@@ -291,7 +302,7 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal scale, qreal angle, 
             /*
              * calcul de la position du point de controle entre le point courant et le point précédent
              */
-            _scircle->tangent(p1).intersect(_scircle->tangent(p2), cp);
+            _scircle->tangent(p1, false, angle, scale).intersect(_scircle->tangent(p2, true, angle, scale), cp);
             qDebug("point de controle : (%f, %f)", cp->x(), offsetY - cp->y());
             /*
              * ajout du point de controle courant dans monofin
@@ -317,7 +328,7 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal scale, qreal angle, 
         /*
          * calcul de la position du point de contrôle entre l'avant dernier et le dernier point
          */
-        _scircle->tangent(p1).intersect(_scircle->specialTangent(lastP, p1), cp);
+        _scircle->tangent(p1, false, angle, scale).intersect(_scircle->specialTangent(lastP, p1, angle, scale), cp);
 
         /*
          * ajout du point de contrôle entre l'avant dernier et le dernier point dans monofin
@@ -328,6 +339,7 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal scale, qreal angle, 
          * ajout du dernier segment
          */
         monofin->addSegment(npk1, npk2, fcpk);
+        delete cp;
     }// fin second point pas sur talon
     monofin->saveProject("MaMonopalme", "test");
     monofin->stopHistory(Data::MonofinSurface);

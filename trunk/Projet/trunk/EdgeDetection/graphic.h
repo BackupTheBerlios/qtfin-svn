@@ -10,6 +10,7 @@
 #include "pixmapitem.h"
 #include "rotatecircle.h"
 #include "algosnake.h"
+#include "drawpreview.h"
 #include "../Drawing/paintingscene.h"
 
 
@@ -34,7 +35,7 @@ public:
      * @param width : the width of the scene
      * @param height : the height of the scene
      */
-    void setSizes(qreal width, qreal height);
+    void setSize(qreal width, qreal height);
 
 
 public slots:
@@ -85,6 +86,18 @@ public slots:
      */
     void startAlgo();
 
+    /**
+     * the draw detected by the algorithm is kept
+     * close the graphic
+     */
+    void kept();
+
+    /**
+     * the draw detected by the algorithm is not kept
+     * the graphic is still open
+     */
+    void doNotKept();
+
 protected:
     Ui::Form _graphic; // the graphic's interface
     EdgesExtractionScene* _graphicsScene; // the scene wich contains all of the items (image, "rotateCircle",...)
@@ -92,7 +105,7 @@ protected:
     AlgoSnake* _algo; // object wich contains the two algorithms working on the opened image
 
     Data::ProjectFile* _monofin;
-
+    DrawPreview* _preview;
 };
 
 #endif // GRAPHIC_H

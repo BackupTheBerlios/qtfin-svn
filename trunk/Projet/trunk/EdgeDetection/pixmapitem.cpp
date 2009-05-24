@@ -56,44 +56,119 @@ void PixmapItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option
         painter->translate(-x, -y);
         this->offset();
         painter->drawPixmap(this->boundingRect().topLeft(), pixmap());
-        painter->drawRect(this->boundingRect());
+        //painter->drawRect(this->boundingRect());
 
         QPen pen(QBrush("black"), 1);
         painter->setPen(pen);
         QRectF rect = this->boundingRect();
         qreal radius = sqrt(rect.width() * rect.width() +
                             rect.height() * rect.height()) / 2;
-        painter->drawEllipse(rect.center() + QPointF(-0.5, -1), radius, radius);
+        painter->drawEllipse(rect.center() + QPointF(-1, -1), radius, radius);
 
         pen = QPen(QBrush("red"), 3);
         painter->setPen(pen);
 
         if(_isForAlgo){
+
             qreal axeSymetry = ((EdgesExtractionScene*)this->scene())->symetryAxe();
             qreal heal = ((EdgesExtractionScene*)this->scene())->heal();
             QPointF point;
 
             bool overAxe;
             point = _scircle->getQPointRotate(0, _rotateAngl, _scale);
-            if(overAxe = point.x() + this->offset().x() >= heal  && point.y() + this->offset().y() <= axeSymetry)
-                painter->drawLine(*(_scircle->getQPoint(0)) + this->offset(),
-                                  *(_scircle->getQPoint(1)) + this->offset());
+            overAxe = point.x() + this->offset().x() > heal  && point.y() + this->offset().y() < axeSymetry;
+            bool fPOverAxe = overAxe;
 
-            for(int i = 1; i < _scircle->getSPointNb() - 1; i++){
+            for(int i = 1; i < _scircle->getSPointNb(); i++){
                 point = _scircle->getQPointRotate(i, _rotateAngl, _scale);
-                if(point.x() + this->offset().x() >= heal  && point.y() + this->offset().y() <= axeSymetry)
-                    painter->drawLine(*(_scircle->getQPoint(i)) + this->offset(),
-                                      *(_scircle->getQPoint(i+1)) + this->offset());
-
+                if(point.x() + this->offset().x() > heal  && point.y() + this->offset().y() < axeSymetry){
+                    if(overAxe)
+                        painter->drawLine(*(_scircle->getQPoint(i - 1)) + this->offset(),
+                                          *(_scircle->getQPoint(i)) + this->offset());
+                    else{
+                        QPointF* iP = new QPointF();
+                        QLineF segment = QLineF(_scircle->getQPointRotate(i - 1, _rotateAngl, _scale) + this->offset(),
+                                                _scircle->getQPointRotate(i, _rotateAngl, _scale) + this->offset());
+                        int intersect = segment.intersect(QLineF(0, axeSymetry, heal * 100, axeSymetry), iP);
+                        if(intersect != QLineF::BoundedIntersection)
+                            segment.intersect(QLineF(heal, 0, heal, axeSymetry * 2), iP);
+                        painter->translate(x, y);
+                        painter->rotate(-_rotateAngl);
+                        painter->scale(1/_scale, 1/_scale);
+                        painter->translate(-x, -y);
+                        painter->drawLine(*iP, _scircle->getQPointRotate(i, _rotateAngl, _scale) + QPointF(0.5, 0.5) + this->offset());
+                        painter->translate(x, y);
+                        painter->rotate(_rotateAngl);
+                        painter->scale(_scale,_scale);
+                        painter->translate(-x, -y);
+                        overAxe = true;
+                        delete iP;
+                    }
+                }else{
+                    if(overAxe){
+                        QPointF* iP = new QPointF();
+                        QLineF segment = QLineF(_scircle->getQPointRotate(i - 1, _rotateAngl, _scale)+ this->offset(),
+                                                _scircle->getQPointRotate(i, _rotateAngl, _scale) + this->offset());
+                        int intersect = segment.intersect(QLineF(0, axeSymetry, heal * 100, axeSymetry), iP);
+                        if(intersect != QLineF::BoundedIntersection)
+                            segment.intersect(QLineF(heal, 0, heal, axeSymetry * 2), iP);
+                        painter->translate(x, y);
+                        painter->rotate(-_rotateAngl);
+                        painter->scale(1/_scale, 1/_scale);
+                        painter->translate(-x, -y);
+                        painter->drawLine(_scircle->getQPointRotate(i - 1, _rotateAngl, _scale) + QPointF(0.5, 0.5) + this->offset(), *iP);
+                        painter->translate(x, y);
+                        painter->rotate(_rotateAngl);
+                        painter->scale(_scale,_scale);
+                        painter->translate(-x, -y);
+                        overAxe = false;
+                        delete iP;
+                    }
+                }
             }
-            point = _scircle->getQPointRotate(_scircle->getSPointNb()-1, _rotateAngl, _scale);
-            if(point.x() + this->offset().x() >= heal * _scale && point.y() + this->offset().y() <= axeSymetry * _scale)
+            if(overAxe && fPOverAxe)
                 painter->drawLine(*(_scircle->getQPoint(_scircle->getSPointNb()-1)) + this->offset(),
                                   *(_scircle->getQPoint(0)) + this->offset());
+            if(!overAxe && fPOverAxe){
+                QPointF* iP = new QPointF();
+                QLineF segment = QLineF(_scircle->getQPointRotate(_scircle->getSPointNb()-1, _rotateAngl, _scale) + this->offset(),
+                                        _scircle->getQPointRotate(0, _rotateAngl, _scale) + this->offset());
+                int intersect = segment.intersect(QLineF(0, axeSymetry, heal * 100, axeSymetry), iP);
+                if(intersect != QLineF::BoundedIntersection)
+                    segment.intersect(QLineF(heal, 0, heal, axeSymetry * 2), iP);
+                painter->translate(x, y);
+                painter->rotate(-_rotateAngl);
+                painter->scale(1/_scale, 1/_scale);
+                painter->translate(-x, -y);
+                painter->drawLine(*iP, _scircle->getQPointRotate(0, _rotateAngl, _scale) + this->offset());
+                painter->translate(x, y);
+                painter->rotate(_rotateAngl);
+                painter->scale(_scale,_scale);
+                painter->translate(-x, -y);
+                delete iP;
+            }
+            if(overAxe && !fPOverAxe){
+                QPointF* iP = new QPointF();
+                QLineF segment = QLineF(_scircle->getQPointRotate(_scircle->getSPointNb()-1, _rotateAngl, _scale)+ this->offset(),
+                                        _scircle->getQPointRotate(0, _rotateAngl, _scale) + this->offset());
+               int intersect = segment.intersect(QLineF(0, axeSymetry, heal * 100, axeSymetry), iP);
+               if(intersect != QLineF::BoundedIntersection)
+                   segment.intersect(QLineF(heal, 0, heal, axeSymetry * 2), iP);
+               painter->translate(x, y);
+               painter->rotate(-_rotateAngl);
+               painter->scale(1/_scale, 1/_scale);
+               painter->translate(-x, -y);
+               painter->drawLine(_scircle->getQPointRotate(_scircle->getSPointNb()-1, _rotateAngl, _scale) + this->offset(), *iP);
+               painter->translate(x, y);
+               painter->rotate(_rotateAngl);
+               painter->scale(_scale,_scale);
+               painter->translate(-x, -y);
+               delete iP;
+           }
 
             QPen pen1(QBrush("yellow"), 5);
             painter->setPen(pen1);
-            painter->drawPoint(_scircle->getQPoint(89)->x() + this->offset().x(),
+            /*painter->drawPoint(_scircle->getQPoint(89)->x() + this->offset().x(),
                                _scircle->getQPoint(89)->y() + this->offset().y());
             painter->drawPoint(_scircle->getQPoint(12)->x() + this->offset().x(),
                                _scircle->getQPoint(12)->y() + this->offset().y());
@@ -104,7 +179,7 @@ void PixmapItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option
             painter->drawPoint(_scircle->getQPoint(22)->x() + this->offset().x(),
                                _scircle->getQPoint(22)->y() + this->offset().y());
             painter->drawPoint(_scircle->getQPoint(23)->x() + this->offset().x(),
-                               _scircle->getQPoint(23)->y() + this->offset().y());
+                               _scircle->getQPoint(23)->y() + this->offset().y());*/
             /*QPen pen2(QBrush("green"), 5);
             painter->setPen(pen2);
             painter->drawPoint(_scircle->getQPoint(753)->x() + this->offset().x(),
@@ -136,18 +211,10 @@ void PixmapItem::rotate2(qreal angle){
 }
 
 void PixmapItem::scaled(qreal scale){
-
-    qreal scaleW = dimInitWidth * scale / 100;
-    qreal scaleH = dimInitHeight * scale / 100;
-
-    _scale = scale / 100;
+    _scale = scale;
     ((RotateCircle*)(this->childItems().first()))->setScale(_scale);
     X = dimInitWidth * _scale;
     Y = dimInitHeight * _scale;
-
-    qDebug("----------\nScale : %f\nwidth : %f\nheigth : %f\n----------", _scale, scaleW, scaleH);
-    qDebug("Offset : (%f,%f)", this->offset().x(), this->offset().y());
-    qDebug("Top left : (%f,%f)", this->boundingRect().topLeft().x(), this->boundingRect().topLeft().y());
 }
 
 
@@ -184,14 +251,12 @@ void PixmapItem::hoverEnterEvent(QGraphicsSceneHoverEvent * event){
 }
 
 void PixmapItem::wheelEvent ( QGraphicsSceneWheelEvent * event ){
-    if(_scale <= 2 && _scale >= 0.01){
-        event->accept();
-        if(event->delta() > 0 && _scale < 2)
-            this->scaled(_scale * 100 + 1);
-        else if(_scale > 0.01)
-            this->scaled(_scale * 100 - 1);
-        if(_isForAlgo)
-            ((EdgesExtractionScene*)this->scene())->itemScaleChanged();
-        this->scene()->update();
-    }
+    event->accept();
+    if(event->delta() > 0 && _scale < 2)
+        this->scaled(_scale + 0.01);
+    if(event->delta() < 0 &&_scale > 0.01)
+        this->scaled(_scale - 0.01);
+    if(_isForAlgo)
+        ((EdgesExtractionScene*)this->scene())->itemScaleChanged();
+    this->scene()->update();
 }

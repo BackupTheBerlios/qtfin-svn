@@ -97,8 +97,6 @@ public:
      */
     void center();
 
-public slots:
-
 
 protected:
     SCircle* _scircle; // the "scircle" arround the item

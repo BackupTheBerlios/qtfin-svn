@@ -10,6 +10,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     Graphic g;
+    //g.setSize(1024, 768);
     g.show();
 
     return a.exec();

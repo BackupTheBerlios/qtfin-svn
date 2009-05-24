@@ -32,7 +32,7 @@ QPointF* SCircle::getQPoint(int i){
 QPointF SCircle::getQPointRotate(int i, qreal angle, qreal scale){
     if(i < 0 || i >= _spointNb)
         return QPointF(0, 0);
-    return _circle.value(i)->posRotate(_spointNb, _center, angle, scale) ;
+    return _circle.value(i)->posRotate(_spointNb, _center , angle, scale) ;
 }
 
 SPoint* SCircle::getSPoint(int i){
@@ -157,22 +157,27 @@ qreal SCircle::tangentY(int i){
     return res;
 }
 
-QLineF SCircle::tangent(int i){
+QLineF SCircle::tangent(int i, bool after, qreal angle, qreal scale){
     QPointF offsetI = _pixItem->offset();
     QLineF res;
     if( i >= 0 && i < _spointNb){
-        res = QLineF(*this->getQPoint((i + _spointNb - 1) % _spointNb) + offsetI, *this->getQPoint((i + 1) % _spointNb) + offsetI);
+        if(after)
+            res = QLineF(this->getQPointRotate(i, angle, scale) + offsetI,
+                     this->getQPointRotate((i + 1) % _spointNb, angle, scale) + offsetI);
+        else
+            res = QLineF(this->getQPointRotate((i + _spointNb - 1) % _spointNb, angle, scale) + offsetI,
+                     this->getQPointRotate(i, angle, scale) + offsetI);
     }else{
         res = QLineF(0, 0, 0, 0);
     }
     return res;
 }
 
-QLineF SCircle::specialTangent(QPointF point, int i){
+QLineF SCircle::specialTangent(QPointF point, int i, qreal angle, qreal scale){
     QPointF offsetI = _pixItem->offset();
     QLineF res;
     if( i >= 0 && i < _spointNb){
-        res = QLineF(*this->getQPoint((i + _spointNb - 1) % _spointNb)  + offsetI, point);
+        res = QLineF(this->getQPointRotate((i + _spointNb - 1) % _spointNb, angle, scale)  + offsetI, point);
     }else{
         res = QLineF(0, 0, 0, 0);
     }
@@ -244,5 +249,6 @@ void SCircle::reinitialize(){
     for(int i = 0; i < _spointNb; i++){
         _circle.value(i)->setRadiusFixed(false);
         _circle.value(i)->radToCarth(_spointNb, _center, _radius);
+        _circle.value(i)->setGrayValue(-1);
     }
 }

@@ -116,7 +116,7 @@ public:
      * @param i : a point of the circle
      * @return the tangent
      */
-    QLineF tangent(int i);
+    QLineF tangent(int i, bool after, qreal angle, qreal scale);
 
     /**
      * give the tangent of a special point
@@ -124,7 +124,7 @@ public:
      * @param i : a point of the circle
      * @return the tangent
      */
-    QLineF specialTangent(QPointF point, int i);
+    QLineF specialTangent(QPointF point, int i, qreal angle, qreal scale);
 
     /**
      * give the variation of the coefficient of the tangent for the point i

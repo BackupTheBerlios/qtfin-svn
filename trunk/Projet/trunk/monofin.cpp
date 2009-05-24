@@ -1,9 +1,9 @@
 #include "monofin.h"
-
-#include "Drawing/layerview.h"
-#include "Drawing/paintingscene.h"
+#include "Data/projectfile.h"
 #include "Drawing/paintingview.h"
 
+#include <QtCore/QCoreApplication>
+#include <QtCore/QDebug>
 #include <QtCore/QFileInfo>
 #include <QtGui/QAction>
 #include <QtGui/QActionGroup>
@@ -17,12 +17,11 @@
 
     \brief The Monofin class...
 
-    \sa MonofinFile, PaintingScene, PaintingView
+    \sa LayerView, PaintingScene, PaintingView, ProjectFile
 */
 
 /*!
-    Constructs a Monofin Object. The \a parent parameter is
-    passed to the QWidget constructor.
+    Constructs a monofin which is a child of \a parent.
 */
 Monofin::Monofin(Data::ProjectFile *projectFile, QWidget *parent)
     : QWidget(parent), _projectFile(projectFile)
@@ -32,20 +31,13 @@ Monofin::Monofin(Data::ProjectFile *projectFile, QWidget *parent)
     _isEmpty = true;
     _isUntitled = true;
     _layout = new QVBoxLayout(this);
-
-    //_projectFile = new Data::ProjectFile();
-    _layerView = new LayerView(_projectFile);
-    _scene = new PaintingScene(1024, 768, _projectFile, this);
-
-    _layout->addWidget(new PaintingView(_scene));
-    _layout->addWidget(_layerView);
-    createToolBar();
-    retranslateUi();
-    setLayout(_layout);
-    setConnections();
-    clean();
 }
+/*!
+    Destroys the monofin.
 
+    All this widget's children are deleted first. The application
+    exits if this widget is the main widget.
+*/
 Monofin::~Monofin()
 {
     qDebug("Monofin::~Monofin()");
@@ -58,16 +50,17 @@ Monofin::~Monofin()
 static int documentNumber = 1;
 
 /*!
-
+    Create a new file.
 */
 void Monofin::newFile()
 {
     setCurrentFile(QString());
     ++documentNumber;
+    initialize();
 }
 
 /*!
-
+    Indicate whether the monofin has been modified. In the latter case, ask the user to save the changes made.
 */
 bool Monofin::okToContinue()
 {
@@ -87,10 +80,12 @@ bool Monofin::okToContinue()
 }
 
 /*!
-
+    Ask the user to open a file, using a QFileDialog.
+    \sa QFileDialog
 */
 bool Monofin::open()
 {
+    qDebug("Monofin::open()");
     if (okToContinue()) {
         QString fileName = QFileDialog::getOpenFileName(this,
                                                         tr("Open Monofin"), ".",
@@ -102,10 +97,11 @@ bool Monofin::open()
 }
 
 /*!
-    \a fileName
+    Check whether the given \a fileName exists before opening it.
 */
 bool Monofin::openFile(const QString &fileName)
 {
+    qDebug() << QString("Monofin::openFile(%1)").arg(fileName);
     if (QFile::exists(fileName))
         return readFile(fileName);
     else
@@ -113,10 +109,11 @@ bool Monofin::openFile(const QString &fileName)
 }
 
 /*!
-
+    Save the file.
 */
 bool Monofin::save()
 {
+    qDebug("Monofin::save()");
     if (_isUntitled)
         return saveAs();
     else
@@ -124,10 +121,11 @@ bool Monofin::save()
 }
 
 /*!
-
+    Save the file, asking the user.
 */
 bool Monofin::saveAs()
 {
+    qDebug("Monofin::saveAs()");
     QString fileName = QFileDialog::getSaveFileName(this,
                                                     tr("Save Monofin"), ".",
                                                     tr("Monofin files (*.fin)"));
@@ -137,9 +135,6 @@ bool Monofin::saveAs()
         return saveFile(fileName);
 }
 
-/*!
-
-*/
 QSize Monofin::sizeHint() const
 {
     return _layout->sizeHint();
@@ -241,11 +236,8 @@ void Monofin::clean(){
 }
 
 void Monofin::finishedLine(bool a){
-    if(a){
-        _actionCreatePolygon->toggle();
-        _actionCreatePolygon->setDisabled(true);
-        _actionGroupDraw->setEnabled(true);
-    }
+    _actionCreatePolygon->setDisabled(a);
+    _actionGroupDraw->setEnabled(a);
 }
 
 // PROTECTED
@@ -260,6 +252,7 @@ void Monofin::closeEvent(QCloseEvent *closeEvent)
     else
         closeEvent->ignore();
 }
+
 void Monofin::changeEvent(QEvent *e)
 {
     switch (e->type()) {
@@ -269,6 +262,16 @@ void Monofin::changeEvent(QEvent *e)
     default:
         break;
     }
+}
+
+void Monofin::keyPressEvent(QKeyEvent *event)
+{
+    QCoreApplication::sendEvent(_scene.data(), event);
+}
+
+void Monofin::keyReleaseEvent(QKeyEvent *event)
+{
+    QCoreApplication::sendEvent(_scene.data(), event);
 }
 
 // PRIVATE SLOTS
@@ -358,13 +361,34 @@ void Monofin::createToolBar()
     _toolBar->addAction(_actionAlignTangents);
 }
 
+void Monofin::initialize()
+{
+    if (!_layerView.isNull())
+        _layerView->close();
+    _layerView = new LayerView(_projectFile);
+    if (!_scene.isNull())
+        _scene->deleteLater();
+    _scene = new PaintingScene(1024, 768, _projectFile, this);
+
+    _layout->addWidget(new PaintingView(_scene.data()));
+    _layout->addWidget(_layerView.data());
+    createToolBar();
+    retranslateUi();
+    setLayout(_layout);
+    setConnections();
+    clean();
+}
+
 /*!
 
 */
 bool Monofin::readFile(const QString &fileName)
 {
-    // TODO
+    qDebug() << QString("Monofin::readFile(%1)").arg(fileName);
+    _projectFile->loadProject(fileName);
     setCurrentFile(fileName);
+    initialize();
+    _scene->updateMonofinDrawing();
     return true;
 }
 
@@ -385,7 +409,8 @@ void Monofin::retranslateUi()
 */
 bool Monofin::saveFile(const QString &fileName)
 {
-    // TODO
+    qDebug() << QString("Monofin::saveFile(%1)").arg(fileName);
+    _projectFile->saveProject(fileName);
     setCurrentFile(fileName);
     return true;
 }
@@ -403,7 +428,10 @@ void Monofin::setConnections()
     connect(_actionAddPoint, SIGNAL(toggled(bool)), this, SLOT(activeAddPoint(bool)));
 
     // SCENE
-    connect(_scene, SIGNAL(lineFinished(bool)), this, SLOT(finishedLine(bool)));
+    connect(_scene.data(), SIGNAL(lineFinished(bool)), _actionCreatePolygon, SLOT(toggle()));
+    connect(_scene.data(), SIGNAL(lineFinished(bool)), this, SLOT(finishedLine(bool)));
+    connect(_scene.data(), SIGNAL(pointsOnScene(bool)), this, SLOT(finishedLine(bool)));
+    connect(_scene.data(), SIGNAL(somethingChanged(int)), this, SLOT(monofinWasModified()));
 
     QMetaObject::connectSlotsByName(this);
 }
@@ -436,8 +464,8 @@ void Monofin::setCurrentFile(const QString &fileName)
 */
 QString Monofin::strippedName(const QString &fullFileName)
 {
-    qDebug("entering Monofin::strippedName(%s)...", fullFileName.toStdString().c_str());
+    qDebug() << QString("entering Monofin::strippedName(%1)...").arg(fullFileName);
     QString str = QFileInfo(fullFileName).fileName();
-    qDebug("leaving Monofin::strippedName with result %s", str.toStdString().c_str());
+    qDebug() << QString("leaving Monofin::strippedName with result %1").arg(str);
     return str;
 }

@@ -29,6 +29,7 @@ protected slots:
 
 protected:
     virtual void changeEvent(QEvent *e);
+    virtual void closeEvent(QCloseEvent *event);
 
 private slots:
     void about();

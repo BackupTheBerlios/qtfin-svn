@@ -5,6 +5,7 @@
 #include "startupdialog.h"
 #include "lib/qtwindowlistmenu.h"
 
+#include <QtCore/QDebug>
 #include <QtCore/QDir>
 #include <QtGui/QAction>
 #include <QtGui/QActionGroup>
@@ -95,6 +96,15 @@ void MainWindow::changeEvent(QEvent *e)
     }
 }
 
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    _mdiArea->closeAllSubWindows();
+    if (activeMonofin())
+        event->ignore();
+    else
+        event->accept();
+}
+
 // PRIVATE SLOTS
 
 void MainWindow::about()
@@ -115,6 +125,7 @@ void MainWindow::newFile()
 
 void MainWindow::open()
 {
+    qDebug("MainWindow::open()");
     QMdiSubWindow *msw = createMonofin();
     Monofin *monofin = static_cast<Monofin *>(msw->widget());
     if(monofin->open()) {
@@ -389,6 +400,7 @@ void MainWindow::createMenus()
 
 QMdiSubWindow *MainWindow::createMonofin()
 {
+    qDebug("MainWindow::createMonofin()");
     Monofin *monofin = new Monofin;
     connect(monofin, SIGNAL(currentFileChanged()), this, SLOT(updateRecentFileActions()));
 

@@ -163,14 +163,14 @@ namespace Data{
     }
 
 
-    void ProjectFile::saveProject(QString path, QString projectName){
+    void ProjectFile::saveProject(const QString &path, const QString &projectName){
         XMLSaveVisitor save;
         _monofinGeometry->accept(&save);
         _monofinPhysicalProperties->accept(&save);
         save.save(path.toStdString(),projectName.toStdString());
     }
 
-    QString ProjectFile::loadProject(QString path){
+    QString ProjectFile::loadProject(const QString &path){
         XMLLoadVisitor load;
         load.load(path.toStdString());
         _monofinGeometry->accept(&load);

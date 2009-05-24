@@ -1,6 +1,7 @@
 #include "layerview.h"
 #include "Data/projectfile.h"
 
+#include <QtGui/QApplication>
 #include <QtGui/QDoubleSpinBox>
 #include <QtGui/QLabel>
 #include <QtGui/QHBoxLayout>
@@ -14,6 +15,7 @@ LayerView::LayerView(ProjectFile *structure, QWidget *parent)
         : QWidget(parent), _struct(structure), _totalHeight(0), _totalLength(0)
 {
     setObjectName("LayerWiew");
+    setAttribute(Qt::WA_DeleteOnClose);
 
     _layout = new QVBoxLayout(this);
     _layout->setObjectName("LayerView::_layout");
@@ -30,9 +32,6 @@ LayerView::LayerView(ProjectFile *structure, QWidget *parent)
         _totalLength += length;
         createLayerEditionRow(i, height, length);
     }
-
-    addLayerItem(0, 20, 80);
-    addLayerItem(1, 40, 90);
 
     setLayout(_layout);
 }
@@ -135,8 +134,11 @@ void LayerView::createLayerEditionRow(int row, qreal height, qreal length)
     qDebug() << "LayerView::createLayerEditionRow(" << row << ")";
     QDoubleSpinBox *heightDoubleSpinBox = new QDoubleSpinBox;
     heightDoubleSpinBox->setValue(height);
+    heightDoubleSpinBox->setSuffix(QApplication::translate("LayerView", " cm", "centimeters", QApplication::UnicodeUTF8));
     QDoubleSpinBox *lengthDoubleSPinBox = new QDoubleSpinBox;
     lengthDoubleSPinBox->setValue(length);
+    lengthDoubleSPinBox->setMaximum(999.99);
+    lengthDoubleSPinBox->setSuffix(QApplication::translate("LayerView", " cm", "centimeters", QApplication::UnicodeUTF8));
     QLabel *heightLabel = new QLabel("height");
     QLabel *lengthLabel = new QLabel("length");
     QHBoxLayout *hbLayout = new QHBoxLayout;

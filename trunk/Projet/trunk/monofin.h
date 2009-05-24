@@ -1,9 +1,11 @@
 #ifndef MONOFIN_H
 #define MONOFIN_H
 
+#include <QtCore/QPointer>
 #include <QtGui/QWidget>
 
-#include "Data/projectfile.h"
+#include "Drawing/layerview.h"
+#include "Drawing/paintingscene.h"
 
 class QAction;
 class QActionGroup;
@@ -47,6 +49,8 @@ signals:
 protected:
     void changeEvent(QEvent *e);
     void closeEvent(QCloseEvent *closeEvent);
+    virtual void keyPressEvent(QKeyEvent *event);
+    virtual void keyReleaseEvent(QKeyEvent *event);
 
 private slots:
     void monofinWasModified();
@@ -68,6 +72,7 @@ private slots:
 
 private:
     void createToolBar();
+    void initialize();
     bool readFile(const QString &fileName);
     void retranslateUi();
     bool saveFile(const QString &fileName);
@@ -80,9 +85,9 @@ private:
     bool _isEmpty;
     bool _isUntitled;
     QVBoxLayout *_layout;
-    LayerView *_layerView;
+    QPointer<LayerView> _layerView;
     Data::ProjectFile *_projectFile;
-    PaintingScene *_scene;
+    QPointer<PaintingScene> _scene;
 
     QAction *_actionAddControl;
     QAction *_actionAddPoint;

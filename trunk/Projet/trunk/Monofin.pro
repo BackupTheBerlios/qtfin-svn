@@ -8,11 +8,6 @@ CONFIG += debug_and_release
 CONFIG(debug, debug|release):CONFIG += console
 else:DEFINES += QT_NO_DEBUG_OUTPUT \
     QT_NO_WARNING_OUTPUT
-# ---
-# Nécessaire pour l'interfaçage avec COMSOL sous Windows
-# Merci de ne pas enlever sans prévenir Yoann !
-DEFINES += WIN
-# ---
 SOURCES += main.cpp \
     monofin.cpp \
     lib/qtwindowlistmenu.cpp \
@@ -51,7 +46,7 @@ SOURCES += main.cpp \
     Ui/mainwindow.cpp \
     Ui/parametersdialog.cpp \
     Ui/startupdialog.cpp \
-	UI/geometry3dviewer.cpp \
+    Ui/geometry3dviewer.cpp \
     Scripting/comsolscript.cpp \
     Scripting/defaultscript.cpp \
     Scripting/defaultscriptmanager.cpp \
@@ -74,10 +69,10 @@ HEADERS += monofin.h \
     Data/SaveVisitor.h \
     Data/segment.h \
     Data/surface.h \
-    Data/xmlloadvisitor.h \
     Data/LoadVisitor.h \
-    Data/xmlsavevisitor.h \
     Data/SaveVisitor.h \
+    Data/xmlloadvisitor.h \
+    Data/xmlsavevisitor.h \
     Drawing/boundingpoint.h \
     Drawing/brline.h \
     Drawing/controlpoint.h \
@@ -103,7 +98,7 @@ HEADERS += monofin.h \
     Ui/mainwindow.h \
     Ui/parametersdialog.h \
     Ui/startupdialog.h \
-	UI/geometry3dviewer.h \
+    Ui/geometry3dviewer.h \
     Scripting/comsolscript.h \
     Scripting/defaultscript.h \
     Scripting/defaultscriptmanager.h \

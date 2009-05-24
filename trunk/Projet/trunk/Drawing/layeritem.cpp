@@ -8,6 +8,7 @@ LayerItem::LayerItem(Qt::BrushStyle brushStyle, qreal heightRatio, qreal lengthR
         : /*QObject(parent),*/ _brushStyle(brushStyle), _heightRatio(heightRatio), _lengthRatio(lengthRatio)
 {
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    setAttribute(Qt::WA_DeleteOnClose);
     refreshPixmap();
 }
 

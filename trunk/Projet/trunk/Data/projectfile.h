@@ -98,9 +98,9 @@ namespace Data{
          * Load & Save *
          ***************/
 
-        void saveProject(QString path, QString projectName);
+        void saveProject(const QString &path, const QString &projectName = QString("Untitled"));
 
-        QString loadProject(QString path);
+        QString loadProject(const QString &path);
     };
 
 } // namespace Data

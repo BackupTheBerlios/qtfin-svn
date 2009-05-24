@@ -1,6 +1,7 @@
 # -------------------------------------------------
 # Project created by QtCreator 2009-03-09T21:00:28
 # -------------------------------------------------
+QT += xml
 TARGET = Monofin
 TEMPLATE = app
 CONFIG += debug_and_release
@@ -24,7 +25,6 @@ SOURCES += main.cpp \
     Data/segment.cpp \
     Data/surface.cpp \
     Data/xmlloadvisitor.cpp \
-    Data/xmlparser/xmlParser.cpp \
     Data/xmlsavevisitor.cpp \
     Drawing/boundingpoint.cpp \
     Drawing/brline.cpp \
@@ -74,7 +74,6 @@ HEADERS += monofin.h \
     Data/SaveVisitor.h \
     Data/segment.h \
     Data/surface.h \
-    Data/xmlparser/xmlParser.h \
     Data/xmlloadvisitor.h \
     Data/LoadVisitor.h \
     Data/xmlsavevisitor.h \

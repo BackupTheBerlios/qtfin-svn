@@ -203,8 +203,13 @@ namespace Data{
 
     void Profil::startHistory(Modification t){
 
-        if (t==MonofinLayer)
-            _makedHistory.clear();
+        if (t==MonofinLayer){
+            if(!_makedHistory.isEmpty()){
+                foreach(HistoryHolder<Modification> * toDelete, _makedHistory)
+                    delete toDelete;
+            }
+            _makedHistory = QList<HistoryHolder<Modification> *>();
+        }
     }
 
     QList<HistoryHolder<Modification> *> Profil::retrieveHistory(Modification t){
@@ -280,6 +285,22 @@ namespace Data{
    void Profil::loadLayer(int rank, float length, float height){
        Layer * newLayer = new Layer(length,height);
        _monofinLayers.insert(rank,newLayer);
+   }
+
+   float Profil::getMaxHeight(){
+       float len = 0.0f;
+       foreach(Layer* lay, _monofinLayers)
+           if (lay->getLength() > len)
+               len = lay->getLength();
+       return len;
+   }
+
+   float Profil::getMaxLength(){
+        float hei;
+        foreach(Layer* lay, _monofinLayers)
+           if (lay->getHeight() > hei)
+               hei = lay->getHeight();
+       return hei;
    }
 
 } // namespace Data

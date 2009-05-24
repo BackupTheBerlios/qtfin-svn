@@ -9,7 +9,6 @@ namespace Data{
 
     class MonofinFile;
     class ConfigFile;
-    class Action;
 
     class ProjectFile : public HistoryCareTaker<Modification>
     {
@@ -68,9 +67,10 @@ namespace Data{
          ****************************/
 
         //consultations possible sur les strates
-		float getMonofinLength() const;
-		float getLayerLength(int rank) const;
+        float getLayerLength(int rank) const;
         float getLayerHeight(int rank) const;
+        float getLayerMaxLength() const;
+        float getLayerMaxHeight() const;
 
         int getHowManyLayers() const;
 

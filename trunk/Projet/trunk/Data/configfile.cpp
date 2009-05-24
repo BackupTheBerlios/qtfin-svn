@@ -126,7 +126,11 @@ namespace Data{
 
     void ConfigFile::startHistory(Modification t){
         if (t==MonofinLayerConfig){
-            _makedHistory.clear();
+            if(!_makedHistory.isEmpty()){
+                foreach(HistoryHolder<Modification> * toDelete, _makedHistory)
+                    delete toDelete;
+            }
+            _makedHistory = QList<HistoryHolder<Modification> *>();
         }
     }
 

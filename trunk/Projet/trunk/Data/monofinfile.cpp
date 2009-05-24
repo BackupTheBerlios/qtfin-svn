@@ -283,6 +283,13 @@ namespace Data{
         _monofinSurface->accept(lv);
     }
 
+    float MonofinFile::getLayerMaxLength(){
+        return _monofinProfil->getMaxLength();
+    }
+
+    float MonofinFile::getLayerMaxHeight(){
+        return _monofinProfil->getMaxHeight();
+    }
 
 }// namespace Data
 

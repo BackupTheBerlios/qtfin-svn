@@ -75,6 +75,10 @@ namespace Data{
          */
         float getLayerHeight(int rank);
 
+        float getMaxHeight();
+
+        float getMaxLength();
+
 
         void startHistory(Modification t);
 

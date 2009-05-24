@@ -27,7 +27,7 @@ void ScriptHelper::writeMonofinLength(QTextStream& script, Data::ProjectFile& da
 {
 	QString length = QString("monofin.length = %1;");
 	length = length
-		   .arg(data.getMonofinLength());
+                   .arg(data.getLayerMaxLength());
 
 	script << length << endl;
 	script << endl;
@@ -77,7 +77,7 @@ void ScriptHelper::writeMonofinLayers(QTextStream& script, Data::ProjectFile& da
 {
 	script << "monofin.layers = [ ..." << endl;
 
-	float monofinLength = data.getMonofinLength();
+        float monofinLength = data.getLayerMaxLength();
 
 	// if no layer, we add a default one
 	if (data.getHowManyLayers() == 0) {

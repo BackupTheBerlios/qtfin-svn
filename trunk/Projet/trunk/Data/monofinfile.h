@@ -165,6 +165,10 @@ namespace Data{
          */
         int getHowManyLayers();
 
+        float getLayerMaxLength();
+
+        float getLayerMaxHeight();
+
         /***********
          * Surface *
          ***********/

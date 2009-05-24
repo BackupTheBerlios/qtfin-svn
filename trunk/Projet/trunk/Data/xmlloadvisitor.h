@@ -2,7 +2,9 @@
 #define XMLLOADVISITOR_H
 
 #include "LoadVisitor.h"
-#include "xmlParser/xmlParser.h"
+//#include "xmlparser/xmlParser.h"
+#include <QDomElement>
+#include <QDomDocument>
 
 namespace Data{
 
@@ -13,7 +15,8 @@ namespace Data{
     class XMLLoadVisitor : public LoadVisitor
     {
     private:
-        XMLNode _mainNode;
+        QDomDocument _mainDocument;
+        QDomElement _mainNode;
     public:
         //XMLLoadVisitor();
 

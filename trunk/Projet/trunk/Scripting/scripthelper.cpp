@@ -79,6 +79,16 @@ void ScriptHelper::writeMonofinLayers(QTextStream& script, Data::ProjectFile& da
 
 	float monofinLength = data.getMonofinLength();
 
+	// if no layer, we add a default one
+	if (data.getHowManyLayers() == 0) {
+		script << QString("struct('thickness', %1, 'length', %2, 'E', %3, 'nu', %4, 'rho', %5)")
+			.arg(0.001) // 1 cm
+			.arg(1)
+			.arg(2.0e11)
+			.arg(0.33)
+			.arg(7850);
+	}
+
 	for (int i = 0; i < data.getHowManyLayers(); i++) {
 		script <<
 				QString("struct('thickness', %1, 'length', %2, 'E', %3, 'nu', %4, 'rho', %5)")

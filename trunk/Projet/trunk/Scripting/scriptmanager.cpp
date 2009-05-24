@@ -68,6 +68,7 @@ bool ScriptManager::execute()
 		process->closeWriteChannel();
 		return true;
 	} else {
+		qDebug("ScriptManager::execute() return false");
 		return false;
 	}
 }

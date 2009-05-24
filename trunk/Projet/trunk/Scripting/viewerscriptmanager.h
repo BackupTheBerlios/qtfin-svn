@@ -3,6 +3,8 @@
 
 #include "scriptmanager.h"
 
+#include "viewerscript.h"
+
 namespace Scripting {
 
 	/**
@@ -16,6 +18,8 @@ namespace Scripting {
 				QString output_path,
 				// data
 				Data::ProjectFile& data);
+
+		QString getOutputPath() const { return ((ViewerScript*)script)->getOutputPath(); }
 	};
 
 }

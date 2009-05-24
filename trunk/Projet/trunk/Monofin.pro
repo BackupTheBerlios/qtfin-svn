@@ -7,6 +7,11 @@ CONFIG += debug_and_release
 CONFIG(debug, debug|release):CONFIG += console
 else:DEFINES += QT_NO_DEBUG_OUTPUT \
     QT_NO_WARNING_OUTPUT
+# ---
+# Nécessaire pour l'interfaçage avec COMSOL sous Windows
+# Merci de ne pas enlever sans prévenir Yoann !
+DEFINES += WIN
+# ---
 SOURCES += main.cpp \
     monofin.cpp \
     lib/qtwindowlistmenu.cpp \
@@ -45,13 +50,14 @@ SOURCES += main.cpp \
     Ui/layerparameters.cpp \
     Ui/mainwindow.cpp \
     Ui/parametersdialog.cpp \
-	Ui/startupdialog.cpp \
-	Scripting/comsolscript.cpp \
-	Scripting/defaultscript.cpp \
-	Scripting/defaultscriptmanager.cpp \
-	Scripting/scripthelper.cpp \
-	Scripting/scriptmanager.cpp \
-	Scripting/viewerscript.cpp \
+    Ui/startupdialog.cpp \
+	UI/geometry3dviewer.cpp \
+    Scripting/comsolscript.cpp \
+    Scripting/defaultscript.cpp \
+    Scripting/defaultscriptmanager.cpp \
+    Scripting/scripthelper.cpp \
+    Scripting/scriptmanager.cpp \
+    Scripting/viewerscript.cpp \
 	Scripting/viewerscriptmanager.cpp
 HEADERS += monofin.h \
     lib/qtwindowlistmenu.h \
@@ -68,11 +74,11 @@ HEADERS += monofin.h \
     Data/SaveVisitor.h \
     Data/segment.h \
     Data/surface.h \
-	Data/xmlparser/xmlParser.h \
-	Data/xmlloadvisitor.h \
-	Data/LoadVisitor.h \
-	Data/xmlsavevisitor.h \
-	Data/SaveVisitor.h \
+    Data/xmlparser/xmlParser.h \
+    Data/xmlloadvisitor.h \
+    Data/LoadVisitor.h \
+    Data/xmlsavevisitor.h \
+    Data/SaveVisitor.h \
     Drawing/boundingpoint.h \
     Drawing/brline.h \
     Drawing/controlpoint.h \
@@ -98,12 +104,13 @@ HEADERS += monofin.h \
     Ui/mainwindow.h \
     Ui/parametersdialog.h \
     Ui/startupdialog.h \
-	Scripting/comsolscript.h \
-	Scripting/defaultscript.h \
-	Scripting/defaultscriptmanager.h \
-	Scripting/scripthelper.h \
-	Scripting/scriptmanager.h \
-	Scripting/viewerscript.h \
+	UI/geometry3dviewer.h \
+    Scripting/comsolscript.h \
+    Scripting/defaultscript.h \
+    Scripting/defaultscriptmanager.h \
+    Scripting/scripthelper.h \
+    Scripting/scriptmanager.h \
+    Scripting/viewerscript.h \
 	Scripting/viewerscriptmanager.h
 FORMS += Ui/layerParameters.ui \
     Ui/parametersDialog.ui \

@@ -78,7 +78,7 @@ namespace Scripting {
 		void _error(QProcess::ProcessError error);
 		void _debug_output();
 
-	private:
+	protected:
 		/** The instance of ComsolScript to work with. */
 		ComsolScript* script;
 

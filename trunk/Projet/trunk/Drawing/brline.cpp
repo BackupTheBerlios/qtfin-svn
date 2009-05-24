@@ -172,12 +172,20 @@ void BrLine::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QW
     int pw = 2;// / _scene->scaleFactor();
     //qDebug("Pen Width : %d", pw);
     pen.setWidth(pw);
-    if(_isMouseOnLine){
+    pen.setJoinStyle(Qt::RoundJoin);
+//    QLinearGradient gradient(0,0,1,1);
+//    gradient.setColorAt(0, Qt::black);
+//    gradient.setColorAt(1, Qt::blue);
+//    QBrush brush(gradient);
+    if(_isMouseOnLine && !_scene->isRenderingPicture()){
         pen.setColor(_colorWhenHighlighted);
+        //brush.setColor(_colorWhenHighlighted);
     }else{
         pen.setColor(_colorWhenNormal);
+        //brush.setColor(_colorWhenNormal);
     }
 
+    //pen.setBrush(brush);
     painter->setPen(pen);
 
     if(_isControlPointActivated){

@@ -14,15 +14,16 @@ PaintingScene::PaintingScene(qreal width,
                              Data::ProjectFile* structure,
                              QObject* parent)
     :QGraphicsScene(parent), _canCreateSelectionRect(true),
-    _gridUnit(20),
+    _gridUnit(20), _hasABackgroundPicture(false),
     _hasABoundingPointMoved(false), _hasPlacedFirstPoint(false),
     _isAddControlActivated(false), _isAddPointActivated(false),
     _isAPointHighlighted(false), _isCreateLineActivated(false),
     _isCreatingSelectionRect(false), _isMagnetActivated(false),
-    _isMultiSelectionKeyActivated(false),
-    _isRemoveControlPointActivated(false),
+    _isModifyingBackgroundPicture(false), _isMultiSelectionKeyActivated(false),
+    _isRemoveControlPointActivated(false), _isRenderingPicture(false),
     _isSimplifyViewActivated(false), _keepBezierCurve(true),
-    _lastPlacedPoint(0), _scaleFactor(1), _structure(structure){
+    _lastPlacedPoint(0), _pixmap(0),
+    _scaleFactor(1), _state(NormalState), _structure(structure){
 
      this->setSceneRect(0,-height/2,width, height);
 
@@ -44,10 +45,15 @@ PaintingScene::PaintingScene(qreal width,
     _colors.insert(LineNormalColor, Qt::black);
     _colors.insert(LineHighlightingColor, Qt::blue);
 
+    //to avoid null pointers
+    _pixItem = new PixmapItem(QPixmap());
+    _rotCircle = new RotateCircle(_pixItem);
+
 }
 
 PaintingScene::~PaintingScene(){
-    if(_isCreateLineActivated){
+    if(_state == this->CreatePointsState){
+        _state = NormalState;
         _isCreateLineActivated = false;
         this->removeItem(_ghostPoint);
         delete _ghostPoint;
@@ -211,6 +217,38 @@ QColor PaintingScene::getColor(ColorItem item, ColorType type){
 
 }
 
+QPixmap PaintingScene::getPictureOfTheScene(unsigned int x, unsigned int y){
+
+    if(x <= 0 || y <= 0){return QPixmap();}
+
+    if(_state == ModifyBackgroundPictureState){
+        this->removeItem(_pixItem);
+    }
+
+    QPixmap pixmap(x,y);
+    pixmap.fill(Qt::white);
+
+    QPainter painter;
+    painter.begin(&pixmap);
+    painter.translate(0,y);
+    painter.scale(1,-1);
+    bool simpl = _isSimplifyViewActivated;
+    this->simplifyView(false);
+    _isRenderingPicture = true;
+    this->render(&painter, QRectF(), this->itemsBoundingRect().adjusted(-20,-20,20,20));
+    _isRenderingPicture = false;
+    painter.end();
+    this->simplifyView(simpl);
+    //qDebug("save pixmap");
+    //pixmap.save("test.png","PNG");
+
+    if(_state == ModifyBackgroundPictureState){
+        this->addItem(_pixItem);
+    }
+
+    return pixmap;
+}
+
 QRectF PaintingScene::pointsBoundingZone(){
     return this->sceneRect()/*.adjusted(20,20,-20,-20)*/;
 }
@@ -340,26 +378,76 @@ void PaintingScene::scale(qreal factor){
 
 void PaintingScene::activateCreateLine(bool a){
     if(a){
+        if(_state != NormalState){
+            qDebug("Warning : 'Create line' activated while another function is already activated");
+        }
+        _state = CreatePointsState;
+
         _ghostPoint = new GhostPoint(QPointF(this->pointsBoundingZone().bottomLeft().x(),0), this);
         this->addItem(_ghostPoint);
         _hasPlacedFirstPoint = false;
-    }else{}
+    }else{
+        if(_state != CreatePointsState){
+            qDebug("Warning : attempting to deactivate 'create line', but this function is not active : go back to normal mode");
+        }
+        _state = NormalState;
+    }
     _isCreateLineActivated = a;
 }
 
 void PaintingScene::activateAddControl(bool a){
+    if(a){
+        if(_state != NormalState){
+            qDebug("Warning : 'Add control points' activated while another function is already activated");
+        }
+        _state = AddControlPointsState;
+
+    }else{
+        if(_state != AddControlPointsState){
+            qDebug("Warning : attempting to deactivate 'add control points', but this function is not active : go back to normal mode");
+        }
+        _state = NormalState;
+    }
     _isAddControlActivated = a;
 }
 
 void PaintingScene::activateAddPoint(bool a){
+    if(a){
+        if(_state != NormalState){
+            qDebug("Warning : 'Insert points' activated while another function is already activated");
+        }
+        _state = InsertPointsState;
+
+    }else{
+        if(_state != InsertPointsState){
+            qDebug("Warning : attempting to deactivate 'insert points', but this function is not active : go back to normal mode");
+        }
+        _state = NormalState;
+    }
     _isAddPointActivated = a;
 }
 
 void PaintingScene::activateRemoveControlPoint(bool a){
+    if(a){
+        if(_state != NormalState){
+            qDebug("Warning : 'Remove control points' activated while another function is already activated");
+        }
+        _state = RemoveControlPointsState;
+
+    }else{
+        if(_state != RemoveControlPointsState){
+            qDebug("Warning : attempting to deactivate 'remove control points', but this function is not active : go back to normal mode");
+        }
+        _state = NormalState;
+    }
     _isRemoveControlPointActivated = a;
 }
 
 void PaintingScene::ajustSceneRect(qreal dx, qreal dy){
+    qreal MINSIZE = 1;
+    qreal MAXSIZE = 10000;
+
+
     QRectF newRect = this->sceneRect().adjusted(0, -dy, dx, dy);
     QRectF itemRect = this->itemsBoundingRect();
 
@@ -371,11 +459,20 @@ void PaintingScene::ajustSceneRect(qreal dx, qreal dy){
     }
     max/=2.0;
 
-    if(newRect.adjusted(-max, -max, max, max).contains(itemRect)){
+    //if the new rectangle contains the item rectangle or if they no
+    //items on the scene, we verify the scene rectangle size, and if it is
+    //correct (between MAXSIZE and MINSIZE), we adjust the scene rectangle
+    if((newRect.adjusted(-max, -max, max, max).contains(itemRect) ||
+        _pointList.size() == 0)
+        && newRect.height() > MINSIZE
+                && newRect.width() > MINSIZE
+                && newRect.height() < MAXSIZE
+                && newRect.width() < MAXSIZE){
+
         this->setSceneRect(newRect);
     }
     _axis->setLine(0,0,this->width(), 0);
-    this->update(this->sceneRect());
+    this->update();
 
 }
 
@@ -506,6 +603,60 @@ void PaintingScene::keepBezierCurve(bool k){
     _keepBezierCurve = k;
 }
 
+void PaintingScene::modifyBackgroundPicture(bool on){
+    if(_hasABackgroundPicture){
+
+        if(on){
+            if(_state != NormalState){
+                qDebug("Warning : 'Modify background picture' activated while another function is already activated");
+            }
+            _state = ModifyBackgroundPictureState;
+            _isModifyingBackgroundPicture = true;
+            this->addItem(_pixItem);
+        }else if(!on){
+            if(_state != ModifyBackgroundPictureState){
+                qDebug("Warning : attempting to deactivate 'modify background picture', but this function is not active : go back to normal mode");
+            }
+            _state = NormalState;
+            this->removeItem(_pixItem);
+            _isModifyingBackgroundPicture = false;
+        }
+
+        this->update();
+    }else{
+        if(on){
+            _state = ModifyBackgroundPictureState;
+        }else{
+            _state = NormalState;
+        }
+
+        qDebug("no background picture to modify, but changing state");
+    }
+}
+
+void PaintingScene::redo(){
+    qDebug("redo");
+    _structure->redo(Data::MonofinSurface);
+
+    this->getMonofinFromStructure();
+}
+
+void PaintingScene::removeBackgroundPicture(){
+    if(_hasABackgroundPicture){
+        _hasABackgroundPicture = false;
+        if(_isModifyingBackgroundPicture){
+            this->removeItem(_pixItem);
+        }
+        delete _pixItem;
+        _pixItem = 0;
+
+        this->update();
+
+    }else{
+        qDebug("No background picture to remove");
+    }
+}
+
 void PaintingScene::removeSelectedPoints(){
     QList<QGraphicsItem*> l = this->selectedItems();
     QGraphicsItem* item;
@@ -519,32 +670,38 @@ void PaintingScene::removeSelectedPoints(){
     emit this->somethingChanged(this->ActionRemoveSomePoints);
 }
 
-void PaintingScene::savePicture(){
-    unsigned int x = 800;
-    unsigned int y = 600;
+void PaintingScene::setBackGroundPicture(QPixmap pixmap){
 
-    QPixmap pixmap(x,y);
-    pixmap.fill(Qt::white);
+    if(pixmap.isNull()){return;}
 
-    QPainter painter;
-    painter.begin(&pixmap);
-    painter.translate(0,y);
-    painter.scale(1,-1);
-    bool simpl = _isSimplifyViewActivated;
-    this->simplifyView(false);
-    this->render(&painter, QRectF(), this->itemsBoundingRect().adjusted(-20,-20,20,20));
-    painter.end();
-    this->simplifyView(simpl);
-    qDebug("save pixmap");
-    pixmap.save("test.png","PNG");
-}
-
-/*void PaintingScene::showCoords(){
-    BoundingPoint* p;
-    foreach(p, _pointList){
-        qDebug("(%f, %f)", p->coord().x(), p->coord().y());
+    if(_hasABackgroundPicture){
+        this->removeBackgroundPicture();
     }
-}*/
+
+    _pixItem = new PixmapItem(pixmap);
+    _pixItem->setZValue(-2);
+
+    _rotCircle = new RotateCircle(_pixItem);
+    _rotCircle->setZValue(-1);
+
+    _pixItem->setOffset(0, 0);
+    _pixItem->translate2((this->width() - _pixItem->boundingRect().width())/ 2 , - _pixItem->boundingRect().height() / 2);
+    _pixItem->rotate2(180);
+    _rotCircle->setPosition(180);
+
+    _pixmap = new QPixmap(_pixItem->pixmap());
+
+    if(_state == ModifyBackgroundPictureState){
+        this->addItem(_pixItem);
+    }
+
+    _hasABackgroundPicture = true;
+
+    this->adjustSceneRectangleToItems();
+
+    //this->update(this->sceneRect());
+
+}
 
 void PaintingScene::simplifyView(bool a){
     _isSimplifyViewActivated = a;
@@ -552,7 +709,7 @@ void PaintingScene::simplifyView(bool a){
 }
 
 void PaintingScene::stopCreateLine(){
-    if(_isCreateLineActivated){
+    if(_state == CreatePointsState){
         _isCreateLineActivated = false;
         this->removeItem(_ghostPoint);
         this->removeItem(_ghostLine);
@@ -565,17 +722,13 @@ void PaintingScene::stopCreateLine(){
         _structure->stopHistory(Data::MonofinSurface);
         emit this->somethingChanged(this->ActionNoAction);
 
+        _state = NormalState;
         emit this->lineInterrupted();
         this->update(this->sceneRect());
         
+    }else{
+        qDebug("Warning : attempting to stop the creation of the line, but no line is being created");
     }
-}
-
-void PaintingScene::redo(){
-    qDebug("redo");
-    _structure->redo(Data::MonofinSurface);
-
-    this->getMonofinFromStructure();
 }
 
 void PaintingScene::undo(){
@@ -586,8 +739,103 @@ void PaintingScene::undo(){
 
 }
 
+void PaintingScene::zoomOnBackgroundPicture(qreal factor){
+    if(_state == ModifyBackgroundPictureState &&
+       _pixItem->getScale()*factor > 0.01 &&
+       _pixItem->getScale()*factor < 2){
+        _pixItem->scaled(_pixItem->getScale()*factor);
+        this->update();
+    }
+
+}
+
 //PROTECTED
 
+void PaintingScene::adjustSceneRectangleToItems(){
+
+    //on vérifie que le rectangle de la scène est bien autour de
+    //tous les objets de cette scène SAUF AUTOUR DE L'IMAGE DE FOND,
+    //sinon on l'ajuste :
+
+    if(_state == ModifyBackgroundPictureState){
+        this->removeItem(_pixItem);
+    }
+
+    QRectF itemRect = this->itemsBoundingRect();
+    QRectF sceneRect = this->sceneRect();
+    //un point d'intersection ou un point de contrôle peut avoir un
+    //rectangle englobant dépassant du rectangle de la scène, donc on le
+    //prend en compte en agrandissant un peu le rectangle de la scène
+    //avant de vérifier qu'il entoure bien tous les objets
+    ControlPoint c(0,0,0,this); //TRES DANGEREUX / VERY DANGEROUS
+    BoundingPoint b(0,0,this);
+    qreal max = c.boundingRect().width();
+    if (max < b.boundingRect().width()){
+        max = b.boundingRect().width();
+    }
+    max/=2.0;
+
+    if(!sceneRect.adjusted(-max, -max, max, max).contains(itemRect)){
+        sceneRect = sceneRect.united(itemRect);
+        sceneRect.moveLeft(0);
+        QRect newSceneRect = sceneRect.toRect();
+        this->setSceneRect(newSceneRect);
+    }
+
+    //on remet l'item de l'image de fond si on l'avait enlevé
+    if(_state == ModifyBackgroundPictureState){
+        this->addItem(_pixItem);
+    }
+
+    //on réajuste l'axe de symétrie au cas où la taille de la scène
+    //aurait changé et on rafraichit la vue
+    _axis->setLine(0,0,this->width(), 0);
+    this->update(this->sceneRect());
+}
+
+void PaintingScene::drawBackground(QPainter* painter, const QRectF& rect){
+    Q_UNUSED(rect);
+
+    if(!_isRenderingPicture){
+
+        QTransform matrix(painter->transform());
+
+        if(_hasABackgroundPicture && !_isModifyingBackgroundPicture){
+
+            QPointF offset = _pixItem->offset();
+            qreal x = offset.x() + _pixmap->width() / 2;
+            qreal y = offset.y() + _pixmap->height() / 2;
+            painter->translate(x, y);
+            painter->rotate(_pixItem->rotationAngle() + 180);
+            painter->scale(_pixItem->getScale(), -_pixItem->getScale());
+            painter->translate(-x, -y);
+
+            painter->drawPixmap(_pixItem->offset(), *_pixmap);
+        }
+
+        painter->setTransform(matrix, false);
+
+        painter->setPen(Qt::DashDotLine);
+        painter->drawRect(this->sceneRect());
+        painter->drawRect(this->pointsBoundingZone());
+
+        painter->setPen(Qt::DotLine);
+        painter->setOpacity(0.2);
+        QRect r = this->sceneRect().toRect();
+        qreal gridUnit = this->gridUnit();
+        for(qreal i = 0; i < r.bottomRight().x(); i+=gridUnit){
+            painter->drawLine(QLineF(i, r.bottomLeft().y(), i, r.topLeft().y()));
+        }
+        for(qreal i = 0; i > r.topLeft().y(); i-=gridUnit){
+            painter->drawLine(QLineF(r.bottomLeft().x(), i, r.bottomRight().x(), i));
+        }
+        for(qreal i = 0; i < r.bottomLeft().y(); i+=gridUnit){
+            painter->drawLine(QLineF(r.bottomLeft().x(), i, r.bottomRight().x(), i));
+        }
+    }
+
+
+}
 
 void PaintingScene::getMonofinFromStructure(){
     //on enlève tous les points sans affecter la structure interne
@@ -734,33 +982,7 @@ void PaintingScene::getMonofinFromStructure(){
         emit this->pointsOnScene(true);
 
 
-        //on vérifie que le rectangle de la scène est bien autour de
-        //tous les objets de cette scène, sinon on l'ajuste :
-
-        QRectF itemRect = this->itemsBoundingRect();
-        QRectF sceneRect = this->sceneRect();
-        //un point d'intersection ou un point de contrôle peut avoir un
-        //rectangle englobant dépassant du rectangle de la scène, donc on le
-        //prend en compte en agrandissant un peu le rectangle de la scène
-        //avant de vérifier qu'il entoure bien tous les objets
-        ControlPoint c(0,0,0,this); //TRES DANGEREUX / VERY DANGEROUS
-        BoundingPoint b(0,0,this);
-        qreal max = c.boundingRect().width();
-        if (max < b.boundingRect().width()){
-            max = b.boundingRect().width();
-        }
-        max/=2.0;
-
-        if(!sceneRect.adjusted(-max, -max, max, max).contains(itemRect)){
-            sceneRect = sceneRect.united(itemRect);
-            sceneRect.moveLeft(0);
-            QRect newSceneRect = sceneRect.toRect();
-            this->setSceneRect(newSceneRect);
-        }
-        //on réajuste l'axe de symétrie au cas où la taille de la scène
-        //aurait changé et on rafraichit la vue
-        _axis->setLine(0,0,this->width(), 0);
-        this->update(this->sceneRect());
+        this->adjustSceneRectangleToItems();
 
 
 
@@ -787,8 +1009,8 @@ void PaintingScene::keyPressEvent(QKeyEvent* event){
         _isMultiSelectionKeyActivated = true;
 
 //P
-    }else if(event->key() == Qt::Key_P){
-        this->savePicture();
+//    }else if(event->key() == Qt::Key_P){
+//        this->getPictureOfTheScene(-1,-1);
 
 //ESC
     }else if(event->key() == Qt::Key_Escape){
@@ -814,6 +1036,16 @@ void PaintingScene::keyPressEvent(QKeyEvent* event){
         this->setGridUnit(this->gridUnit() - 1);
     }
 
+//PAGE UP
+    else if(event->key() == Qt::Key_PageUp){
+        this->zoomOnBackgroundPicture(1.2);
+    }
+
+//PAGE DOWN
+    else if(event->key() == Qt::Key_PageDown){
+        this->zoomOnBackgroundPicture(0.8);
+    }
+
 }
 
 void PaintingScene::keyReleaseEvent(QKeyEvent* event){
@@ -830,9 +1062,17 @@ void PaintingScene::mouseMoveEvent(QGraphicsSceneMouseEvent* event){
         qDebug("intersect not...");
     }*/
 
+
+    bool intersect = false; //useful for 'create line'
+    QPointF pos; //useful for 'create line'
+    QRectF r; //useful for 'highlight lines'
+    bool isOneSelection = false; //useful for 'highlight lines'
+
+    switch(_state){
+
 //1. CREATE LINE
-    if(_isCreateLineActivated){
-        bool intersect = false;
+        case CreatePointsState:
+
         if(_hasPlacedFirstPoint){
             if(_pointList.isEmpty()){qDebug("empty list");}
             else{
@@ -853,60 +1093,47 @@ void PaintingScene::mouseMoveEvent(QGraphicsSceneMouseEvent* event){
 
         _ghostPoint->setCanBePlaced(!intersect);
 
-        QPointF pos(event->scenePos());
+        pos = event->scenePos();
         if(!_hasPlacedFirstPoint){
             pos.setY(0);
         }else{}
         _ghostPoint->moveTo(pos);
-    }
+
+        break;
 
 //2. CREATE SELECTION RECTANGLE
-    else if(_isCreatingSelectionRect){
-        _selectionRect->setBottomRight(event->scenePos());
-    }
+        case NormalState:
+        if(_isCreatingSelectionRect){
+            _selectionRect->setBottomRight(event->scenePos());
+        }
 
+        break;
 
 //3. HIGHLIGHT ITEMS
-    else{
-  //3.1 Highlight points
+   // Highlight lines
+        case AddControlPointsState:
+        case InsertPointsState:
 
-        /*if(!(_isAddControlActivated ||
-             _isAddPointActivated ||
-             _isRemoveControlPointActivated)){
-
-            //QRectF r(event->scenePos().x(), event->scenePos().y(), 0.1, 0.1);
-            foreach(bp, _pointList){
-                bp->setMouseOnPoint(false);
-                if(!__isAPointHighlighted && bp->isUnderMouse()){
-                    bp->setMouseOnPoint(true);
-                    __isAPointHighlighted = true;
-                    _itemUnderMouse = bp;
-
-
-
-
-
-                }//if
-            }//foreach
-        }//if
-*/
-   //3.2 Highlight lines
-        bool isOneSelection = false;
-        if(_isAddControlActivated || _isAddPointActivated){
-            isOneSelection = false;
-            QRectF r(event->scenePos().x() - 3, event->scenePos().y() - 3, 6, 6);
-            BrLine* lf;
-            foreach(lf, _lineList){
-                lf->setMouseOnLine(false);
-                if(!isOneSelection){
-                    if(lf->intersects(r)){
-                        lf->setMouseOnLine(true);
-                        isOneSelection = true;
-                    }
+        r = QRectF(event->scenePos().x() - 3, event->scenePos().y() - 3, 6, 6);
+        BrLine* lf;
+        foreach(lf, _lineList){
+            lf->setMouseOnLine(false);
+            if(!isOneSelection){
+                if(lf->intersects(r)){
+                    lf->setMouseOnLine(true);
+                    isOneSelection = true;
                 }
-            }//foreach
-        }//if
-    }
+            }
+        }//foreach
+
+        break;
+
+        default:
+        ;
+
+    }//switch
+
+//ALWAYS
     this->update(this->sceneRect());
     QGraphicsScene::mouseMoveEvent(event);
 }
@@ -916,15 +1143,21 @@ void PaintingScene::mousePressEvent(QGraphicsSceneMouseEvent* event){
 
         qDebug("click");
 
-//1. CREATE LINE
+        //these two booleans are only useful for the case 'create line',
+        //but must be initialized here
         bool isFirstPoint = false;
         bool isLastPoint = false;
-        if(_isCreateLineActivated){
+
+        switch(_state){
+
+//1. CREATE LINE
+            case CreatePointsState:
+
             if(_ghostPoint->canBePlaced()){
                 BoundingPoint* rect; //pointeur vers le nouveau point
                                     //qui sera ajouté à la scène et à la liste
                 if(_hasPlacedFirstPoint){
-                
+
                     QRectF mouseRect(_ghostPoint->coord().x()- 5,
                            _ghostPoint->coord().y()- 5,
                            10,
@@ -1007,6 +1240,7 @@ void PaintingScene::mousePressEvent(QGraphicsSceneMouseEvent* event){
 
                     isLastPoint = false;
                     emit lineFinished(true);
+                    _state = NormalState;
                     _isCreateLineActivated = false;
                     qDebug("last point created");
 
@@ -1015,10 +1249,12 @@ void PaintingScene::mousePressEvent(QGraphicsSceneMouseEvent* event){
                 }
 
             }//end if (can be placed)
-        }else
+            break;
+
 
 //2. ADD CONTROL POINT
-        if(_isAddControlActivated){
+        case AddControlPointsState:
+
             BrLine* l;
             foreach(l, _lineList){
                 if(l->isMouseOnLine()){
@@ -1037,11 +1273,14 @@ void PaintingScene::mousePressEvent(QGraphicsSceneMouseEvent* event){
 
                     }
                 }
-            }
-        }else
+            }//foreach
+
+            break;
+
 
 //3. INSERT POINT
-        if(_isAddPointActivated){
+            case InsertPointsState:
+
             BrLine* lf;
             foreach(lf, _lineList){
                 if(lf->isMouseOnLine()){
@@ -1179,35 +1418,53 @@ void PaintingScene::mousePressEvent(QGraphicsSceneMouseEvent* event){
                 }
             }//foreach
 
+            break;
+
 
 //4. REMOVE CONTROL POINT
-        }else if(_isRemoveControlPointActivated){}
+            case RemoveControlPointsState:
 
-//5. OTHER
-//5.1 Something is highlighted
-        else if(_isAPointHighlighted){
-            if(!_isMultiSelectionKeyActivated){
-                if(!this->selectedItems().contains(_itemUnderMouse)){
-                    this->clearSelection();
-                    _itemUnderMouse->setSelected(true);
+            break;
+
+//5. MODIFY BACKGROUND PICTURE
+            case ModifyBackgroundPictureState:
+
+            break;
+
+
+//6. OTHER
+            case NormalState:
+
+    //6.1 Something is highlighted
+            if(_isAPointHighlighted){
+                if(!_isMultiSelectionKeyActivated){
+                    if(!this->selectedItems().contains(_itemUnderMouse)){
+                        this->clearSelection();
+                        _itemUnderMouse->setSelected(true);
+                    }
+                }else{
+                    _itemUnderMouse->setSelected(!_itemUnderMouse->isSelected());
                 }
-            }else{
-                _itemUnderMouse->setSelected(!_itemUnderMouse->isSelected());
             }
-        }
-//5.2 Nothing is highligthed
-    //(selection rectangle)
-        else if(_canCreateSelectionRect){
-            qDebug("create selection rect");
-            _isCreatingSelectionRect = true;
-            _selectionRect = new SelectionRect(QRectF(event->scenePos(), event->scenePos()));
-            this->addItem(_selectionRect);
 
-        }
-//6. ALL THE OTHER CASES
-        else{
+    //6.2 Nothing is highligthed
+        //(selection rectangle)
+            else if(_canCreateSelectionRect){
+                qDebug("create selection rect");
+                _isCreatingSelectionRect = true;
+                _selectionRect = new SelectionRect(QRectF(event->scenePos(), event->scenePos()));
+                this->addItem(_selectionRect);
 
-        }
+            }
+
+            break;
+
+//7. ALL THE OTHER CASES
+            default:
+
+
+
+        ;}//switch
 
 //ALWAYS
         this->update(this->sceneRect());

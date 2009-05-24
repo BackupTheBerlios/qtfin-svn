@@ -6,6 +6,7 @@
 #include <QVBoxLayout>
 #include <QCheckBox>
 #include <QTime>
+#include <QFileDialog>
 
 class PaintingScene;
 
@@ -25,6 +26,8 @@ public slots:
     void clean();
     void finishedLine(bool a);
     void lineInterrupted();
+    void modifyPicture(bool a);
+    void openImage();
     void pointsOnScene(bool a);
 
 signals:
@@ -39,8 +42,11 @@ protected:
     QPushButton* _toolButtonAddPoint;
     QPushButton* _toolButtonAlignTangents;
     QPushButton* _toolButtonClean;
+    QPushButton* _toolButtonOpenImage;
+    QPushButton* _toolButtonModifyPicture;
     QPushButton* _toolButtonPoint;
     QPushButton* _toolButtonRemoveControl;
+    QPushButton* _toolButtonRemovePicture;
     QPushButton* _toolButtonSimplifyView;
     QPushButton* _undoButton;
     QVBoxLayout* _vlayout;

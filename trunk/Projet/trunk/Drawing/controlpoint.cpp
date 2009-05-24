@@ -92,7 +92,7 @@ void ControlPoint::paint(QPainter* painter,
 
     if(!_scene->isSimplifyViewActivated()){
 
-        if(!_isHighlighted){
+        if(!_isHighlighted || _scene->isRenderingPicture()){
             painter->setPen(_colorWhenNormal);
         }else{
             painter->setPen(_colorWhenHighlighted);
@@ -182,7 +182,7 @@ void ControlPoint::mousePressEvent(QGraphicsSceneMouseEvent* event){
 
 //REMOVE CONTROL POINT
 
-        if(_scene->isRemoveControlPointActivated()){
+        if(_scene->state() == PaintingScene::RemoveControlPointsState){
             _line->setControlPoint(false);
 
             _scene->controlPointHasBeenHidden(this);

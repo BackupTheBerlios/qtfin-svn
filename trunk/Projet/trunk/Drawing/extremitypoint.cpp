@@ -6,9 +6,24 @@
 ExtremityPoint::ExtremityPoint(const QPointF& coord, PaintingScene* scene)
         :BoundingPoint(coord, scene){}
 
-void ExtremityPoint::moveTo(const QPointF& p){
+void ExtremityPoint::moveTo(const QPointF& p, bool useMagnetIfActivated){
     this->prepareGeometryChange();
     QPointF pos(p.x(), 0);
+
+    if(useMagnetIfActivated && _scene->isMagnetActivated()){
+        qreal gu = _scene->gridUnit();
+
+        //We add to the position of the point, half of the grid unit, that is
+        //to make the point change of grid line, when the cursor is between
+        //lines and not on a line (a bit complicated, but remove "+ gu/2.0"
+        //to better understand).
+        //Then, we divide by the grid unit to know the number of the line
+        //where the point should go.
+        //And we multiply this number by the grid unit to place the point
+        //at the correct position.
+        pos.setX((int)((pos.x()+ gu/2.0) / gu) * gu);
+
+    }
 
     QRectF zone = _scene->pointsBoundingZone();
     if(pos.x() < zone.bottomLeft().x()){

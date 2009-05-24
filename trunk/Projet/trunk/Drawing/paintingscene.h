@@ -13,8 +13,10 @@
 #include "extremitypoint.h"
 #include <QPainter>
 #include <QPixmap>
-#include <QMatrix>
+#include <QTransform>
 #include "../Data/projectfile.h"
+#include "../EdgeDetection/pixmapitem.h"
+#include "../EdgeDetection/rotatecircle.h"
 
 class BrLine;
 class BoundingPoint;
@@ -30,6 +32,16 @@ class PaintingScene: public QGraphicsScene{
     Q_OBJECT
 
 public:
+
+    enum SceneState{NormalState,
+                    CreatePointsState,
+                    AddControlPointsState,
+                    RemoveControlPointsState,
+                    InsertPointsState,
+                    ModifyBackgroundPictureState
+                };
+
+
 
     //the type of the action when a signal somethingChanged is emitted
     enum DrawingAction{ActionCreateLine,
@@ -161,11 +173,24 @@ public:
     QColor getColor(ColorItem item, ColorType type);
 
     /**
+    * Return a picture from the scene without background and with all items on
+    * their normal color. The size of the picture is the given
+    * parameter (x X y). If at least one of the parameters is negative or
+    * equal to zero, the returned QPixmap is non-valid.
+    *@param x the width of the picture
+    *@param y the height of the picture
+    *@return the scene painted in a QPixmap
+    **/
+    QPixmap getPictureOfTheScene(unsigned int x, unsigned int y);
+
+    /**
     *@return the unit of the grid (the length between two lines of the grid)
     **/
     qreal gridUnit(){
         return _gridUnit;
     }
+
+    bool hasABackgroundPicture(){return _hasABackgroundPicture;}
 
     /**
     *@return the height of the scene rectangle.
@@ -176,7 +201,9 @@ public:
     bool isAddPointActivated(){return _isAddPointActivated;}
     bool isCreateLineActivated(){return _isCreateLineActivated;}
     bool isMagnetActivated(){return _isMagnetActivated;}
+    bool isModifyingPicture(){return isModifyingPicture();}
     bool isRemoveControlPointActivated(){return _isRemoveControlPointActivated;}
+    bool isRenderingPicture(){return _isRenderingPicture;}
     bool isSimplifyViewActivated(){return _isSimplifyViewActivated;}
 
     /**
@@ -240,13 +267,18 @@ public:
     /**
     * Indicates to the internal structure that the next modifications on the
     * scene will be considered as one, until stopModifications is call.
-    * WARNING : be careful to use this function only when you precise that
+    * WARNING : be careful to use this function ONLY when you precise that
     * the modifications are NOT unique (see boundingPointHasMoved or
     * controlPointHasMoved).
     **/
     void startModifications(){
         _structure->startHistory(Data::MonofinSurface);
     }
+
+    /**
+    *@return the state of the scene as an int, see enum SceneState for details
+    **/
+    int state(){return _state;}
 
     /**
     * Indicates to the internal structure that the modifications considered
@@ -316,8 +348,8 @@ public slots:
     /**
     * Calls the function alignTangents() on every selected points. It is
     * NOT ADVISED to call this function when several points are selected,
-    * because it only aligns the tangents of the points ONE BY ONE. It will
-    * NOT align several points.
+    * but it will work. The result when several points are selected is
+    * generally useless.
     **/
     void alignTangents();
 
@@ -350,25 +382,44 @@ public slots:
     **/
     void keepBezierCurve(bool k);
 
+
+    /**
+    * Activates or deactivates the possibility of modifying the background
+    * picture (move, rotate, csale). It changes the scene state. If the scene
+    * has no background picture, it only change its state.
+    *@param on if true, add the background picture to the scene and allow
+    * the user to modify the it; if false, remove the background picture and
+    * set it as a background of the scene
+    **/
+    void modifyBackgroundPicture(bool on);
+
+    /**
+    * Calls the redo function on the internal structure and get the points
+    * back from it, by calling getMonofinFromStructure(), which EMIT
+    * a pointOnScene(bool) signal.
+    **/
+    void redo();
+
+    /**
+    * Removes the background picture from the scene or from its background.
+    * It does nothing if the scene has no background picture.
+    **/
+    void removeBackgroundPicture();
+
     /**
     * Removes the selected points of the scene and of the internal structure.
     **/
     void removeSelectedPoints();
 
-
     /**
-    ***********************************************************************
-    * Sauvegarde un image de la scene dans le dossier de l'exécutable
-    * "test.png"
-
-    * La signature peut être modifiée pour prendre en compte le chemin
-    * du fichier, la taille de l'image, etc.
-
-    QUELQU'UN STP DIS-MOI CE QUE TU VEUX POUR CETTE FONCTION !!!
-
-    ***********************************************************************
+    * Sets a background picture for the scene. Depending of the state of the
+    * scene, if the user is already allowed to modify this picture or not
+    * (see modifyBackgroundPicture), the picture is set on the background of
+    * the scene, or as an item added to it. If the pixmap is null,
+    * it does nothing.
+    *@param pixmap the picture to set on the background as a QPixmap
     **/
-    void savePicture();
+    void setBackGroundPicture(QPixmap pixmap);
 
     /**
     * Sets the size of the unit of the grid (The length between two lines of
@@ -394,18 +445,26 @@ public slots:
     void stopCreateLine();
 
     /**
-    * Calls the redo function on the internal structure and get the points
-    * back from it, by calling getMonofinFromStructure(), which EMIT
-    * a pointOnScene(bool) signal.
-    **/
-    void redo();
-
-    /**
     * Calls the undo function on the internal structure and get the points
     * back from it, by calling getMonofinFromStructure(), which EMIT
     * a pointOnScene(bool) signal.
     **/
     void undo();
+
+    /**
+    * Removes all the points from the scene (NOT from the structure) if there
+    * is any, and get new one from the internal structure.
+    **/
+    void updateMonofinDrawing(){this->getMonofinFromStructure();}
+
+    /**
+    * Multiply the scale of the background picture by the given factor
+    * (>1 will enlarge the picture, <1 will shrink it). The original scale of
+    * the picture is 1. If this value becomes lower than 0.01 or greater
+    * than 2, the function will do nothing.
+    *@param factor the factor by which we multply the scale of the picture
+    **/
+    void zoomOnBackgroundPicture(qreal factor);
 
 signals:
 
@@ -450,6 +509,13 @@ protected:
                     LineHighlightingColor = 6
                 };
 
+    /**
+    * Modifies the scene rectangle if there are items outside it, so it can
+    * contain the items bounding rectangle.
+    **/
+    void adjustSceneRectangleToItems();
+
+    virtual void drawBackground(QPainter* painter, const QRectF& rect);
     void getMonofinFromStructure();
     void keyPressEvent(QKeyEvent* event);
     void keyReleaseEvent(QKeyEvent* event);
@@ -467,6 +533,7 @@ protected:
     GhostLine* _ghostLine;
     GhostPoint* _ghostPoint;
     qreal _gridUnit;
+    bool _hasABackgroundPicture;
     bool _hasABoundingPointMoved;
     bool _hasPlacedFirstPoint;
     bool _isAddControlActivated;
@@ -475,16 +542,22 @@ protected:
     bool _isCreateLineActivated;
     bool _isCreatingSelectionRect;
     bool _isMagnetActivated;
+    bool _isModifyingBackgroundPicture;
     bool _isMultiSelectionKeyActivated;
     bool _isRemoveControlPointActivated;
+    bool _isRenderingPicture;
     bool _isSimplifyViewActivated;
     BoundingPoint* _itemUnderMouse;
     bool _keepBezierCurve;
     BoundingPoint* _lastPlacedPoint;
     QList<BrLine*> _lineList;
+    PixmapItem* _pixItem;
+    QPixmap* _pixmap;
     QList<BoundingPoint*> _pointList;
+    RotateCircle* _rotCircle;
     qreal _scaleFactor;
     SelectionRect* _selectionRect;
+    SceneState _state;
     Data::ProjectFile* _structure;
 
 };

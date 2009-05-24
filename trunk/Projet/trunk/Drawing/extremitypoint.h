@@ -28,11 +28,16 @@ public:
     /**
     * Makes the extremity point moving to the coordinates of the given QPointF,
     * but ONLY along the extremity axis of the scene in the zone where points
-    * can move (see PaintingScene::pointsBoundingZone).
+    * can move (see PaintingScene::pointsBoundingZone). If the magnet is
+    * activated in the scene, the function can use it to move the point only
+    * on the intersections of the grid, depending on the parameter.
     * It also calls the function move() of the lines if they exist.
-    * @param p the new coordinates of the bounding point as a QPointF
+    *@param p the new coordinates of the bounding point as a QPointF
+    *@param useMagnetIfActivated if true, the point will be placed on the
+    * intersections of the grid, but ONLY if the magnet is activated on the
+    * scene ; if false, the point is placed just as described before
     **/
-    void moveTo(const QPointF& p);
+    void moveTo(const QPointF& p, bool useMagnetIfActivated = true);
 
     /**
     * Returns the type of the extremity point as an int. This int is different

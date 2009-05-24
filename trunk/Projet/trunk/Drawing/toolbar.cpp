@@ -56,6 +56,18 @@ ToolBar::ToolBar(PaintingScene* scene, QWidget* parent)
     _magnetCheckBox->click();
     _vlayout->addWidget(_magnetCheckBox);
 
+    _toolButtonOpenImage = new QPushButton("Open Image", this);
+    _vlayout->addWidget(_toolButtonOpenImage);
+
+    _toolButtonModifyPicture = new QPushButton("Modify backgroud picture");
+    _toolButtonModifyPicture->setCheckable(true);
+    _toolButtonModifyPicture->setEnabled(true);
+    _vlayout->addWidget(_toolButtonModifyPicture);
+
+    _toolButtonRemovePicture = new QPushButton("Remove backgroud picture");
+    _toolButtonRemovePicture->setEnabled(true);
+    _vlayout->addWidget(_toolButtonRemovePicture);
+
     /*QPushButton* viewCoords = new QPushButton("View coords", this);
     _vlayout->addWidget(viewCoords);*/
 
@@ -83,6 +95,11 @@ ToolBar::ToolBar(PaintingScene* scene, QWidget* parent)
     QObject::connect(_scene, SIGNAL(pointsOnScene(bool)), this, SLOT(pointsOnScene(bool)));
     QObject::connect(_keepBezierCheckBox, SIGNAL(clicked(bool)), _scene, SLOT(keepBezierCurve(bool)));
     QObject::connect(_magnetCheckBox, SIGNAL(clicked(bool)), _scene, SLOT(activateMagnet(bool)));
+    QObject::connect(_toolButtonOpenImage, SIGNAL(clicked()), this, SLOT(openImage()));
+    QObject::connect(_toolButtonModifyPicture, SIGNAL(clicked(bool)), _scene, SLOT(modifyBackgroundPicture(bool)));
+    QObject::connect(_toolButtonModifyPicture, SIGNAL(clicked(bool)), this, SLOT(modifyPicture(bool)));
+    QObject::connect(_toolButtonRemovePicture, SIGNAL(clicked()), _scene, SLOT(removeBackgroundPicture()));
+
 
     QObject::connect(koin, SIGNAL(clicked()), this, SLOT(changeColor()));
     QObject::connect(this, SIGNAL(changeColor(int,int,QColor)), _scene, SLOT(changeColor(int,int,QColor)));
@@ -99,6 +116,7 @@ void ToolBar::activeAddControl(bool a){
     _toolButtonRemoveControl->setDisabled(a);
     _undoButton->setDisabled(a);
     _redoButton->setDisabled(a);
+    _toolButtonModifyPicture->setDisabled(a);
 }
 
 void ToolBar::activeAddPoint(bool a){
@@ -108,6 +126,7 @@ void ToolBar::activeAddPoint(bool a){
     _toolButtonRemoveControl->setDisabled(a);
     _undoButton->setDisabled(a);
     _redoButton->setDisabled(a);
+    _toolButtonModifyPicture->setDisabled(a);
 }
 
 void ToolBar::activateRemoveControl(bool a){
@@ -117,6 +136,7 @@ void ToolBar::activateRemoveControl(bool a){
     _toolButtonClean->setDisabled(a);
     _undoButton->setDisabled(a);
     _redoButton->setDisabled(a);
+    _toolButtonModifyPicture->setDisabled(a);
 }
 
 void ToolBar::beginLine(bool a){
@@ -128,6 +148,7 @@ void ToolBar::beginLine(bool a){
     _toolButtonRemoveControl->setDisabled(a);
     _undoButton->setDisabled(a);
     _redoButton->setDisabled(a);
+    _toolButtonModifyPicture->setDisabled(a);
 }
 
 void ToolBar::changeColor(){
@@ -194,6 +215,25 @@ void ToolBar::lineInterrupted(){
     _toolButtonPoint->setEnabled(true);
     _toolButtonPoint->click();
     this->pointsOnScene(false);
+}
+
+void ToolBar::modifyPicture(bool a){
+    _toolButtonAddPoint->setDisabled(a);
+    _toolButtonAddControl->setDisabled(a);
+    _toolButtonAlignTangents->setDisabled(a);
+    _toolButtonClean->setDisabled(a);
+    _toolButtonRemoveControl->setDisabled(a);
+    _undoButton->setDisabled(a);
+    _redoButton->setDisabled(a);
+
+}
+
+void ToolBar::openImage(){
+    QString file = QFileDialog::getOpenFileName(this, "Ouvrir un fichier", QString(), "Images (*.png *.bmp *.jpg)");
+    if(!file.isNull()){
+        QPixmap pix(file);
+        _scene->setBackGroundPicture(pix);
+    }
 }
 
 void ToolBar::pointsOnScene(bool a){

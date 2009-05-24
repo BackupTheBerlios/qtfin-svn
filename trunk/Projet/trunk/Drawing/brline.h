@@ -7,6 +7,8 @@
 #include <QPainterPath>
 #include <QColor>
 #include <QPen>
+#include <QBrush>
+#include <QLinearGradient>
 #include "boundingpoint.h"
 #include "controlpoint.h"
 #include "paintingscene.h"

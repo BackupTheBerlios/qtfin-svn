@@ -378,7 +378,9 @@ void BoundingPoint::paint(QPainter* painter, const QStyleOptionGraphicsItem* opt
     if(!_scene->isSimplifyViewActivated()){
         QPen pen;
 
-        if(this->isSelected()){
+        if(_scene->isRenderingPicture()){
+            pen.setColor(_colorWhenNormal);
+        }else if(this->isSelected()){
             pen.setColor(_colorWhenSelected);
         }else{
             if(_isMouseOnPoint){
@@ -632,9 +634,7 @@ void BoundingPoint::mouseReleaseEvent(QGraphicsSceneMouseEvent* event){
 void BoundingPoint::hoverEnterEvent(QGraphicsSceneHoverEvent* event){
     //qDebug("enter hover");
 
-    if(!(_scene->isAddControlActivated()||
-         _scene->isAddPointActivated()||
-         _scene->isRemoveControlPointActivated())){
+    if(_scene->state() == PaintingScene::NormalState){
 
         _scene->setCanCreateSelectionRect(false);
         //if(!this->isSelected()){

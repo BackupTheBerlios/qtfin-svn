@@ -12,7 +12,7 @@ namespace Data{
     Profil::Profil(ConfigFile * link) : _linkedConfigFile(link) {}
 
     Profil::~Profil(){
-        while(!_monofinLayers.empty()){
+        while(!_monofinLayers.isEmpty()){
             Layer * toDelete = _monofinLayers.back();
             _monofinLayers.pop_back();
             delete toDelete;
@@ -301,6 +301,17 @@ namespace Data{
            if (lay->getHeight() > hei)
                hei = lay->getHeight();
        return hei;
+   }
+
+   void Profil::clearProfil(){
+        if(_monofinLayers.isEmpty())
+            return;
+
+        while(!_monofinLayers.isEmpty()){
+            Layer * toDelete = _monofinLayers.back();
+            _monofinLayers.pop_back();
+            delete toDelete;
+        }
    }
 
 } // namespace Data

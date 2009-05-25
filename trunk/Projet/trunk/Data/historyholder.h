@@ -80,6 +80,12 @@ namespace Data{
         virtual void startHistory(Type t);
 
         virtual void stopHistory(Type t);
+
+        virtual void dropLastHistory(Type t);
+
+    protected:
+
+        virtual void dropAllHistory();
     };
 
 #include "historyholder.imp"

@@ -4,11 +4,13 @@
 #include "configfile.h"
 #include <sstream>
 #include <fstream>
+#include <QImage>
+#include <QBuffer>
+#include <QFile>
 
 namespace Data{
 
     void XMLSaveVisitor::save(std::string path, std::string projectName){
-        std::stringstream os;
         std::fstream file(path.c_str(),std::fstream::out);
 
         file << "<project name=\""<< projectName << "\" ver=\"1.0\">" << std::endl;
@@ -19,8 +21,33 @@ namespace Data{
         file << _configFile;
         file << "</project>" << std::endl;
 
+        file.close();
+    }
+
+    void XMLSaveVisitor::saveForm(std::string path, std::string projectName, QImage & picture){
+        std::fstream file(path.c_str(),std::fstream::out);
+
+        file << "<project name=\""<< projectName << "\" ver=\"1.0\">" << std::endl;
+        file << "<monofin>" << std::endl;
+        file << _surface;
+        file << "<layers>" << std::endl;
+        file << "</layers>" << std::endl;
+        file << "</monofin>" << std::endl;
+        file << "<config>" << std::endl;
+        file << "<layerConfig>" << std::endl;
+        file << "</layerConfig>" << std::endl;
+        file << "</config>" << std::endl;
+
+        QBuffer test;
+        test.open(QIODevice::WriteOnly);
+        picture.save(&test,"XBM");
+        QString sauvegarde(test.data());
+        file << "<picture data=\"" << sauvegarde.toStdString() << "\"/>" << std::endl;
+
+        file << "</project>" << std::endl;
 
         file.close();
+
     }
 
     void XMLSaveVisitor::visitSurface(Surface *s){

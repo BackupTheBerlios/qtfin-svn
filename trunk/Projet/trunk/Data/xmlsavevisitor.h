@@ -12,6 +12,7 @@ namespace Data{
         std::string _configFile;
     public:
         void save(std::string path, std::string projectName);
+        void saveForm(std::string path, std::string projectName, QImage & picture);
 
         void visitSurface(Surface *s);
         void visitProfil(Profil *p);

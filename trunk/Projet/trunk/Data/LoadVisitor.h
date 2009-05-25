@@ -2,6 +2,8 @@
 #define LOADVISITOR_H
 
 #include <string>
+#include <QString>
+#include <QImage>
 
 namespace Data{
 
@@ -16,6 +18,8 @@ namespace Data{
         virtual ~LoadVisitor() {}
 
         virtual void load(std::string path) = 0;
+        virtual void loadForm(std::string path) = 0;
+        virtual QImage getImage(std::string path) = 0;
 
         virtual void visitSurface(Surface *sf) = 0;
         virtual void visitProfil(Profil *pr) = 0;

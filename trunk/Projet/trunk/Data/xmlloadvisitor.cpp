@@ -10,12 +10,37 @@
 namespace Data{
     void XMLLoadVisitor::load(std::string path){
         //_mainNode = XMLNode::openFileHelper(path.c_str(),"project");
+        _onlyForm = false;
         _mainDocument = QDomDocument("project");
         QFile test(QString(path.c_str()));
         //test = QFile(QString(path));
         _mainDocument.setContent(&test);
         _mainNode = _mainDocument.documentElement();
         test.close();
+    }
+
+    void XMLLoadVisitor::loadForm(std::string path){
+        _onlyForm = true;
+        _mainDocument = QDomDocument("project");
+        QFile test(QString(path.c_str()));
+        //test = QFile(QString(path));
+        _mainDocument.setContent(&test);
+        _mainNode = _mainDocument.documentElement();
+        test.close();
+    }
+
+    QImage XMLLoadVisitor::getImage(std::string path){
+        QFile xmlFile(QString(path.c_str()));
+        QDomDocument main("picture");
+        main.setContent(&xmlFile);
+        QDomElement picture = main.elementsByTagName("picture").at(0).toElement();
+        if(picture.tagName() != "picture"){
+            return QImage();
+        }
+        QString pictureData = picture.attribute("data","");
+        QImage pictureObject;
+        pictureObject.loadFromData(pictureData.toStdString().c_str(),"XBM");
+        return pictureObject;
     }
 
     void XMLLoadVisitor::visitSurface(Surface *sf){
@@ -102,12 +127,15 @@ namespace Data{
     }
 
     void XMLLoadVisitor::visitProfil(Profil *pr){
+        if(_onlyForm)
+            return;
         //chargement des layers
         //XMLNode layers = _mainNode.getChildNode("monofin").getChildNode("layers");
         QDomElement layers = _mainNode.elementsByTagName("monofin").at(0).toElement().elementsByTagName("layers").at(0).toElement();
         //int nbLayer =  layers.nChildNode("layer");
         QDomNode layerNode = layers.firstChild();
         while(!layerNode.isNull()){
+
             QDomElement currentLayer = layerNode.toElement();
             if(!currentLayer.isNull()){
                 if(currentLayer.tagName() == "layer"){
@@ -127,6 +155,8 @@ namespace Data{
     }
 
     void XMLLoadVisitor::visitConfigFile(ConfigFile * cf){
+        if(_onlyForm)
+            return;
         //chargement des layers
         //XMLNode layers = _mainNode.getChildNode("config").getChildNode("layerConfig");
         QDomElement layers = _mainNode.elementsByTagName("config").at(0).toElement().elementsByTagName("layerConfig").at(0).toElement();
@@ -150,7 +180,8 @@ namespace Data{
 
                 }
             }
+            layerNode  = layerNode.nextSibling();
         }
-        layerNode  = layerNode.nextSibling();
+
     }
 }

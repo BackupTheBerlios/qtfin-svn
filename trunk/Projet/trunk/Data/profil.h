@@ -91,6 +91,8 @@ namespace Data{
 
         void loadLayer(int rank, float length, float height);
 
+        void clearProfil();
+
     private:
 
         /**

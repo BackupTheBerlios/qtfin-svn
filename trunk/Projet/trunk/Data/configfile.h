@@ -52,6 +52,8 @@ namespace Data{
 
         void loadLayerConfig(int rank, float young, float poisson, float rho);
 
+        void clearConfigFile();
+
     private:
 
         void updateCreate(int rank);

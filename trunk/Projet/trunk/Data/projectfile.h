@@ -4,6 +4,7 @@
 #include "DataConstants.h"
 #include "historyholder.h"
 #include <QString>
+#include <QImage>
 
 namespace Data{
 
@@ -100,7 +101,13 @@ namespace Data{
 
         void saveProject(const QString &path, const QString &projectName = QString("Untitled"));
 
+        void saveForm(const QString &path, const QString &projectName = QString("Untitled"), QImage &picture = QImage());
+
         QString loadProject(const QString &path);
+
+        void loadForm(const QString &path);
+
+        QImage getImage(const QString &path);
     };
 
 } // namespace Data

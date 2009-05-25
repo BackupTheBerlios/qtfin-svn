@@ -1,6 +1,7 @@
 #ifndef SAVEVISITOR_H
 #define SAVEVISITOR_H
 #include <string>
+#include <QImage>
 
 namespace Data{
 
@@ -14,6 +15,7 @@ namespace Data{
         virtual ~SaveVisitor(){}
 
         virtual void save(std::string path, std::string projectName) = 0;
+        virtual void saveForm(std::string path, std::string projectName, QImage & picture) = 0;
 
         virtual void visitSurface(Surface * s) = 0;
         virtual void visitProfil(Profil * p) = 0;

@@ -291,5 +291,9 @@ namespace Data{
         return _monofinProfil->getMaxHeight();
     }
 
+    void MonofinFile::clearProfil(){
+        _monofinProfil->clearProfil();
+    }
+
 }// namespace Data
 

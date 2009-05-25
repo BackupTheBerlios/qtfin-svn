@@ -223,6 +223,8 @@ namespace Data{
 
         void accept(LoadVisitor *lv);
 
+        void clearProfil();
+
     private:
         /**
          * a function called at the initialisation of the structure to linkthe profil and the configfile (which also manage layers)

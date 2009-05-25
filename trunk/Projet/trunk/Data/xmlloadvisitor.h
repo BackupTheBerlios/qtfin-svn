@@ -17,10 +17,13 @@ namespace Data{
     private:
         QDomDocument _mainDocument;
         QDomElement _mainNode;
+        bool _onlyForm;
     public:
         //XMLLoadVisitor();
 
         void load(std::string path);
+        void loadForm(std::string path);
+        QImage getImage(std::string path);
 
         void visitSurface(Surface *sf);
         void visitProfil(Profil *pr);

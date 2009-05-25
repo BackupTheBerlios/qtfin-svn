@@ -202,3 +202,37 @@ void HistoryCareTaker<Type>::stopHistory(Type t){
     }
     _isStarted[t] = false;
 }
+
+template<typename Type>
+void HistoryCareTaker<Type>::dropLastHistory(Type t){
+    stopHistory(t);
+    if(_passedHistory.contains(t))
+        _passedHistory[t].pop_back();
+}
+
+template<typename Type>
+void HistoryCareTaker<Type>::dropAllHistory(){
+    foreach(Type key,_passedHistory.keys()){
+        //std::cout << "Destructeur HCT: current deletetion " << ++test << std::endl;
+        QStack< QList< HistoryHolder<Type> *> > &toClear = _passedHistory[key];
+        while(!toClear.isEmpty()){
+            QList<HistoryHolder<Type> *> list = toClear.pop();
+            foreach(HistoryHolder<Type> * toDelete, list){
+                //std::cout << "Destructeur HCT: list size " << list.size() << std::endl;
+                delete toDelete;
+            }
+        }
+        //std::cout << test << std::endl;
+        //delete toClear;
+    }
+
+    foreach(Type key,_futureHistory.keys()){
+        QStack< QList< HistoryHolder<Type> *> > &toClear = _futureHistory[key];
+        while(!toClear.isEmpty()){
+            foreach(HistoryHolder<Type> * toDelete, toClear.pop())
+                delete toDelete;
+        }
+        //delete toClear;
+    }
+
+}

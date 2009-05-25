@@ -12,9 +12,7 @@ namespace Data{
 
     ConfigFile::~ConfigFile(){
 
-        int i = 0;
-
-        for(i=0; i<_monofinLayerConfig.size(); i++){
+        while(!_monofinLayerConfig.isEmpty()){
 
             LayerConfig * toDelete = _monofinLayerConfig.back();
             _monofinLayerConfig.pop_back();
@@ -206,6 +204,22 @@ namespace Data{
         newLayerConfig->setRho(rho);
         newLayerConfig->setYoung(young);
         _monofinLayerConfig.insert(rank,newLayerConfig);
+
+    }
+
+    void ConfigFile::clearConfigFile(){
+        if(_monofinLayerConfig.isEmpty())
+            return;
+
+
+        while(!_monofinLayerConfig.isEmpty()){
+
+            LayerConfig * toDelete = _monofinLayerConfig.back();
+            _monofinLayerConfig.pop_back();
+
+            delete toDelete;
+
+        }
 
     }
 } // namespace Data

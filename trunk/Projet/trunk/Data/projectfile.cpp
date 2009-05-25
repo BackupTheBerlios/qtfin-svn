@@ -170,12 +170,41 @@ namespace Data{
         save.save(path.toStdString(),projectName.toStdString());
     }
 
+    void ProjectFile::saveForm(const QString &path, const QString &projectName, QImage &picture){
+        XMLSaveVisitor save;
+        _monofinGeometry->accept(&save);
+        save.saveForm(path.toStdString(),projectName.toStdString(),picture);
+    }
+
     QString ProjectFile::loadProject(const QString &path){
+        stopHistory(Data::MonofinLayer);
+        stopHistory(Data::MonofinSurface);
+        stopHistory(Data::MonofinLayerConfig);
+        dropAllHistory();
+        _monofinGeometry->clearProfil();
+        _monofinGeometry->clearSurface();
+        _monofinPhysicalProperties->clearConfigFile();
         XMLLoadVisitor load;
         load.load(path.toStdString());
         _monofinGeometry->accept(&load);
         _monofinPhysicalProperties->accept(&load);
         return (QString("None"));
+    }
+
+    void ProjectFile::loadForm(const QString &path){
+        XMLLoadVisitor load;
+        load.loadForm(path.toStdString());
+        stopHistory(Data::MonofinSurface);
+        startHistory(Data::MonofinSurface);
+        _monofinGeometry->clearSurface();
+        _monofinGeometry->accept(&load);
+        stopHistory(Data::MonofinSurface);
+
+    }
+
+    QImage ProjectFile::getImage(const QString &path){
+        XMLLoadVisitor load;
+        return load.getImage(path.toStdString());
     }
 
 } // namespace Data

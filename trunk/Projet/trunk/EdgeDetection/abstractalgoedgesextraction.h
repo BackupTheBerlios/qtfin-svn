@@ -27,7 +27,7 @@ public:
     /**
      * Extract the form detected previously and transform this form into a Monofin struture
      */
-    virtual bool edgesExtraction(Data::ProjectFile* monofin, qreal scale, qreal angle, qreal offsetX, qreal offsetY) = 0;
+    virtual bool edgesExtraction(Data::ProjectFile* monofin, qreal offsetX, qreal offsetY) = 0;
 
     virtual void reinitialize() = 0;
 };

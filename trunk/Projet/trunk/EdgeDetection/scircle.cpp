@@ -86,7 +86,6 @@ int SCircle::firstPoint(qreal angle, qreal offsetX, qreal offsetY, qreal scale, 
     QPointF fp = this->getQPointRotate(0, angle, scale) + offsetI;
     if(fp.y() >= offsetY || fp.x() <= offsetX){
         for(int i = 1; i < _spointNb && p == -1; i++){
-            qDebug("passe 1 : %d", i);
             QPointF cp = this->getQPointRotate(i, angle, scale) + offsetI;
             if(cp.x() > offsetX || cp.y() < offsetY){
                 p = i;
@@ -108,7 +107,6 @@ int SCircle::firstPoint(qreal angle, qreal offsetX, qreal offsetY, qreal scale, 
         }
     }else{
         for(int i = _spointNb - 1; i > 0 && p == -1; i--){
-            qDebug("passe 2 : %d", i);
             QPointF cp = this->getQPointRotate(i, angle, scale) + offsetI;
             if(cp.x() <= offsetX || cp.y() >= offsetY){
                 p = i + 1;
@@ -125,7 +123,11 @@ int SCircle::firstPoint(qreal angle, qreal offsetX, qreal offsetY, qreal scale, 
             }
         }
     }
-
+    if(p != -1){
+        QPointF resPoint = this->getQPointRotate(p, angle, scale) + offsetI;
+        if(resPoint.y() >= offsetY || resPoint.x() <= offsetX)
+            p = -1;
+    }
     return p;
 }
 

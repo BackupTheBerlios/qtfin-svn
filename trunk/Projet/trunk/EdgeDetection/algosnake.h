@@ -36,7 +36,7 @@ public:
     /**
      * implementation of the edges extraction algorithm
      */
-    virtual bool edgesExtraction(Data::ProjectFile* monofin, qreal scale, qreal angle, qreal offsetX, qreal offsetY);
+    virtual bool edgesExtraction(Data::ProjectFile* monofin, qreal offsetX, qreal offsetY);
 
     /**
      * reinitialize the algorithms

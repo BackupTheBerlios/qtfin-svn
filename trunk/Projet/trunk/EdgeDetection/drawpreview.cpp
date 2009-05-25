@@ -37,7 +37,6 @@ void DrawPreview::paintEvent(QPaintEvent *event){
     painter.setPen(QPen(QBrush("red"), 3));
     painter.drawLine(QPointF(0, _height / 2), QPointF(_width, _height / 2));
     QList<int> listSeg = _preview->getAllSegmentKeys();
-    qDebug("nb points : %d", listSeg.size());
     for(int i = 0; i < listSeg.size(); i++){
         int p1;
         int p2;

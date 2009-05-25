@@ -150,8 +150,7 @@ void Graphic::startAlgo(){
         QMessageBox::warning(this, "Over position", "Warning, the image is positionned badly !\nSome points detected are not in the scene !");
         _algo->reinitialize();
     }else{
-        ok =_algo->edgesExtraction(_monofin, _graphicsScene->pixItem()->getScale(), _graphicsScene->pixItem()->rotationAngle(),
-                               _graphicsScene->heal(), _graphicsScene->symetryAxe());
+        ok =_algo->edgesExtraction(_monofin, _graphicsScene->heal(), _graphicsScene->symetryAxe());
         if(!ok){
             QMessageBox::warning(this, "No edge detected", "Warning, the image is positionned badly !\nThe axe of symetry is not detected !");
             _algo->reinitialize();

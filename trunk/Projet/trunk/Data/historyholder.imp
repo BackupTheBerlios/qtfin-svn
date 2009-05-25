@@ -193,6 +193,9 @@ void HistoryCareTaker<Type>::stopHistory(Type t){
     foreach(HistoryMaker<Type> * hM, _historyMakers)
         globalHistory+=hM->retrieveHistory(t);
 
+    if(globalHistory.isEmpty())
+        return;
+
     if(_passedHistory.contains(t)){
         _passedHistory[t].push_back(globalHistory);
     }else{

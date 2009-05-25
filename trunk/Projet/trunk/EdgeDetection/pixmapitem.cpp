@@ -211,10 +211,12 @@ void PixmapItem::rotate2(qreal angle){
 }
 
 void PixmapItem::scaled(qreal scale){
-    _scale = scale;
-    ((RotateCircle*)(this->childItems().first()))->setScale(_scale);
-    X = dimInitWidth * _scale;
-    Y = dimInitHeight * _scale;
+    if(scale >= 0.01 && scale <= 2){
+        _scale = scale;
+        ((RotateCircle*)(this->childItems().first()))->setScale(_scale);
+        X = dimInitWidth * _scale;
+        Y = dimInitHeight * _scale;
+    }
 }
 
 

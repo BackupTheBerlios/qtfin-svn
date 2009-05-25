@@ -3,6 +3,7 @@
 
 #include <QApplication>
 #include <QtGui/QWidget>
+#include <QDialog>
 #include "ui_graphic.h"
 
 #include "edgesextractionscene.h"
@@ -16,7 +17,7 @@
 
 
 
-class Graphic : public QWidget {
+class Graphic : public QDialog {
     Q_OBJECT
 
 public:
@@ -97,6 +98,7 @@ public slots:
      * the graphic is still open
      */
     void doNotKept();
+
 
 protected:
     Ui::Form _graphic; // the graphic's interface

@@ -41,12 +41,16 @@ void RotateCircle::paint(QPainter* painter, const QStyleOptionGraphicsItem* opti
     painter->translate(x, y);
     painter->scale(_scale, _scale);
     painter->translate(-x, -y);
+    QPixmap pix;
     if(_enter)
-        painter->setBrush(QBrush(QColor("red")));
+        //painter->setBrush(QBrush(QColor("red")));
+        pix = QPixmap("./Images/blueSatellite.png");
     else
-        painter->setBrush(QBrush(QColor("green")));
+        //painter->setBrush(QBrush(QColor("green")));
+        pix = QPixmap("./Images/redSatellite.png");
 
-    painter->drawEllipse(this->rect());
+    //painter->drawEllipse(this->rect());
+    painter->drawPixmap(this->rect().toRect(), pix);
 }
 
 void RotateCircle::hoverEnterEvent(QGraphicsSceneHoverEvent * event){

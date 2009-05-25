@@ -8,14 +8,19 @@
 using namespace Data;
 
 Graphic::Graphic(QWidget *parent, ProjectFile* monofin, qreal width, qreal height) :
-    QWidget(parent), _monofin(monofin), _preview(NULL)
+    QDialog(parent), _monofin(monofin), _preview(NULL)
 {
+    //this->setWindowModality(Qt::WindowModal);
     _graphic.setupUi(this);
-    if(width == 0 || height == 0)
+    if(width == 0 || height == 0){
         _graphicsScene = new EdgesExtractionScene(_graphic.graphicWidget, 800, 600);
-    else
+        this->setMinimumSize(1200, 700);
+    }
+    else{
         _graphicsScene = new EdgesExtractionScene(_graphic.graphicWidget, width,
                                                   height);
+        this->setMinimumSize((int)width + 400, (int)height + 100);
+    }
     _graphicsView = new EdgesExtractionView(_graphicsScene);
 
     QVBoxLayout* layout = new QVBoxLayout(this);
@@ -39,6 +44,7 @@ void Graphic::setSize(qreal width, qreal height){
     _graphicsView->setScene(newScene);
     delete _graphicsScene;
     _graphicsScene = newScene;
+    this->setMinimumSize((int)width + 400, (int)height + 100);
 }
 
 void Graphic::setPixmap(){
@@ -62,37 +68,40 @@ void Graphic::setPixmap(){
                      this, SLOT(setPixmapPositionY(int)));
     }
     QString file = QFileDialog::getOpenFileName(this, "Ouvrir un fichier", QString(), "Images (*.png *.bmp)");
-    QPixmap pix(file);
-    _graphicsScene->setPixmap(pix);
+    if(file != ""){
+        QPixmap pix(file);
+        _graphicsScene->setPixmap(pix);
 
-    _graphic.posXSpinBox->setValue((int)_graphicsScene->pixItem()->boundingRect().center().x());
-    _graphic.posYSpinBox->setValue((int)_graphicsScene->pixItem()->boundingRect().center().y());
-    _graphic.scaleSpinBox->setValue(100);
+        _graphic.posXSpinBox->setValue((int)_graphicsScene->pixItem()->boundingRect().center().x());
+        _graphic.posYSpinBox->setValue((int)_graphicsScene->pixItem()->boundingRect().center().y());
+        _graphic.scaleSpinBox->setValue(100);
 
-    _graphic.posXSpinBox->setValue((int)_graphicsScene->pixItem()->boundingRect().center().x());
-    _graphic.posYSpinBox->setValue((int)_graphicsScene->pixItem()->boundingRect().center().y());
-    _graphic.scaleSpinBox->setValue(100);
+        _graphic.posXSpinBox->setValue((int)_graphicsScene->pixItem()->boundingRect().center().x());
+        _graphic.posYSpinBox->setValue((int)_graphicsScene->pixItem()->boundingRect().center().y());
+        _graphic.scaleSpinBox->setValue(100);
 
-    _algo = new AlgoSnake(_graphicsScene->pixItem()->scircle());
-    _algo->setImage(new QImage(_graphicsScene->pixItem()->pixmap().toImage()));
+        _algo = new AlgoSnake(_graphicsScene->pixItem()->scircle());
+        _algo->setImage(new QImage(_graphicsScene->pixItem()->pixmap().toImage()));
+    }
 
-
-    QObject::connect(_graphic.scaleSpinBox, SIGNAL(valueChanged(double)),
-                     this, SLOT(setScale(double)));
-    QObject::connect(_graphic.angleSpinBox, SIGNAL(valueChanged(double)),
-                this, SLOT(rotate(double)));
-    QObject::connect(_graphicsScene, SIGNAL(rotateAngleChanged(double)),
-                _graphic.angleSpinBox, SLOT(setValue(double)));
-    QObject::connect(_graphicsScene, SIGNAL(positionChanged()),
-                     this, SLOT(positionChanged()));
-    QObject::connect(_graphicsScene, SIGNAL(scaleChanged()),
-                     this, SLOT(scaleChanged()));
-    QObject::connect(_graphic.StartButton, SIGNAL(clicked()),
-                     this, SLOT(startAlgo()));
-    QObject::connect(_graphic.posXSpinBox, SIGNAL(valueChanged(int)),
-                     this, SLOT(setPixmapPositionX(int)));
-    QObject::connect(_graphic.posYSpinBox, SIGNAL(valueChanged(int)),
-                     this, SLOT(setPixmapPositionY(int)));
+    if(_graphicsScene->pixItem() != NULL){
+        QObject::connect(_graphic.scaleSpinBox, SIGNAL(valueChanged(double)),
+                         this, SLOT(setScale(double)));
+        QObject::connect(_graphic.angleSpinBox, SIGNAL(valueChanged(double)),
+                    this, SLOT(rotate(double)));
+        QObject::connect(_graphicsScene, SIGNAL(rotateAngleChanged(double)),
+                    _graphic.angleSpinBox, SLOT(setValue(double)));
+        QObject::connect(_graphicsScene, SIGNAL(positionChanged()),
+                         this, SLOT(positionChanged()));
+        QObject::connect(_graphicsScene, SIGNAL(scaleChanged()),
+                         this, SLOT(scaleChanged()));
+        QObject::connect(_graphic.StartButton, SIGNAL(clicked()),
+                         this, SLOT(startAlgo()));
+        QObject::connect(_graphic.posXSpinBox, SIGNAL(valueChanged(int)),
+                         this, SLOT(setPixmapPositionX(int)));
+        QObject::connect(_graphic.posYSpinBox, SIGNAL(valueChanged(int)),
+                         this, SLOT(setPixmapPositionY(int)));
+    }
 }
 
 void Graphic::rotate(double angle){
@@ -168,7 +177,7 @@ void Graphic::kept(){
     /**
      * voir si on ferme la fenetre ou si on la cache
      */
-    this->close();
+    this->accept();
 }
 
 void Graphic::doNotKept(){

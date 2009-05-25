@@ -14,7 +14,7 @@ using namespace Data;
 
 AlgoSnake::AlgoSnake(SCircle* scircle):
         AbstractAlgoEdgesExtraction(), _scircle(scircle), _image(NULL){
-    _scircle->addSPoint(100);
+    _scircle->addSPoint(500);
 }
 
 int AlgoSnake::valAbs(int v){
@@ -150,8 +150,8 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal offsetX, qreal offse
             QLineF newSegment(path.first(), newPoint);
             bool isCP = false;
             for(int j = 1; j < path.size() && !isCP; j++){
-                QLineF lz1(path.value(j) + QPointF(-2, 0), path.value(j) + QPointF(2, 0));
-                QLineF lz2(path.value(j) + QPointF(0, -2), path.value(j) + QPointF(0, 2));
+                QLineF lz1(path.value(j) + QPointF(-1.5, 0), path.value(j) + QPointF(1.5, 0));
+                QLineF lz2(path.value(j) + QPointF(0, -1.5), path.value(j) + QPointF(0, 1.5));
                 int intersect1 = newSegment.intersect(lz1, nothingP);
                 int intersect2 = newSegment.intersect(lz2, nothingP);
                 if(intersect1 != QLineF::BoundedIntersection && intersect2 != QLineF::BoundedIntersection){
@@ -198,8 +198,8 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal offsetX, qreal offse
             QLineF newSegment(path.first(), newPoint);
             bool isCP = false;
             for(int j = 1; j < path.size() && !isCP; j++){
-                QLineF lz1(path.value(j) + QPointF(-2, 0), path.value(j) + QPointF(2, 0));
-                QLineF lz2(path.value(j) + QPointF(0, -2), path.value(j) + QPointF(0, 2));
+                QLineF lz1(path.value(j) + QPointF(-1.5, 0), path.value(j) + QPointF(1.5, 0));
+                QLineF lz2(path.value(j) + QPointF(0, -1.5), path.value(j) + QPointF(0, 1.5));
                 int intersect1 = newSegment.intersect(lz1, nothingP);
                 int intersect2 = newSegment.intersect(lz2, nothingP);
                 if(intersect1 != QLineF::BoundedIntersection && intersect2 != QLineF::BoundedIntersection){

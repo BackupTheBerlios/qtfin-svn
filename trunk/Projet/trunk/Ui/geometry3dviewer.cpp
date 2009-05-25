@@ -5,6 +5,10 @@
 #include <QGridLayout>
 #include <QImage>
 #include <QDir>
+#include <QCloseEvent>
+
+const QString Geometry3DViewer::OUTPUT_PATH = QDir::toNativeSeparators(
+		QString("%1/temp.png").arg(Scripting::ScriptManager::ScriptDirectory));
 
 Geometry3DViewer::Geometry3DViewer(Data::ProjectFile& data, QWidget *parent)
 {
@@ -23,10 +27,7 @@ Geometry3DViewer::Geometry3DViewer(Data::ProjectFile& data, QWidget *parent)
 	layout()->addWidget(lState);
 
 	// vsm
-	vsm = new Scripting::ViewerScriptManager(
-			QDir::toNativeSeparators(QString("%1/temp.png").arg(Scripting::ScriptManager::ScriptDirectory)),
-			data);
-
+	vsm = new Scripting::ViewerScriptManager(data);
 	QObject::connect(vsm, SIGNAL(ended(bool)), this, SLOT(scriptExecutionEnded(bool)));
 }
 
@@ -34,9 +35,14 @@ void Geometry3DViewer::show() {
 	QFrame::show();
 	lState->setText(tr("Retrieving the geometry preview, please wait..."));
 	// starting the script execution
-	if (!vsm->execute()) {
+	if (!vsm->execute(OUTPUT_PATH)) {
 		emit(scriptExecutionEnded(false));
 	}
+}
+
+void Geometry3DViewer::closeEvent(QCloseEvent *event) {
+	vsm->kill();
+	event->accept();
 }
 
 Geometry3DViewer::~Geometry3DViewer() {
@@ -48,7 +54,7 @@ void Geometry3DViewer::scriptExecutionEnded(bool successed) {
 	if (!successed) {
 		lState->setText(tr("An error occured, unable to retrieve the geometry preview."));
 	} else {
-		QImage image(vsm->getOutputPath());
+		QImage image(OUTPUT_PATH);
 		if (image.isNull()) {
 			lState->setText(tr("Unable to display the geometry preview image."));
 		} else {

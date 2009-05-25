@@ -17,13 +17,10 @@ namespace Scripting {
 		  * Default constructor.
 		  * @see DefaultScript
 		  */
-		DefaultScriptManager(
-				// settings
-				bool solve_problem,
-				int mesh_sizes,
-				QString output_path,
-				// data
-				Data::ProjectFile& data);
+		DefaultScriptManager(Data::ProjectFile& data);
+
+	public slots:
+		bool execute(bool solve_problem, int mesh_sizes, QString output_path);
 	};
 
 }

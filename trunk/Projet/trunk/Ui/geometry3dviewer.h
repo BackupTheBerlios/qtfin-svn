@@ -10,9 +10,10 @@
 class Geometry3DViewer : public QFrame
 {
 	Q_OBJECT
-public:	
+public:
 	Geometry3DViewer(Data::ProjectFile& data, QWidget *parent = 0);
 	~Geometry3DViewer();
+	virtual void closeEvent(QCloseEvent *event);
 
 public slots:
 	void show();
@@ -20,6 +21,7 @@ public slots:
 private:
 	QLabel* lState;
 	Scripting::ViewerScriptManager* vsm;
+	const static QString OUTPUT_PATH;
 
 private slots:
 	void scriptExecutionEnded(bool successed);

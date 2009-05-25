@@ -4,6 +4,7 @@
 
 #include <QDir>
 #include <QString>
+#include <QList>
 
 using namespace Scripting;
 
@@ -27,7 +28,7 @@ void ScriptHelper::writeMonofinLength(QTextStream& script, Data::ProjectFile& da
 {
 	QString length = QString("monofin.length = %1;");
 	length = length
-                   .arg(data.getLayerMaxLength());
+			 .arg(data.getHowManyLayers() > 0 ? data.getLayerMaxLength() : 0.025); // valeur par défaut au cas ou
 
 	script << length << endl;
 	script << endl;
@@ -58,45 +59,64 @@ void ScriptHelper::writeMonofinSegments(QTextStream& script, Data::ProjectFile& 
 
 		script <<
 				QString("struct('x', [%1 %2 %3], 'y', [%4 %5 %6])")
-					.arg(aX)
-					.arg(bX)
-					.arg(cX)
-					.arg(aY)
-					.arg(bY)
-					.arg(cY);
+				.arg(aX)
+				.arg(bX)
+				.arg(cX)
+				.arg(aY)
+				.arg(bY)
+				.arg(cY);
 
 		if (i < data.getAllSegmentKeys().count() - 1) {
 			script << ", ..." << endl;
 		}
 	}
 
-	script << " ];" << endl << endl;
+	script << " ];" << endl;
+
+	// Création de méta données
+	QList<int> iKeys = data.getExtremityPoint();
+
+	if (iKeys.length() != 2) {
+		script << "error('Structure de données corompues, impossible de lancer le script.');" << endl;
+	} else {
+		float aX, aY, bX, bY;
+		data.getIntersectionPoint(iKeys.at(0), aX, aY);
+		data.getIntersectionPoint(iKeys.at(1), bX, bY);
+
+		float absoluteLength = qMax(aX, bX) - qMin(aX, bX);
+		script << QString("monofin.metaSegments = struct('absoluteLength', %1, 'dX', %2, 'dY', %3);")
+				.arg(absoluteLength)
+				.arg(qMin(aX, bX) == aX ? aX : bX)
+				.arg(qMin(aX, bX) == aX ? aY : bY) << endl;
+	}
+
+	script << endl;
 }
 
 void ScriptHelper::writeMonofinLayers(QTextStream& script, Data::ProjectFile& data)
 {
 	script << "monofin.layers = [ ..." << endl;
 
-        float monofinLength = data.getLayerMaxLength();
+	float monofinLength = data.getLayerMaxLength();
 
 	// if no layer, we add a default one
 	if (data.getHowManyLayers() == 0) {
 		script << QString("struct('thickness', %1, 'length', %2, 'E', %3, 'nu', %4, 'rho', %5)")
-			.arg(0.001) // 1 cm
-			.arg(1)
-			.arg(2.0e11)
-			.arg(0.33)
-			.arg(7850);
+				.arg(0.001) // 1 cm
+				.arg(1)
+				.arg(2.0e11)
+				.arg(0.33)
+				.arg(7850);
 	}
 
 	for (int i = 0; i < data.getHowManyLayers(); i++) {
 		script <<
 				QString("struct('thickness', %1, 'length', %2, 'E', %3, 'nu', %4, 'rho', %5)")
-					.arg(data.getLayerHeight(i))
-					.arg(data.getLayerLength(i) / monofinLength) // the script needs a ratio
-					.arg(data.getLayerConfigYoung(i))
-					.arg(data.getLayerConfigPoisson(i))
-					.arg(data.getLayerConfigRho(i));
+				.arg(data.getLayerHeight(i))
+				.arg(data.getLayerLength(i) / monofinLength) // the script needs a ratio
+				.arg(data.getLayerConfigYoung(i))
+				.arg(data.getLayerConfigPoisson(i))
+				.arg(data.getLayerConfigRho(i));
 
 		if (i < data.getHowManyLayers() - 1) {
 			script << ", ..." << endl;

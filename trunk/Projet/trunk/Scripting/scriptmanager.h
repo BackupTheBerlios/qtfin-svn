@@ -22,12 +22,10 @@ namespace Scripting {
 	public:
 		/**
 		  * Default constructuor.
-		  * @param script
-		  *		The instance of ComsolScript to work with.
 		  * @param data
 		  *		The data with wich the script will be build.
 		  */
-		ScriptManager(ComsolScript* script, Data::ProjectFile& data);
+		ScriptManager(Data::ProjectFile& data);
 
 		/** Destructor */
 		~ScriptManager();
@@ -44,23 +42,26 @@ namespace Scripting {
 		  */
 		const static QString ScriptDirectory;
 
-	public slots:
+	protected:
 
 		/**
 		  * Slot starting the execution of the script.
 		  * As soon as the method return true, the signals started() and ended(bool) will
 		  * be emited.
+		  * @param script
+		  *		The instance of ComsolScript to execute.
 		  * @return
 		  *		True if the script is executing, False otherwise.
 		  */
-		bool execute();
+		virtual bool execute(ComsolScript& script);
+
+	public slots:
+		/**
+		  * Slot killing the process in case we want to cancel the script execution.
+		  */
+		void kill();
 
 	signals:
-		/**
-		  * Signal received as soon as the execution of the script started.
-		  */
-		void started();
-
 		/**
 		  * Signal always received after a call to execute, indicating the
 		  * result of the script execution.
@@ -73,20 +74,20 @@ namespace Scripting {
 
 		/* Internal slots to interact with a QProcess. */
 
-		void _started();
 		void _finished(int exitCode, QProcess::ExitStatus exitStatus);
 		void _error(QProcess::ProcessError error);
 		void _debug_output();
 
 	protected:
-		/** The instance of ComsolScript to work with. */
-		ComsolScript* script;
-
 		/** The data to build the script uppon with. */
 		Data::ProjectFile& data;
 
 		/** The process responsible for the script execution. */
 		QProcess* process;
+
+	private:
+		void disconnect();
+		void connect();
 	};
 
 }

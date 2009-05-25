@@ -13,13 +13,10 @@ namespace Scripting {
 	class ViewerScriptManager : public ScriptManager
 	{
 	public:
-		ViewerScriptManager(
-				// settings
-				QString output_path,
-				// data
-				Data::ProjectFile& data);
+		ViewerScriptManager(Data::ProjectFile& data);
 
-		QString getOutputPath() const { return ((ViewerScript*)script)->getOutputPath(); }
+	public slots:
+		bool execute(QString output_path);
 	};
 
 }

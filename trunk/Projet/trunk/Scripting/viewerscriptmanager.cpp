@@ -3,7 +3,13 @@
 
 using namespace Scripting;
 
-ViewerScriptManager::ViewerScriptManager(QString output_path, Data::ProjectFile& data)
-		: Scripting::ScriptManager(new Scripting::ViewerScript(output_path),
-		  data) {
+ViewerScriptManager::ViewerScriptManager(Data::ProjectFile& data)
+		: Scripting::ScriptManager(data) {
+}
+
+bool ViewerScriptManager::execute(QString output_path) {
+	ViewerScript* script = new ViewerScript(output_path);
+	bool r = ScriptManager::execute(*script);
+	delete script;
+	return r;
 }

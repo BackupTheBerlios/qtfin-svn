@@ -35,10 +35,18 @@ s = geomcoerce('solid', curves);
 
 % Calcul de la longueur de la palme sur son axe central de symétrie.
 % Cette valeur définie la longueur maximale d'une strate constituant la palme.
-L = data.segments(length(data.segments)).x(3) - data.segments(1).x(1);
+L = data.metaSegments.absoluteLength;
+
+% Avant, on utilisait l'ordre naturel des segments. La structure de données ne garantie pas ce comportement...
+% L = data.segments(length(data.segments)).x(3) - data.segments(1).x(1);
 
 % Translation de l'origine de la palme.
-s = move(s, -data.segments(1).x(1), -data.segments(1).y(1));
+dX = data.metaSegments.dX;
+dY = data.metaSegments.dY;
+% dX = data.segments(1).x(1);
+% dY = data.segments(1).y(1);
+
+s = move(s, -dX, -dY);
 
 % Mise à l'échelle de la palme.
 s = scale(s, data.length/L, data.length/L);

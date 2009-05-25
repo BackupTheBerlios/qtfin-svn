@@ -45,21 +45,6 @@ BoundingPoint::BoundingPoint(const QPointF& coord, PaintingScene* scene):
     _pos = new QPointF(coord);
 }
 
-BoundingPoint::BoundingPoint(const BoundingPoint& p):
-        _atLeastOneClick(p._atLeastOneClick), _canMove(p._canMove),
-    _colorWhenNormal(p._colorWhenNormal), _colorWhenSelected(p._colorWhenSelected),
-    _colorWhenHighlighted(p._colorWhenHighlighted),
-    _hasLeftLine(false), _hasRightLine(false),
-    _isMouseOnPoint(p._isMouseOnPoint), _isMoving(p._isMoving),
-    _scene(p._scene){
-
-    this->setAcceptHoverEvents(true);
-    //this->setFlag(QGraphicsItem::ItemIsSelectable, true);
-
-    _pos = new QPointF(p.coord());
-
-}
-
 BoundingPoint::~BoundingPoint(){
     delete _pos;
     //les objets BrLine* sont détruits dans la PaintingScene
@@ -632,15 +617,12 @@ void BoundingPoint::mouseReleaseEvent(QGraphicsSceneMouseEvent* event){
 }
 
 void BoundingPoint::hoverEnterEvent(QGraphicsSceneHoverEvent* event){
-    //qDebug("enter hover");
-
+    Q_UNUSED(event);
     if(_scene->state() == PaintingScene::NormalState){
 
         _scene->setCanCreateSelectionRect(false);
-        //if(!this->isSelected()){
-            this->setMouseOnPoint(true);
-            _scene->boundingPointIsHighlighted(this, true);
-        //}
+        this->setMouseOnPoint(true);
+        _scene->boundingPointIsHighlighted(this, true);
 
         //Décommenter le bloc suivant rendra
         //les points plus durs à attraper...
@@ -664,6 +646,7 @@ void BoundingPoint::hoverEnterEvent(QGraphicsSceneHoverEvent* event){
 
 
 void BoundingPoint::hoverLeaveEvent(QGraphicsSceneHoverEvent* event){
+    Q_UNUSED(event);
     this->setMouseOnPoint(false);
     _scene->boundingPointIsHighlighted(this, false);
     _scene->setCanCreateSelectionRect(true);

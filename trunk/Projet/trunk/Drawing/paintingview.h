@@ -33,20 +33,10 @@ public slots:
     /**
     * Scales the view by the given factor and modifies the value
     * scaleFactor of the PaintingScene. It does nothing if the scale factor
-    * of the PaintingScene is greater than ZOOMMAX.
+    * of the PaintingScene is greater than ZOOMMAX or lower than ZOOMMIN.
     *@param factor the factor by which the scale of the view is multiplied
-    * (by default : the value of ZOOMINFACTOR, typically around 1.25)
     **/
-    void zoomIn(qreal factor = ZOOMINFACTOR);
-
-    /**
-    * Scales the view by the given factor and modifies the value
-    * scaleFactor of the PaintingScene. It does nothing if the scale factor
-    * of the PaintingScene is lower than ZOOMMIN.
-    *@param factor the factor by which the scale of the view is multiplied
-    * (by default : the value of ZOOMAXFACTOR, typically around 0.8)
-    **/
-    void zoomOut(qreal factor = ZOOMOUTFACTOR);
+    void zoom(qreal factor);
 
 protected:
     //virtual void drawBackground(QPainter* painter, const QRectF& rect);

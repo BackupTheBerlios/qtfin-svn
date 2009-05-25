@@ -53,11 +53,6 @@ public:
     BoundingPoint(const QPointF& coord, PaintingScene* scene);
 
     /**
-    * Constructor by copy, useless.
-    **/
-    BoundingPoint(const BoundingPoint& p);
-
-    /**
     * Destroy the object QPointF _pos, but do not destroy the lines
     **/
     ~BoundingPoint();

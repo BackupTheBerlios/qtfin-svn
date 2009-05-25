@@ -284,8 +284,12 @@ public:
     * Indicates to the internal structure that the modifications considered
     * as one are finished. Be careful to have only use functions with NOT
     * unique modifications (see boundingPointHasMoved or controlPointHasMoved).
+    * It also emit a signal somethingChanged if several points have moved.
     **/
     void stopModifications(){
+        if(this->_hasABoundingPointMoved){
+            emit somethingChanged(ActionMoveBoundingPoint);
+        }
         _structure->stopHistory(Data::MonofinSurface);
     }
 
@@ -297,6 +301,7 @@ public:
 public slots:
     /**
     * Activates or deactivates the addition of control points.
+    * It changes the state of the scene.
     *@param a if true, activates 'add control point' ;
     * if false, deactivates 'add control points'
     **/
@@ -304,6 +309,7 @@ public slots:
 
     /**
     * Activates or deactivates the insertion of points.
+    * It changes the state of the scene.
     *@param a if true, activates 'insert point' ;
     * if false, deactivates 'insert points'
     **/
@@ -311,7 +317,10 @@ public slots:
 
     /**
     * Activates or deactivates the creation of the monofin's outline.
-    Activate it creates a ghost point in the scene.
+    * Activate it creates a ghost point in the scene. It also changes the
+    * state of the scene.
+    * Deactivate it stops the creation of the line if there is one in creation.
+    * In this case, the slot stopCreateLine is called.
     *@param a if true, activates 'draw monofin' ;
     * if false, deactivates 'draw monofin'
     **/
@@ -326,6 +335,7 @@ public slots:
 
     /**
     * Activates or deactivates the deletion of control points.
+    * It changes the state of the scene.
     *@param a if true, activates 'remove control point' ;
     * if false, deactivates 'remove control point'
     **/
@@ -439,8 +449,8 @@ public slots:
 
     /**
     * Stops the creation of a monofin's outline if the first point was placed,
-    * but not the last. It removes the placed points, destroys the ghost
-    * items, and emit a lineInterrupted signal.
+    * but not the last. It removes the placed points and emit a
+    * lineInterrupted signal. It also emits a somethingChanged signal.
     **/
     void stopCreateLine();
 

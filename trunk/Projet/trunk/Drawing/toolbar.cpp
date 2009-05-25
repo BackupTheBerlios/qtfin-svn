@@ -140,7 +140,7 @@ void ToolBar::activateRemoveControl(bool a){
 }
 
 void ToolBar::beginLine(bool a){
-    _toolButtonPoint->setDisabled(a);
+    //_toolButtonPoint->setDisabled(a);
     _toolButtonAddControl->setDisabled(a);
     _toolButtonAddPoint->setDisabled(a);
     _toolButtonAlignTangents->setDisabled(a);
@@ -149,6 +149,7 @@ void ToolBar::beginLine(bool a){
     _undoButton->setDisabled(a);
     _redoButton->setDisabled(a);
     _toolButtonModifyPicture->setDisabled(a);
+    if(!a){this->lineInterrupted();}
 }
 
 void ToolBar::changeColor(){
@@ -205,15 +206,19 @@ void ToolBar::clean(){
 
 void ToolBar::finishedLine(bool a){
     if(a){
-        _toolButtonPoint->setEnabled(true);
+        /*_toolButtonPoint->setEnabled(true);
         _toolButtonPoint->click();
-        _toolButtonPoint->setDisabled(true);
+        _toolButtonPoint->setDisabled(true);*/
+        _toolButtonPoint->setChecked(false);
+        this->pointsOnScene(true);
     }
 }
 
 void ToolBar::lineInterrupted(){
     _toolButtonPoint->setEnabled(true);
-    _toolButtonPoint->click();
+    _undoButton->setEnabled(true);
+    _redoButton->setEnabled(true);
+    _toolButtonPoint->setChecked(false);
     this->pointsOnScene(false);
 }
 

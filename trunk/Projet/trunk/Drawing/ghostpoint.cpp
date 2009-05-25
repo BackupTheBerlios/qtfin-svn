@@ -13,6 +13,8 @@ GhostPoint::~GhostPoint(){
 }
 
 void GhostPoint::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget){
+    Q_UNUSED(option);
+    Q_UNUSED(widget);
     painter->setOpacity(0.8);
     if(_canBePlaced){painter->setPen(Qt::black);}
     else{painter->setPen(Qt::red);}

@@ -152,13 +152,14 @@ bool ControlPoint::willMoveToGoCloseToPosY(qreal posY){
 //PROTECTED
 
 void ControlPoint::hoverEnterEvent(QGraphicsSceneHoverEvent* event){
-    qDebug("control hover");
+    Q_UNUSED(event);
     _scene->setCanCreateSelectionRect(false);
     _isHighlighted = true;
     _scene->update(_scene->sceneRect());
 }
 
 void ControlPoint::hoverLeaveEvent(QGraphicsSceneHoverEvent* event){
+    Q_UNUSED(event);
     _scene->setCanCreateSelectionRect(true);
     _isHighlighted = false;
     _scene->update(_scene->sceneRect());

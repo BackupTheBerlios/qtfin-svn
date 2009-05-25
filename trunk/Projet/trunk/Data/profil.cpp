@@ -296,7 +296,7 @@ namespace Data{
    }
 
    float Profil::getMaxLength(){
-        float hei;
+        float hei = 0.0f;
         foreach(Layer* lay, _monofinLayers)
            if (lay->getHeight() > hei)
                hei = lay->getHeight();

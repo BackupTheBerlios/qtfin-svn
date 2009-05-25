@@ -115,4 +115,4 @@ TRANSLATIONS = translations/monofin_de.ts \
 target.path = .
 INSTALLS += target
 RESOURCES += resources/images.qrc
-mac:RESOURCES += resources/translations.qrc
+#mac:RESOURCES += resources/translations.qrc

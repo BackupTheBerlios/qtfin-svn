@@ -49,18 +49,22 @@ PaintingScene::PaintingScene(qreal width,
     _pixItem = new PixmapItem(QPixmap());
     _rotCircle = new RotateCircle(_pixItem);
 
+    _ghostPoint = new GhostPoint(QPointF(0,0), this);
+    _ghostLine = new GhostLine(0, _ghostPoint, this); //WARNING : initialized
+                                                      //with a null pointer
+
 }
 
 PaintingScene::~PaintingScene(){
     if(_state == this->CreatePointsState){
         _state = NormalState;
         _isCreateLineActivated = false;
-        this->removeItem(_ghostPoint);
-        delete _ghostPoint;
-        if(_hasPlacedFirstPoint){
-            this->removeItem(_ghostLine);
-            delete _ghostLine;
-        }
+        //this->removeItem(_ghostPoint);
+        //delete _ghostPoint;
+//        if(_hasPlacedFirstPoint){
+//            this->removeItem(_ghostLine);
+//            delete _ghostLine;
+//        }
     }
     this->removeAllPoints();
 }
@@ -383,14 +387,17 @@ void PaintingScene::activateCreateLine(bool a){
         }
         _state = CreatePointsState;
 
-        _ghostPoint = new GhostPoint(QPointF(this->pointsBoundingZone().bottomLeft().x(),0), this);
+        //_ghostPoint = new GhostPoint(QPointF(this->pointsBoundingZone().bottomLeft().x(),0), this);
+        _ghostPoint->moveTo(QPointF(this->pointsBoundingZone().bottomLeft().x(),0));
         this->addItem(_ghostPoint);
         _hasPlacedFirstPoint = false;
     }else{
         if(_state != CreatePointsState){
             qDebug("Warning : attempting to deactivate 'create line', but this function is not active : go back to normal mode");
+            _state = NormalState;
+        }else{
+            this->stopCreateLine();
         }
-        _state = NormalState;
     }
     _isCreateLineActivated = a;
 }
@@ -711,15 +718,23 @@ void PaintingScene::simplifyView(bool a){
 void PaintingScene::stopCreateLine(){
     if(_state == CreatePointsState){
         _isCreateLineActivated = false;
-        this->removeItem(_ghostPoint);
-        this->removeItem(_ghostLine);
-        delete _ghostPoint;
-        delete _ghostLine;
+
+        QList<QGraphicsItem*> items = this->items();
+        if(items.contains(_ghostPoint)){
+            this->removeItem(_ghostPoint);
+        }
+        if(items.contains(_ghostLine)){
+            this->removeItem(_ghostLine);
+        }
+        //delete _ghostPoint;
+        //delete _ghostLine;
 
         this->removeAllPoints();
 
         _structure->clearSurface();
         _structure->stopHistory(Data::MonofinSurface);
+        _structure->dropLastHistory(Data::MonofinSurface);
+
         emit this->somethingChanged(this->ActionNoAction);
 
         _state = NormalState;
@@ -1168,10 +1183,15 @@ void PaintingScene::mousePressEvent(QGraphicsSceneMouseEvent* event){
                                                    _axis->line().y2() + 5))){
             //Last point :
                         rect = new ExtremityPoint(QPointF(_ghostPoint->coord().x(), 0), this);
-                        this->removeItem(_ghostPoint);
-                        this->removeItem(_ghostLine);
-                        delete _ghostPoint;
-                        delete _ghostLine;
+                        QList<QGraphicsItem*> items = this->items();
+                        if(items.contains(_ghostPoint)){
+                            this->removeItem(_ghostPoint);
+                        }
+                        if(items.contains(_ghostLine)){
+                            this->removeItem(_ghostLine);
+                        }
+                        //delete _ghostPoint;
+                        //delete _ghostLine;
                         isLastPoint = true;
                     }else{
             //Middle points :
@@ -1186,7 +1206,8 @@ void PaintingScene::mousePressEvent(QGraphicsSceneMouseEvent* event){
                     _structure->startHistory(Data::MonofinSurface);
 
                     rect = new ExtremityPoint(_ghostPoint->coord(), this);
-                    _ghostLine = new GhostLine(rect, _ghostPoint, this);
+                    //_ghostLine = new GhostLine(rect, _ghostPoint, this);
+                    _ghostLine->setP1(rect);
                     this->addItem(_ghostLine);
                     isFirstPoint = true;
                 }
@@ -1234,13 +1255,17 @@ void PaintingScene::mousePressEvent(QGraphicsSceneMouseEvent* event){
                     PaintingScene::mouseMoveEvent(event);
                 }else if(isLastPoint){
 
+                    //WARNING
+                    //turn the state to normal state NOW, otherwise problems
+                    //with pointers will appear for _ghostPoint and _ghostLine
+                    _state = NormalState;
+
                     foreach(BoundingPoint* bp, _pointList){
                         bp->setFlag(QGraphicsItem::ItemIsSelectable, true);
                     }
 
                     isLastPoint = false;
                     emit lineFinished(true);
-                    _state = NormalState;
                     _isCreateLineActivated = false;
                     qDebug("last point created");
 

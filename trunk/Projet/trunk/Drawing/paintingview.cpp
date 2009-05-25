@@ -19,17 +19,12 @@ PaintingView::PaintingView(PaintingScene* scene, QWidget* parent)
 
 //PUBLIC SLOTS
 
-void PaintingView::zoomIn(qreal factor){
+void PaintingView::zoom(qreal factor){
     //on évite de zoomer trop pour éviter les bugs...
-    if(_scene->scaleFactor() < ZOOMMAX){
-        this->scale(factor, factor);
-        _scene->scale(factor);
-    }
-}
-
-void PaintingView::zoomOut(qreal factor){
+    if(_scene->scaleFactor() < ZOOMMAX &&
     //au-delà de certaines valeurs, ça ne sert plus à rien de dézoomer...
-    if(_scene->scaleFactor() > ZOOMMIN){
+       _scene->scaleFactor() > ZOOMMIN){
+
         this->scale(factor, factor);
         _scene->scale(factor);
     }
@@ -70,8 +65,8 @@ void PaintingView::zoomOut(qreal factor){
 void PaintingView::wheelEvent(QWheelEvent* event){
     //QPointF p = this->mapFromScene(event->pos());
     if(event->delta() > 0){
-        this->zoomIn();
+        this->zoom(ZOOMINFACTOR);
     }else{
-        this->zoomOut();
+        this->zoom(ZOOMOUTFACTOR);
     }
 }

@@ -10,9 +10,8 @@ using namespace Scripting;
 
 void ScriptHelper::writePath(QTextStream& script, Data::ProjectFile& data)
 {
-	QString path = QString("path('%1', path);");
-	path = path
-		   .arg(QDir::toNativeSeparators(ScriptManager::ScriptDirectory));
+	QString path = QString("path('%1', path);")
+					.arg(ScriptManager::getScriptDirectory());
 
 	script << path << endl;
 	script << endl;

@@ -8,8 +8,11 @@
 
 using namespace Scripting;
 
-/* Constant initialization. */
-const QString ScriptManager::ScriptDirectory = QString("%1/scripts").arg(QDir::currentPath());
+QString ScriptManager::getScriptDirectory(QString filename) {
+	return QString("%1/scripts/%2")
+			.arg(QDir::currentPath())
+			.arg(filename);
+}
 
 ScriptManager::ScriptManager(Data::ProjectFile& data)
 	: data(data)
@@ -21,7 +24,7 @@ ScriptManager::ScriptManager(Data::ProjectFile& data)
 	connect();
 
 	// setting up the working directory
-	process->setWorkingDirectory(ScriptDirectory);
+	process->setWorkingDirectory(getScriptDirectory());
 }
 
 void ScriptManager::connect() {

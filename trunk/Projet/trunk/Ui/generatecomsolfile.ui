@@ -58,7 +58,7 @@
      <item row="0" column="1">
       <widget class="QComboBox" name="cbMeshSizes">
        <property name="currentIndex">
-        <number>0</number>
+        <number>4</number>
        </property>
        <item>
         <property name="text">
@@ -119,6 +119,9 @@
        <property name="text">
         <string/>
        </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
      <item row="0" column="0">
@@ -158,6 +161,9 @@
       <widget class="QPushButton" name="bGenerate">
        <property name="text">
         <string>Generate file...</string>
+       </property>
+       <property name="default">
+        <bool>true</bool>
        </property>
       </widget>
      </item>

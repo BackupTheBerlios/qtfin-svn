@@ -40,7 +40,7 @@ namespace Scripting {
 		  * A local directory where the external COMSOL Scripts needed are stored.
 		  * Temporary scripts will be put in this same directory.
 		  */
-		const static QString ScriptDirectory;
+		static QString getScriptDirectory(QString filename = "");
 
 	protected:
 

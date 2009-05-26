@@ -21,7 +21,6 @@ public slots:
 private:
 	QLabel* lState;
 	Scripting::ViewerScriptManager* vsm;
-	const static QString OUTPUT_PATH;
 
 private slots:
 	void scriptExecutionEnded(bool successed);

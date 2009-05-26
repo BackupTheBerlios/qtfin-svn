@@ -7,9 +7,6 @@
 #include <QDir>
 #include <QCloseEvent>
 
-const QString Geometry3DViewer::OUTPUT_PATH = QDir::toNativeSeparators(
-		QString("%1/temp.png").arg(Scripting::ScriptManager::ScriptDirectory));
-
 Geometry3DViewer::Geometry3DViewer(Data::ProjectFile& data, QWidget *parent)
 {
 	// setting up the frame
@@ -35,7 +32,7 @@ void Geometry3DViewer::show() {
 	QFrame::show();
 	lState->setText(tr("Retrieving the geometry preview, please wait..."));
 	// starting the script execution
-	if (!vsm->execute(OUTPUT_PATH)) {
+	if (!vsm->execute(Scripting::ScriptManager::getScriptDirectory("temp.png"))) {
 		emit(scriptExecutionEnded(false));
 	}
 }
@@ -54,7 +51,7 @@ void Geometry3DViewer::scriptExecutionEnded(bool successed) {
 	if (!successed) {
 		lState->setText(tr("An error occured, unable to retrieve the geometry preview."));
 	} else {
-		QImage image(OUTPUT_PATH);
+		QImage image(Scripting::ScriptManager::getScriptDirectory("temp.png"));
 		if (image.isNull()) {
 			lState->setText(tr("Unable to display the geometry preview image."));
 		} else {

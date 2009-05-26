@@ -9,6 +9,14 @@ namespace Scripting {
 
 	class ScriptHelper {
 	public:
+		/* Constants */
+
+		const static float DEFAULT_MONOFIN_LENGTH = 25; // cm
+		const static float DEFAULT_LAYER_THICKNESS = 1; // cm
+		const static float DEFAULT_LAYER_E = 200000;	// MPa
+		const static float DEFAULT_LAYER_NU = 0.33;		// ratio
+		const static float DEFAULT_LAYER_RHO = 7850;	// Kg/m^3
+
 		/**
 		  * Write the bloc path of the script. It just indicate COMSOL where to find the
 		  * external scripts needed.
@@ -35,6 +43,11 @@ namespace Scripting {
 		  * Write the information about the layers of the monofin.
 		  */
 		static void writeMonofinLayers(QTextStream& script, Data::ProjectFile& data);
+
+		/**
+		  * Write the End Of Script token.
+		  */
+		static void writeEOS(QTextStream& script);
 	};
 
 }

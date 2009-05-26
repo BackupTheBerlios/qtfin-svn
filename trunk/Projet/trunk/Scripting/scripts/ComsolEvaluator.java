@@ -1,72 +1,117 @@
 import com.femlab.script.api.*;
 import java.io.*;
-import java.lang.StringBuilder;
-import java.util.regex.*;
 
 public class ComsolEvaluator {
 
-	private static void processException(Exception e) {
-		System.out.println("@@@ Error:");
-		System.out.println(e.getMessage());
-		System.exit(1);
+	/**
+	 * End Of Script.
+	 */
+	private static final String EOS = "@@@";
+
+	/**
+	 * New line.
+	 */
+	private static final String NEWLINE = System.getProperty("line.separator");
+
+	/**
+	 * Try to create a log file.
+	 * 
+	 * @return Instance of FileWriter or null.
+	 */
+	private static FileWriter createLogWriter() {
+		FileWriter writer = null;
+		try {
+			writer = new FileWriter("ComsolEvaluator.log");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return writer;
+	}
+
+	/**
+	 * Try to write a string ending with a new line in a file.
+	 * 
+	 * @param log
+	 * @param message
+	 */
+	private static void writeLog(FileWriter log, String message) {
+		if (log == null)
+			return;
+
+		try {
+			log.write(message);
+			log.write(NEWLINE);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void main(String[] args) {
-		// builder that will contain the one line script
-		StringBuilder script = new StringBuilder();
+		// error status
+		int status = 0;
 		
-		System.out.println("@@@ Reading input COMSOL script...");
+		// log
+		FileWriter log = createLogWriter();
+
+		writeLog(log, "Reading input COMSOL script...");
+
+		// create the COMSOL workspace
+		ApiWorkspace ws = new ApiWorkspace();
+		BufferedReader reader = null;
+
 		try {
-			// retrieve a reader for System.in
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					System.in));
+			// reading System.in
+			reader = new BufferedReader(new InputStreamReader(System.in));
 
-			// regex to strap the multiline instructions
-			Pattern miPattern = Pattern.compile("(.*)\\.\\.\\.\\s*$");
-			
-			// iteration throw System.in
+			// a line from System.in
 			String line = "";
-			while ((line = reader.readLine()) != null) {			
-				Matcher miMatcher = miPattern.matcher(line);
 
-				// multiline instruction ?
-				if (miMatcher.matches())
-					script.append(miMatcher.group(1));
-				else {
-					// classic line
-					script.append(line);
-					script.append(System.getProperty("line.separator"));
+			// iteration throw System.in
+			while ((line = reader.readLine()) != null) {
+
+				if (line.equals(EOS)) {
+					writeLog(log, "EOS");
+					break;
 				}
-				
+
+				line = line.trim().replaceAll(NEWLINE, "");
+				writeLog(log, "eval: " + line);
+				ws.eval(line);
 			}
 
-			reader.close();
 		} catch (IOException e) {
-			processException(e);
-		}
-
-		System.out.println();
-		System.out.println("@@@");
-		System.out.println(script.toString());
-		System.out.println("@@@");
-		System.out.println();
-
-		System.out.println("@@@ Evaluating input COMSOL script...");
-		try {
-			// create the COMSOL workspace
-			ApiWorkspace ws = new ApiWorkspace();
-
-			// evaluation
-			ws.eval(script.toString());
-			
-			// delete the COMSOL workspace
-			ws.destroy();
+			e.printStackTrace();
+			writeLog(log, e.getMessage());
+			status = 1;
 		} catch (ApiException e) {
-			processException(e);
+			e.printStackTrace();
+			writeLog(log, e.getMessage());
+			status = 1;
+		} finally {
+			// disposing ws
+			if (ws != null)
+				try {
+					ws.destroy();
+				} catch (ApiException e) {
+					e.printStackTrace();
+				}
+			// disposing reader
+			if (reader != null)
+				try {
+					reader.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 		}
-		
-		System.out.println("@@@ Done!");
-		System.exit(0);
-	}
 
+		writeLog(log, "Done!");
+		if (log != null)
+			try {
+				log.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+		System.exit(status);
+	}
 }

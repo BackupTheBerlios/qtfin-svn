@@ -22,19 +22,20 @@ void ViewerScript::write(QTextStream& script, Data::ProjectFile& data) const
 	writeMonofinSettings(script, data);
 
 	writeMain(script, data);
+	ScriptHelper::writeEOS(script);
 }
 
 void ViewerScript::writeMonofinSettings(QTextStream& script, Data::ProjectFile& data) const
 {
-	QString settings = QString("monofin.settings = struct('output_path', '%1');");
-	settings = settings
-			   .arg(QDir::toNativeSeparators(output_path));
-
-	script << settings << endl;
-	script << endl;
+	script
+			<< QString("monofin.settings = struct('output_path', '%1');")
+			   .arg(QDir::toNativeSeparators(output_path))
+			<< endl;
 }
 
 void ViewerScript::writeMain(QTextStream& script, Data::ProjectFile& data) const
 {
-	script << "main_viewer(monofin);" << endl;
+	script
+			<< "main_viewer(monofin);"
+			<< endl;
 }

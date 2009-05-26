@@ -21,21 +21,22 @@ void DefaultScript::write(QTextStream& script, Data::ProjectFile& data) const {
 	writeMonofinSettings(script, data);
 
 	writeMain(script, data);
+	ScriptHelper::writeEOS(script);
 }
 
 void DefaultScript::writeMonofinSettings(QTextStream& script, Data::ProjectFile& data) const
 {
-	QString settings = QString("monofin.settings = struct('solve_problem', %1, 'mesh_sizes', %2, 'output_path', '%3');");
-	settings = settings
+	script
+			<< QString("monofin.settings = struct('solve_problem', %1, 'mesh_sizes', %2, 'output_path', '%3');")
 			   .arg(solve_problem ? "true" : "false")
 			   .arg(mesh_sizes)
-			   .arg(QDir::toNativeSeparators(output_path));
-
-	script << settings << endl;
-	script << endl;
+			   .arg(QDir::toNativeSeparators(output_path))
+			<< endl;
 }
 
 void DefaultScript::writeMain(QTextStream& script, Data::ProjectFile& data) const
 {
-	script << "main_default(monofin);" << endl;
+	script
+			<< "main_default(monofin);"
+			<< endl;
 }

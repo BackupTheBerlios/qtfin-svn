@@ -15,13 +15,20 @@ public:
     StartupDialog(QWidget *parent = 0);
     ~StartupDialog();
 
-signals:
-    void newProject();
-    void imageProject();
-    void openProject();
+    enum { empty=2,
+           image=3,
+           open=4
+       };
 
 protected:
     virtual void changeEvent(QEvent *e);
+    virtual bool eventFilter(QObject *obj, QEvent *event);
+
+private slots:
+    void imageProject() { done(image); }
+    void newEmptyProject() { done(empty); }
+    void openProject() { done(open); }
+    void retranslateUi();
 
 private:
     Ui::StartupDialogClass *ui;

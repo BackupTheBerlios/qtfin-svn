@@ -1,6 +1,7 @@
 #include "layerview.h"
 #include "Data/projectfile.h"
 
+#include <QtCore/QDebug>
 #include <QtGui/QApplication>
 #include <QtGui/QDoubleSpinBox>
 #include <QtGui/QLabel>
@@ -25,13 +26,16 @@ LayerView::LayerView(ProjectFile *structure, QWidget *parent)
     setMaximumHeight(400);
 
     // get data from the structure
-    for (int i=0; i<_struct->getHowManyLayers(); ++i) {
+    int i;
+    for (i=0; i<_struct->getHowManyLayers(); ++i) {
         qreal height = _struct->getLayerHeight(i);
         qreal length = _struct->getLayerLength(i);
         _totalHeight += height;
         _totalLength += length;
         createLayerEditionRow(i, height, length);
     }
+    if (i==0)
+        addLayerItem(0, 4, 100);
 
     setLayout(_layout);
 }
@@ -41,14 +45,20 @@ LayerView::~LayerView()
     qDebug("LayerView::~LayerView()");
 }
 
+int LayerView::nbLayers()
+{
+    qDebug("LayerView::nbLayers()");
+     return _layers.count();
+ }
+
 QSize LayerView::sizeHint() const
 {
     return _layout->sizeHint();
 }
 
-// PROTECTED
-
-void LayerView::addLayerItem(int rank, qreal height, qreal length) {
+void LayerView::addLayerItem(int rank, qreal height, qreal length)
+{
+    qDebug() << QString("LayerView::addLayerItem(rank: %1, height: %2, length: %3").arg(rank).arg(height).arg(length);
     if (rank < 0 || height < 0 || length < 0)
         return;
 
@@ -66,14 +76,21 @@ void LayerView::removeLayerItem(int rank)
     qDebug() << QString("LayerView::removeLayerItem(%1)").arg(rank);
     _totalHeight -= _heightDoubleSpinBoxes.at(rank)->value();
     _totalLength -= _lengthDoubleSpinBoxes.at(rank)->value();
-    QLayoutItem *item = _layout->itemAt(rank);
-    _layout->removeItem(item);
+
+    // remove the layer
+    if (!_layout->takeAt(rank))
+        qDebug("no item to be removed");
+    _layers.remove(rank);
+    _heightDoubleSpinBoxes.remove(rank);
+    _lengthDoubleSpinBoxes.remove(rank);
 
     // remove the layer from the data structure
     _struct->startHistory(MonofinLayer);
     _struct->removeLayer(rank);
     _struct->stopHistory(MonofinLayer);
 }
+
+// PROTECTED
 
 void LayerView::updateLayerHeight()
 {
@@ -137,7 +154,7 @@ void LayerView::createLayerEditionRow(int row, qreal height, qreal length)
     heightDoubleSpinBox->setSuffix(QApplication::translate("LayerView", " cm", "centimeters", QApplication::UnicodeUTF8));
     QDoubleSpinBox *lengthDoubleSPinBox = new QDoubleSpinBox;
     lengthDoubleSPinBox->setValue(length);
-    lengthDoubleSPinBox->setMaximum(999.99);
+    lengthDoubleSPinBox->setMaximum(9999.99);
     lengthDoubleSPinBox->setSuffix(QApplication::translate("LayerView", " cm", "centimeters", QApplication::UnicodeUTF8));
     QLabel *heightLabel = new QLabel("height");
     QLabel *lengthLabel = new QLabel("length");

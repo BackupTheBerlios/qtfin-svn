@@ -1,9 +1,10 @@
 #include "mainwindow.h"
 
 #include "monofin.h"
-#include "parametersdialog.h"
 #include "startupdialog.h"
 #include "lib/qtwindowlistmenu.h"
+#include "Drawing/paintingscene.h"
+#include "Edgedetection/graphic.h"
 
 #include <QtCore/QDebug>
 #include <QtCore/QDir>
@@ -44,13 +45,13 @@ MainWindow::MainWindow(QWidget *parent)
     connect(_mdiArea, SIGNAL(subWindowActivated(QMdiSubWindow*)),
             this, SLOT(updateWindowTitle()));
 
-    _paramDiag = new ParametersDialog(this);
+    _startupDialog = new StartupDialog(this);
 
-#ifdef QT_OS_MAC
+#ifdef Q_OS_MAC
     _qmPath = qApp->applicationDirPath() + ":/translations";
 #else
     _qmPath = qApp->applicationDirPath() + "/translations";
-#endif // QT_OS_MAC
+#endif // Q_OS_MAC
 
     _appTranslator.load("monofin_" + QLocale::system().name(),
                         _qmPath);
@@ -75,13 +76,8 @@ MainWindow::MainWindow(QWidget *parent)
 #include "layerparameters.h"
 void MainWindow::configurate()
 {
-    if(_paramDiag->exec()) {
-        QTabWidget *qtw = _paramDiag->layerTabWidget;
-        for(int i = 0; i<qtw->count(); ++i) {
-            LayerParameters * ll = static_cast<LayerParameters*> (qtw->widget(i));
-            qDebug("%f", ll->youngDoubleSpinBox->value());
-        }
-    }
+    if (activeMonofin())
+        activeMonofin()->configurate();
 }
 
 // PROTECTED
@@ -115,12 +111,55 @@ void MainWindow::about()
                        .arg(_majorVersion).arg(_minorVersion));
 }
 
-void MainWindow::newFile()
+void MainWindow::launch()
+{
+    if (activeMonofin()) {
+        activeMonofin()->launch();
+    }
+}
+
+void MainWindow::preview3D()
+{
+    if (activeMonofin()) {
+        activeMonofin()->preview3D();
+    }
+}
+
+void MainWindow::newEmptyProject()
 {
     QMdiSubWindow *msw = createMonofin();
     Monofin *monofin = static_cast<Monofin *>(msw->widget());
     monofin->newFile();
     monofin->show();
+}
+
+void MainWindow::newFile()
+{
+    int res = 0;
+    if (res = _startupDialog->exec()) {
+        switch (res) {
+            case StartupDialog::empty:
+                newEmptyProject();
+            break;
+            case StartupDialog::image:
+                newProjectFromImage();
+            break;
+            case StartupDialog::open:
+                open();
+            break;
+            default:
+
+            break;
+        }    
+    }
+}
+
+void MainWindow::newProjectFromImage()
+{
+    QMdiSubWindow *msw = createMonofin();
+    Monofin *monofin = static_cast<Monofin *>(msw->widget());
+    if(monofin->newFileFromImage())
+        monofin->show();
 }
 
 void MainWindow::open()
@@ -275,6 +314,8 @@ void MainWindow::createActions()
     _actionShowGrid->setChecked(true);
     _actionProperties = new QAction(this);
     _actionProperties->setObjectName(QString::fromUtf8("actionProperties"));
+    _action3DPreview = new QAction(this);
+    _action3DPreview->setObjectName(QString::fromUtf8("action3DPreview"));
 
     // MENU SIMULATION
     _actionConfigurate = new QAction(this);
@@ -368,6 +409,8 @@ void MainWindow::createMenus()
     _menuDrawExt->setObjectName(QString::fromUtf8("menuDrawExt"));
     _menuDrawExt->setDisabled(true);
     _menuDraw->addMenu(_menuDrawExt);
+    _menuDraw->addSeparator();
+    _menuDraw->addAction(_action3DPreview);
 
     // MENU SIMULATION
     _menuSimulation = new QMenu(_menuBar);
@@ -401,7 +444,7 @@ void MainWindow::createMenus()
 QMdiSubWindow *MainWindow::createMonofin()
 {
     qDebug("MainWindow::createMonofin()");
-    Monofin *monofin = new Monofin;
+    Monofin *monofin = new Monofin();
     connect(monofin, SIGNAL(currentFileChanged()), this, SLOT(updateRecentFileActions()));
 
     QMdiSubWindow *msw = _mdiArea->addSubWindow(monofin);
@@ -482,6 +525,8 @@ void MainWindow::setConnections()
     connect(_actionSaveAs, SIGNAL(triggered()), this, SLOT(saveAs()));
     connect(_actionExit, SIGNAL(triggered()), this, SLOT(close()));
     connect(_actionConfigurate, SIGNAL(triggered()), this, SLOT(configurate()));
+    connect(_action3DPreview, SIGNAL(triggered()), this, SLOT(preview3D()));
+    connect(_actionLaunch, SIGNAL(triggered()), this, SLOT(launch()));
     connect(_actionAbout, SIGNAL(triggered()), this, SLOT(about()));
     connect(_actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 

@@ -30,7 +30,7 @@ Graphic::Graphic(QWidget *parent, ProjectFile* monofin, qreal width, qreal heigh
     QObject::connect(_graphic.OpenButton, SIGNAL(clicked()),
                      this, SLOT(setPixmap()));
     QObject::connect(_graphic.CancelButton, SIGNAL(clicked()),
-                     this, SLOT(close()));
+                     this, SLOT(reject()));
 
     if(_monofin == 0)
         _monofin = new ProjectFile();
@@ -44,7 +44,7 @@ void Graphic::setSize(qreal width, qreal height){
     _graphicsView->setScene(newScene);
     delete _graphicsScene;
     _graphicsScene = newScene;
-    this->setMinimumSize((int)width + 400, (int)height + 100);
+    this->setMinimumSize((int)width + 200, (int)height + 100);
 }
 
 void Graphic::setPixmap(){
@@ -67,7 +67,7 @@ void Graphic::setPixmap(){
         QObject::disconnect(_graphic.posYSpinBox, SIGNAL(valueChanged(int)),
                      this, SLOT(setPixmapPositionY(int)));
     }
-    QString file = QFileDialog::getOpenFileName(this, "Ouvrir un fichier", QString(), "Images (*.png *.bmp)");
+    QString file = QFileDialog::getOpenFileName(this, "Ouvrir un fichier", QString(), "Images (*.png *.bmp *.jpg *gif)");
     if(file != ""){
         QPixmap pix(file);
         _graphicsScene->setPixmap(pix);

@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     QObject::connect(timer, SIGNAL(timeout()), mainWin, SLOT(show()));
     QObject::connect(timer, SIGNAL(timeout()), splash, SLOT(close()));
 
-    splash->setPixmap(QPixmap(":/images/splash"));
+    splash->setPixmap(QPixmap(":/images/splashScreen.png"));
     splash->show();
 
     timer->start(2000);

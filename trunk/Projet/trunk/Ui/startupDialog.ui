@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>376</width>
-    <height>185</height>
+    <width>559</width>
+    <height>305</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,19 +19,15 @@
      <property name="text">
       <string>New project (empty)</string>
      </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QCommandLinkButton" name="imageProjectCmdButton">
-     <property name="text">
-      <string>New from an image...</string>
+     <property name="icon">
+      <iconset resource="../resources/icons.qrc">
+       <normaloff>:/icons/general/newEmptyProject.png</normaloff>:/icons/general/newEmptyProject.png</iconset>
      </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QCommandLinkButton" name="openProjectCmdButton">
-     <property name="text">
-      <string>Open a project...</string>
+     <property name="iconSize">
+      <size>
+       <width>64</width>
+       <height>64</height>
+      </size>
      </property>
     </widget>
    </item>
@@ -45,8 +41,44 @@
      </property>
     </widget>
    </item>
+   <item row="1" column="0">
+    <widget class="QCommandLinkButton" name="imageProjectCmdButton">
+     <property name="text">
+      <string>New from an image...</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../resources/icons.qrc">
+       <normaloff>:/icons/general/newFromImage.png</normaloff>:/icons/general/newFromImage.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>64</width>
+       <height>64</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QCommandLinkButton" name="openProjectCmdButton">
+     <property name="text">
+      <string>Open a project...</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../resources/icons.qrc">
+       <normaloff>:/icons/general/openProject.png</normaloff>:/icons/general/openProject.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>64</width>
+       <height>64</height>
+      </size>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../resources/icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

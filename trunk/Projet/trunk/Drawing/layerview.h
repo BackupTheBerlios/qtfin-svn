@@ -20,11 +20,13 @@ public:
     LayerView(Data::ProjectFile *structure, QWidget *parent = 0);
     virtual ~LayerView();
 
+    int nbLayers();
     QSize sizeHint() const;
 
-protected slots:
     void addLayerItem(int rank, qreal height, qreal length);
     void removeLayerItem(int rank);
+
+protected slots:
     void updateLayerHeight();
     void updateLayerLength();
 

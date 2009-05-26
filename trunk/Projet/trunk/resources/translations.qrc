@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/translations" >
+        <file alias="monofin_de.qm" >../translations/monofin_de.qm</file>
+        <file alias="monofin_en.qm" >../translations/monofin_en.qm</file>
+        <file alias="monofin_fr.qm" >../translations/monofin_fr.qm</file>
+    </qresource>
+</RCC>

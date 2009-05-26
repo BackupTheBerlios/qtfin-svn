@@ -13,8 +13,7 @@ class ParametersDialog : public QDialog, public Ui::ParametersDialog {
 public:
     explicit ParametersDialog(QWidget *parent = 0);
 
-protected slots:
-    void chooseFile();
+    void setNbLayers(int nb);
 
 protected:
     virtual void changeEvent(QEvent *e);

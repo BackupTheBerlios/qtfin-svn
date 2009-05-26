@@ -1,6 +1,12 @@
 #include "monofin.h"
 #include "Data/projectfile.h"
 #include "Drawing/paintingview.h"
+#include "Ui/geometry3dviewer.h"
+#include "Ui/generatecomsolfile.h"
+#include "Ui/insertlayerdialog.h"
+#include "Ui/layerindexdialog.h"
+#include "Ui/layerparameters.h"
+#include "Ui/parametersdialog.h"
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDebug>
@@ -31,6 +37,10 @@ Monofin::Monofin(Data::ProjectFile *projectFile, QWidget *parent)
     _isEmpty = true;
     _isUntitled = true;
     _layout = new QVBoxLayout(this);
+    _paramDiag = new ParametersDialog(this);
+
+    _viewer = new Geometry3DViewer(*_projectFile);
+    _generator = new GenerateComsolFile(*_projectFile);
 }
 /*!
     Destroys the monofin.
@@ -41,6 +51,10 @@ Monofin::Monofin(Data::ProjectFile *projectFile, QWidget *parent)
 Monofin::~Monofin()
 {
     qDebug("Monofin::~Monofin()");
+    if (_projectFile) {
+        qDebug("delete Data::Project");
+        delete _projectFile;
+    }
 }
 
 // PUBLIC
@@ -50,13 +64,48 @@ Monofin::~Monofin()
 static int documentNumber = 1;
 
 /*!
+
+*/
+int Monofin::getNbLayers()
+{
+    if (!_layerView.isNull())
+        return _layerView->nbLayers();
+    else
+        return 0;
+}
+
+/*!
     Create a new file.
 */
 void Monofin::newFile()
 {
+    qDebug("Monofin::newFile()");
     setCurrentFile(QString());
     ++documentNumber;
     initialize();
+}
+
+/*!
+
+*/
+bool Monofin::newFileFromImage()
+{
+    qDebug("Monofin::newFileFromImage()");
+    newFile();
+    if (_graphicView.isNull())
+        _graphicView = new Graphic(0, _projectFile, _scene->width(), _scene->height());
+    _projectFile->startHistory(Data::MonofinSurface);
+    _projectFile->clearSurface();
+    _projectFile->stopHistory(Data::MonofinSurface);
+    int res = _graphicView->exec();
+    if (res) {
+        qDebug("Graphic.exec) return true");
+        _scene->updateMonofinDrawing();
+        return true;
+    } else {
+        _projectFile->undo(Data::MonofinSurface);
+        return false;
+    }
 }
 
 /*!
@@ -191,6 +240,34 @@ void Monofin::cleanPoints()
     _isEmpty = true;
 }
 
+void Monofin::configurate()
+{
+    _paramDiag->setNbLayers(_layerView->nbLayers());
+    if(_paramDiag->exec()) {
+        QTabWidget *qtw = _paramDiag->layerTabWidget;
+        if (qtw->count() > 0) {
+            _projectFile->startHistory(Data::MonofinLayerConfig);
+            for(int i = 0; i<qtw->count(); ++i) {
+                LayerParameters * ll = static_cast<LayerParameters*> (qtw->widget(i));
+                _projectFile->setLayerConfigPoisson(i, ll->poissonDoubleSpinBox->value());
+                _projectFile->setLayerConfigRho(i, ll->densityDoubleSpinBox->value());
+                _projectFile->setLayerConfigYoung(i, ll->youngDoubleSpinBox->value());
+            }
+            _projectFile->stopHistory(Data::MonofinLayerConfig);
+        }
+    }
+}
+
+void Monofin::launch()
+{
+    _generator->show();
+}
+
+void Monofin::preview3D()
+{
+    _viewer->show();
+}
+
 /*!
 
 */
@@ -315,6 +392,32 @@ void Monofin::on_actionCleanPolygon_triggered()
     cleanPoints();
 }
 
+void Monofin::on_actionInsertLayer_triggered()
+{
+    InsertLayerDialog *ild =  new InsertLayerDialog(this);
+    ild->setNbLayer(_layerView->nbLayers());
+    if (ild->exec()) {
+        int r = ild->getLayerRank() + ild->before();
+        _layerView->addLayerItem(r, ild->getLayerHeight(), ild->getLayerLength());
+    }
+    ild->deleteLater();
+}
+
+void Monofin::on_actionRemoveLayer_triggered()
+{
+    if (_layerView->nbLayers() < 2) {
+        // alert user
+    } else {
+        LayerIndexDialog *lid = new LayerIndexDialog(this);
+        lid->setNbLayer(_layerView->nbLayers());
+        if (lid->exec()) {
+            int r = lid->getLayerRank();
+            _layerView->removeLayerItem(r);
+        }
+        lid->deleteLater();
+    }
+}
+
 // PRIVATE
 
 void Monofin::createToolBar()
@@ -323,27 +426,48 @@ void Monofin::createToolBar()
     _actionAddControl = new QAction(this);
     _actionAddControl->setObjectName(QString::fromUtf8("actionAddControl"));
     _actionAddControl->setCheckable(true);
+    _actionAddControl->setIcon(QIcon(":/icons/drawing/createControlPoint.png"));
+
     _actionAddPoint = new QAction(this);
     _actionAddPoint->setObjectName(QString::fromUtf8("actionAddPoint"));
     _actionAddPoint->setCheckable(true);
+    _actionAddPoint->setIcon(QIcon(":/icons/drawing/createPoint.png"));
+
     _actionCreatePolygon = new QAction(this);
     _actionCreatePolygon->setObjectName(QString::fromUtf8("actionCreatePolygon"));
     _actionCreatePolygon->setCheckable(true);
     _actionCreatePolygon->setEnabled(true);
+    _actionCreatePolygon->setIcon(QIcon(":/icons/drawing/beginLine.png"));
+
     _actionCleanPolygon = new QAction(this);
     _actionCleanPolygon->setObjectName(QString::fromUtf8("actionCleanPolygon"));
+    _actionCleanPolygon->setIcon(QIcon(":/icons/drawing/clear.png"));
+
     _actionRemoveControl = new QAction(this);
     _actionRemoveControl->setObjectName(QString::fromUtf8("actionRemoveControl"));
     _actionRemoveControl->setCheckable(true);
+    _actionRemoveControl->setIcon(QIcon(":/icons/drawing/eraseControlPoint.png"));
+
     _actionAlignTangents = new QAction(this);
     _actionAlignTangents->setObjectName(QString::fromUtf8("actionAlignTangents"));
+    _actionAlignTangents->setIcon(QIcon(":/icons/drawing/alignTangent.png"));
+
     _actionGroupDraw = new QActionGroup(this);
     _actionGroupDraw->setExclusive(false);
+
     _actionGroupDraw->addAction(_actionAddControl);
     _actionGroupDraw->addAction(_actionAddPoint);
     _actionGroupDraw->addAction(_actionCleanPolygon);
     _actionGroupDraw->addAction(_actionRemoveControl);
     _actionGroupDraw->addAction(_actionAlignTangents);
+
+    _actionInsertLayer = new QAction(this);
+    _actionInsertLayer->setObjectName(QString::fromUtf8("actionInsertLayer"));
+    _actionInsertLayer->setIcon(QIcon(":/icons/drawing/addLayer.png"));
+
+    _actionRemoveLayer = new QAction(this);
+    _actionRemoveLayer->setObjectName(QString::fromUtf8("actionRemoveLayer"));
+    _actionRemoveLayer->setIcon(QIcon(":/icons/drawing/removeLayer.png"));
 
     // TOOLBAR
     _toolBarArea = Qt::LeftToolBarArea;
@@ -359,18 +483,22 @@ void Monofin::createToolBar()
     _toolBar->addAction(_actionAddPoint);
     _toolBar->addSeparator();
     _toolBar->addAction(_actionAlignTangents);
+    _toolBar->addSeparator();
+    _toolBar->addAction(_actionInsertLayer);
+    _toolBar->addAction(_actionRemoveLayer);
 }
 
 void Monofin::initialize()
 {
+    qDebug("Monofin::initialize()");
     if (!_layerView.isNull())
         _layerView->close();
     _layerView = new LayerView(_projectFile);
     if (!_scene.isNull())
         _scene->deleteLater();
-    _scene = new PaintingScene(1024, 768, _projectFile, this);
+    _scene = new PaintingScene(1024, 768, _projectFile);
 
-    _layout->addWidget(new PaintingView(_scene.data()));
+    _layout->addWidget(new PaintingView(_scene.data(), this));
     _layout->addWidget(_layerView.data());
     createToolBar();
     retranslateUi();
@@ -402,6 +530,8 @@ void Monofin::retranslateUi()
     _actionCleanPolygon->setText(tr("Clean polygon"));
     _actionRemoveControl->setText(tr("Remove control point"));
     _actionAlignTangents->setText(tr("Align tangents"));
+    _actionInsertLayer->setText(tr("Add a layer"));
+    _actionRemoveLayer->setText(tr("Remove a layer"));
 }
 
 /*!

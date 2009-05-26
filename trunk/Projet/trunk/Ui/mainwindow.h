@@ -1,12 +1,14 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QtCore/QTranslator>
 #include <QtGui/QMainWindow>
-#include <QTranslator>
+
+#include "Data/projectfile.h"
 
 class Monofin;
 class PaintingScene;
-class ParametersDialog;
+class StartupDialog;
 class QtWindowListMenu;
 class QAction;
 class QActionGroup;
@@ -33,7 +35,11 @@ protected:
 
 private slots:
     void about();
+    void launch();
+    void preview3D();
+    void newEmptyProject();
     void newFile();
+    void newProjectFromImage();
     void open();
     void openRecentFile();
     bool save();
@@ -72,6 +78,7 @@ private:
     QAction *_actionSaveAs;
     QAction *_actionConfigurate;
     QAction *_actionLaunch;
+    QAction *_action3DPreview;
     QAction *_actionShowGrid;
     QAction *_actionProperties;
     QAction *_actionAbout;
@@ -91,7 +98,7 @@ private:
     QDockWidget *_dockFormLibrary;
     QWidget *_dockWidgetContents;
 
-    QMdiArea *_mdiArea;    
+    QMdiArea *_mdiArea;
 
     QString _currentLanguage;
     QString _qmPath;
@@ -103,7 +110,7 @@ private:
     QAction *_recentFileActions[MaxRecentFiles];
     QAction *_separatorAction;
 
-    ParametersDialog *_paramDiag;
+    StartupDialog *_startupDialog;
 };
 
 #endif // MAINWINDOW_H

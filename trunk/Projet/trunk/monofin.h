@@ -6,14 +6,18 @@
 
 #include "Drawing/layerview.h"
 #include "Drawing/paintingscene.h"
+#include "EdgeDetection/graphic.h"
 
 class QAction;
 class QActionGroup;
 class QToolBar;
 class QVBoxLayout;
 
+class Geometry3DViewer;
+class GenerateComsolFile;
 class LayerView;
 class PaintingScene;
+class ParametersDialog;
 
 class Monofin : public QWidget
 {
@@ -23,8 +27,10 @@ public:
     virtual ~Monofin();
 
     QString currentFile() const { return _curFile; }
+    int getNbLayers();
     bool isEmpty() const { return _isEmpty; }
     void newFile();
+    bool newFileFromImage();
     bool okToContinue();
     bool open();
     bool openFile(const QString &fileName);
@@ -41,6 +47,9 @@ public slots:
     void activateRemoveControlPoint(bool a);
     void alignTangents();
     void cleanPoints();
+    void configurate();
+    void launch();
+    void preview3D();
     void removeSelectedPoints();
 
 signals:
@@ -67,6 +76,8 @@ private slots:
     void on_actionRemoveControl_toggled(bool a);
     void on_actionAlignTangents_triggered();
     void on_actionCleanPolygon_triggered();
+    void on_actionInsertLayer_triggered();
+    void on_actionRemoveLayer_triggered();
 
     void setToolBarArea(Qt::ToolBarArea tba) { _toolBarArea = tba; }
 
@@ -85,9 +96,14 @@ private:
     bool _isEmpty;
     bool _isUntitled;
     QVBoxLayout *_layout;
+    QPointer<Graphic> _graphicView;
     QPointer<LayerView> _layerView;
+    ParametersDialog *_paramDiag;
     Data::ProjectFile *_projectFile;
     QPointer<PaintingScene> _scene;
+
+    Geometry3DViewer *_viewer;
+    GenerateComsolFile *_generator;
 
     QAction *_actionAddControl;
     QAction *_actionAddPoint;
@@ -95,6 +111,8 @@ private:
     QAction *_actionCleanPolygon;
     QAction *_actionRemoveControl;
     QAction *_actionAlignTangents;
+    QAction *_actionInsertLayer;
+    QAction *_actionRemoveLayer;
     QActionGroup *_actionGroupDraw;
     QToolBar *_toolBar;
     Qt::ToolBarArea _toolBarArea;

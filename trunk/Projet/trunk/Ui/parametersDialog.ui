@@ -57,22 +57,12 @@
        <string>physical</string>
       </property>
      </item>
-     <item>
-      <property name="text">
-       <string>dynamical</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>simulation</string>
-      </property>
-     </item>
     </widget>
    </item>
    <item row="0" column="1">
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="physicalPage">
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -111,126 +101,6 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="dynamicalPage">
-      <layout class="QGridLayout" name="gridLayout_6">
-       <item row="1" column="1">
-        <widget class="QGroupBox" name="groupBox_6">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
-          <item>
-           <widget class="QLabel" name="pathLabel">
-            <property name="text">
-             <string>path</string>
-            </property>
-            <property name="buddy">
-             <cstring>pathLineEdit</cstring>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="pathLineEdit"/>
-          </item>
-          <item>
-           <widget class="QPushButton" name="browseButton">
-            <property name="text">
-             <string>Browse...</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QRadioButton" name="customRadioButton">
-         <property name="text">
-          <string>Custom</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QRadioButton" name="fileRadioButton">
-         <property name="text">
-          <string>File</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QGroupBox" name="groupBox_5">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_7">
-          <item row="0" column="0">
-           <widget class="QLabel" name="durationLabel">
-            <property name="text">
-             <string>duration</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-            <property name="buddy">
-             <cstring>durationDoubleSpinBox</cstring>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="3">
-           <widget class="QLabel" name="stepLabel">
-            <property name="text">
-             <string>step</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-            <property name="buddy">
-             <cstring>stepDoubleSpinBox</cstring>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="formulaLabel">
-            <property name="text">
-             <string>formula</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-            <property name="buddy">
-             <cstring>formulaLineEdit</cstring>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1" colspan="4">
-           <widget class="QLineEdit" name="formulaLineEdit"/>
-          </item>
-          <item row="2" column="1" colspan="4">
-           <widget class="QComboBox" name="formulaComboBox"/>
-          </item>
-          <item row="0" column="1">
-           <widget class="QDoubleSpinBox" name="durationDoubleSpinBox"/>
-          </item>
-          <item row="0" column="4">
-           <widget class="QDoubleSpinBox" name="stepDoubleSpinBox"/>
-          </item>
-         </layout>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="simulationPage"/>
     </widget>
    </item>
    <item row="1" column="1">
@@ -264,22 +134,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>customRadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>groupBox_5</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>170</x>
-     <y>120</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>244</x>
-     <y>36</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>listWidget</sender>
    <signal>currentRowChanged(int)</signal>
    <receiver>stackedWidget</receiver>
@@ -308,22 +162,6 @@
     <hint type="destinationlabel">
      <x>196</x>
      <y>287</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fileRadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>groupBox_6</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>158</x>
-     <y>354</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>275</x>
-     <y>302</y>
     </hint>
    </hints>
   </connection>

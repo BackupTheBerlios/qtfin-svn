@@ -10,13 +10,18 @@ StartupDialog::StartupDialog(QWidget *parent)
      * Connections.
      */
     connect(ui->newProjectCmdButton, SIGNAL(clicked()),
-            this, SIGNAL(newProject()));
-    connect(ui->newProjectCmdButton, SIGNAL(clicked()),
-            this, SIGNAL(accepted()));
+            this, SLOT(newEmptyProject()));
     connect(ui->imageProjectCmdButton, SIGNAL(clicked()),
-            this, SIGNAL(imageProject()));
+            this, SLOT(imageProject()));
     connect(ui->openProjectCmdButton, SIGNAL(clicked()),
-            this, SIGNAL(openProject()));
+            this, SLOT(openProject()));
+
+    /**
+     * Event filters.
+     */
+    ui->newProjectCmdButton->installEventFilter(this);
+    ui->imageProjectCmdButton->installEventFilter(this);
+    ui->openProjectCmdButton->installEventFilter(this);
 }
 
 StartupDialog::~StartupDialog()
@@ -33,4 +38,35 @@ void StartupDialog::changeEvent(QEvent *e)
     default:
         break;
     }
+}
+
+bool StartupDialog::eventFilter(QObject *obj, QEvent *event)
+{
+    if (obj == ui->newProjectCmdButton) {
+        if (event->type() == QEvent::MouseMove) {
+            ui->label->setText(tr("Create a new empty project."));
+            return true;
+        } else
+            return false;
+    } else if (obj == ui->imageProjectCmdButton) {
+        if (event->type() == QEvent::MouseMove) {
+            ui->label->setText(tr("Create a new project from an image."));
+            return true;
+        } else
+            return false;
+    } else if (obj == ui->openProjectCmdButton) {
+        if (event->type() == QEvent::MouseMove) {
+            ui->label->setText(tr("Open an existing project."));
+            return true;
+        } else
+            return false;
+    } else
+        return QDialog::eventFilter(obj, event);
+
+}
+
+void StartupDialog::retranslateUi()
+{
+
+    ui->retranslateUi(this);
 }

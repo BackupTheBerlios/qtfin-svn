@@ -3,6 +3,7 @@
 
 #include <QtCore/QPointer>
 #include <QtGui/QWidget>
+#include <QtGui/QMenu>
 
 #include "Drawing/layerview.h"
 #include "Drawing/paintingscene.h"
@@ -44,13 +45,30 @@ public slots:
     void activateAddControl(bool a);
     void activateAddPoint(bool a);
     void activateCreateLine(bool a);
+    void activateMagnet(bool a);
+    void activateModifyBackgroundPicture(bool a);
     void activateRemoveControlPoint(bool a);
+    void addBackgroundPicture();
     void alignTangents();
     void cleanPoints();
     void configurate();
+    void decreaseWindowSize();
+    void increaseWindowSize();
+    void keepBezierCurve(bool a);
     void launch();
     void preview3D();
+    void redo();
+    void removeBackgroundPicture();
     void removeSelectedPoints();
+    void simplifyView(bool a);
+    void switchToBlack();
+    void switchToRed();
+    void switchToWhite();
+    void undo();
+    void zoomIn();
+    void zoomInOnBackgroundPicture();
+    void zoomOut();
+    void zoomOutOnBackgroundPicture();
 
 signals:
     void currentFileChanged();
@@ -66,6 +84,7 @@ private slots:
 
     void activeAddControl(bool a);
     void activeAddPoint(bool a);
+    void activeModifyBackgroundPicture(bool a);
     void activateRemoveControl(bool a);
     void beginLine(bool a);
     void clean();
@@ -105,14 +124,31 @@ private:
     Geometry3DViewer *_viewer;
     GenerateComsolFile *_generator;
 
+    QAction *_actionUndo;
+    QAction *_actionRedo;
     QAction *_actionAddControl;
     QAction *_actionAddPoint;
+    QAction *_actionRemovePoints;
     QAction *_actionCreatePolygon;
     QAction *_actionCleanPolygon;
     QAction *_actionRemoveControl;
     QAction *_actionAlignTangents;
+    QAction *_actionMagnet;
+    QAction *_actionSwitchColors;
+    QMenu *_menuColors;
+    QAction *_actionSwitchToBlack;
+    QAction *_actionSwitchToWhite;
+    QAction *_actionSwitchToRed;
+    QAction *_actionSimplifyView;
+    QAction *_actionIncreaseWindowSize;
+    QAction *_actionDecreaseWindowSize;
     QAction *_actionInsertLayer;
     QAction *_actionRemoveLayer;
+    QAction *_actionAddBackgroundPicture;
+    QAction *_actionTransformBackgroundPicture;
+    QAction *_actionRemoveBackgroundPicture;
+    QAction *_enlargeBackgroundPictureSize;
+    QAction *_reduceBackgroundPictureSize;
     QActionGroup *_actionGroupDraw;
     QToolBar *_toolBar;
     Qt::ToolBarArea _toolBarArea;

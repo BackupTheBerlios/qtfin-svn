@@ -447,7 +447,7 @@ void BoundingPoint::setRightLine(BrLine* l){
 
 }
 
-bool BoundingPoint::willMoveToGoCloseToPosX(qreal posX){
+/*bool BoundingPoint::willMoveToGoCloseToPosX(qreal posX){
     QRectF zone = _scene->pointsBoundingZone();
     if(posX < zone.left()){
         return _pos->x() != zone.left();
@@ -467,7 +467,7 @@ bool BoundingPoint::willMoveToGoCloseToPosY(qreal posY){
     }else{
         return _pos->y() != posY;
     }
-}
+}*/
 
 //PROTECTED
 

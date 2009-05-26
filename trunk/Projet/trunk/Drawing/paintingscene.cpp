@@ -450,7 +450,7 @@ void PaintingScene::activateRemoveControlPoint(bool a){
     _isRemoveControlPointActivated = a;
 }
 
-void PaintingScene::ajustSceneRect(qreal dx, qreal dy){
+void PaintingScene::adjustSceneRect(qreal dx, qreal dy){
     qreal MINSIZE = 1;
     qreal MAXSIZE = 10000;
 
@@ -1028,17 +1028,17 @@ void PaintingScene::keyPressEvent(QKeyEvent* event){
 //        this->getPictureOfTheScene(-1,-1);
 
 //ESC
-    }else if(event->key() == Qt::Key_Escape){
-        this->stopCreateLine();
+    /*}else if(event->key() == Qt::Key_Escape){
+        this->stopCreateLine();*/
 
 //+
     }else if(event->key() == Qt::Key_Plus){
-        this->ajustSceneRect(20,20);
+        this->adjustSceneRect(20,20);
 
 
 //-
     }else if(event->key() == Qt::Key_Minus){
-        this->ajustSceneRect(-20,-20);
+        this->adjustSceneRect(-20,-20);
     }
 
 //UP

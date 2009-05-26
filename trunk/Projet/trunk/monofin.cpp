@@ -215,12 +215,34 @@ void Monofin::activateCreateLine(bool a)
     _scene->activateCreateLine(a);
 }
 
+void Monofin::activateMagnet(bool a)
+{
+    _scene->activateMagnet(a);
+}
+
+void Monofin::activateModifyBackgroundPicture(bool a)
+{
+    _scene->modifyBackgroundPicture(a);
+}
+
 /*!
     \a a
 */
 void Monofin::activateRemoveControlPoint(bool a)
 {
     _scene->activateRemoveControlPoint(a);
+}
+
+void Monofin::addBackgroundPicture()
+{
+    QString file = QFileDialog::getOpenFileName(this,
+                                                tr("Open file"),
+                                                QString(),
+                                                "Images (*.png *.bmp *.jpg)");
+    if(!file.isNull()){
+        QPixmap pix(file);
+        _scene->setBackGroundPicture(pix);
+    }
 }
 
 /*!
@@ -258,6 +280,21 @@ void Monofin::configurate()
     }
 }
 
+void Monofin::decreaseWindowSize()
+{
+    _scene->adjustSceneRect(-20,-20);
+}
+
+void Monofin::increaseWindowSize()
+{
+    _scene->adjustSceneRect(20,20);
+}
+
+void Monofin::keepBezierCurve(bool a)
+{
+    _scene->keepBezierCurve(a);
+}
+
 void Monofin::launch()
 {
     _generator->show();
@@ -268,12 +305,73 @@ void Monofin::preview3D()
     _viewer->show();
 }
 
+void Monofin::redo()
+{
+    _scene->redo();
+}
+
+void Monofin::removeBackgroundPicture()
+{
+    _scene->removeBackgroundPicture();
+}
+
 /*!
 
 */
 void Monofin::removeSelectedPoints()
 {
     _scene->removeSelectedPoints();
+}
+
+void Monofin::simplifyView(bool a)
+{
+    _scene->simplifyView(a);
+}
+
+void Monofin::switchToBlack()
+{
+    _scene->changeColor(PaintingScene::LineColor, PaintingScene::NormalColor, QColor(Qt::black));
+    _scene->changeColor(PaintingScene::BoundingPointColor, PaintingScene::NormalColor, QColor(Qt::black));
+    _scene->changeColor(PaintingScene::ControlPointColor, PaintingScene::NormalColor, QColor(Qt::black));
+    _scene->changeColor(PaintingScene::BoundingPointColor, PaintingScene::SelectionColor, QColor(Qt::red));
+}
+
+void Monofin::switchToRed()
+{
+    _scene->changeColor(PaintingScene::LineColor, PaintingScene::NormalColor, QColor(Qt::red));
+    //_scene->changeColor(PaintingScene::BoundingPointColor, PaintingScene::NormalColor, QColor(Qt::red));
+    _scene->changeColor(PaintingScene::ControlPointColor, PaintingScene::NormalColor, QColor(Qt::red));
+}
+
+void Monofin::switchToWhite()
+{
+    _scene->changeColor(PaintingScene::LineColor, PaintingScene::NormalColor, QColor(Qt::white));
+    _scene->changeColor(PaintingScene::BoundingPointColor, PaintingScene::NormalColor, QColor(Qt::gray));
+    _scene->changeColor(PaintingScene::ControlPointColor, PaintingScene::NormalColor, QColor(Qt::white));
+}
+
+void Monofin::undo()
+{
+    _scene->undo();
+}
+
+void Monofin::zoomIn(){
+
+}
+
+void Monofin::zoomInOnBackgroundPicture()
+{
+    _scene->zoomOnBackgroundPicture(1.1);
+}
+
+void Monofin::zoomOut(){
+
+
+}
+
+void Monofin::zoomOutOnBackgroundPicture()
+{
+    _scene->zoomOnBackgroundPicture(0.9);
 }
 
 // PROTECTED SLOTS
@@ -284,6 +382,7 @@ void Monofin::activeAddControl(bool a){
     _actionAlignTangents->setDisabled(a);
     _actionCleanPolygon->setDisabled(a);
     _actionRemoveControl->setDisabled(a);
+    _actionRemovePoints->setDisabled(a);
 }
 
 void Monofin::activeAddPoint(bool a){
@@ -292,19 +391,26 @@ void Monofin::activeAddPoint(bool a){
     _actionAlignTangents->setDisabled(a);
     _actionCleanPolygon->setDisabled(a);
     _actionRemoveControl->setDisabled(a);
+    _actionRemovePoints->setDisabled(a);
+}
+
+void Monofin::activeModifyBackgroundPicture(bool a){
+    _enlargeBackgroundPictureSize->setEnabled(a);
+    _reduceBackgroundPictureSize->setEnabled(a);
 }
 
 void Monofin::activateRemoveControl(bool a){
-    qDebug("activeRemoteControl: %d", a);
+    qDebug("activeRemoveControl: %d", a);
     _actionAddPoint->setDisabled(a);
     _actionAddControl->setDisabled(a);
     _actionAlignTangents->setDisabled(a);
     _actionCleanPolygon->setDisabled(a);
+    _actionRemovePoints->setDisabled(a);
 }
 
 void Monofin::beginLine(bool a){
-    _actionCreatePolygon->setDisabled(a);
-    _actionGroupDraw->setDisabled(a);
+    //_actionCreatePolygon->setDisabled(a);
+    _actionGroupDraw->setDisabled(a || !_actionCreatePolygon->isChecked());
 }
 
 void Monofin::clean(){
@@ -423,6 +529,13 @@ void Monofin::on_actionRemoveLayer_triggered()
 void Monofin::createToolBar()
 {
     // ACTIONS
+
+    _actionUndo = new QAction(this);
+    _actionUndo->setObjectName(QString::fromUtf8("actionUndo"));
+
+    _actionRedo = new QAction(this);
+    _actionRedo->setObjectName(QString::fromUtf8("actionRedo"));
+
     _actionAddControl = new QAction(this);
     _actionAddControl->setObjectName(QString::fromUtf8("actionAddControl"));
     _actionAddControl->setCheckable(true);
@@ -432,6 +545,10 @@ void Monofin::createToolBar()
     _actionAddPoint->setObjectName(QString::fromUtf8("actionAddPoint"));
     _actionAddPoint->setCheckable(true);
     _actionAddPoint->setIcon(QIcon(":/icons/drawing/createPoint.png"));
+
+    _actionRemovePoints = new QAction(this);
+    _actionRemovePoints->setObjectName(QString::fromUtf8("actionRemovePoint"));
+    _actionRemovePoints->setIcon(QIcon(":/icons/drawing/erasePoint.png"));
 
     _actionCreatePolygon = new QAction(this);
     _actionCreatePolygon->setObjectName(QString::fromUtf8("actionCreatePolygon"));
@@ -457,6 +574,7 @@ void Monofin::createToolBar()
 
     _actionGroupDraw->addAction(_actionAddControl);
     _actionGroupDraw->addAction(_actionAddPoint);
+    _actionGroupDraw->addAction(_actionRemovePoints);
     _actionGroupDraw->addAction(_actionCleanPolygon);
     _actionGroupDraw->addAction(_actionRemoveControl);
     _actionGroupDraw->addAction(_actionAlignTangents);
@@ -469,23 +587,100 @@ void Monofin::createToolBar()
     _actionRemoveLayer->setObjectName(QString::fromUtf8("actionRemoveLayer"));
     _actionRemoveLayer->setIcon(QIcon(":/icons/drawing/removeLayer.png"));
 
+    _actionMagnet = new QAction(this);
+    _actionMagnet->setObjectName(QString::fromUtf8("actionMagnet"));
+    _actionMagnet->setCheckable(true);
+    _actionMagnet->setIcon(QIcon(":/icons/drawing/magnet.png"));
+
+
+    _actionSwitchColors = new QAction(this);
+    _actionSwitchColors->setObjectName(QString::fromUtf8("actionSwitchColors"));
+    _actionSwitchColors->setIcon(QIcon(":/icons/drawing/switchColor.png"));
+
+    _menuColors = new QMenu(this);
+    _menuColors->setObjectName(QString::fromUtf8("menuColors"));
+    _menuColors->setIcon(QIcon(":/icons/drawing/switchColor.png"));
+
+    _actionSwitchToRed = new QAction(this);
+    _actionSwitchToRed->setObjectName(QString::fromUtf8("actionSwitchToRed"));
+
+    _actionSwitchToBlack = new QAction(this);
+    _actionSwitchToBlack->setObjectName(QString::fromUtf8("actionSwitchToBlack"));
+
+    _actionSwitchToWhite = new QAction(this);
+    _actionSwitchToWhite->setObjectName(QString::fromUtf8("actionSwitchToWhite"));
+
+    _menuColors->addAction(_actionSwitchToBlack);
+    _menuColors->addAction(_actionSwitchToRed);
+    _menuColors->addAction(_actionSwitchToWhite);
+
+    _actionSwitchColors->setMenu(_menuColors);
+
+
+    _actionSimplifyView = new QAction(this);
+    _actionSimplifyView->setObjectName(QString::fromUtf8("actionSimplifyView"));
+    _actionSimplifyView->setCheckable(true);
+
+    _actionIncreaseWindowSize = new QAction(this);
+    _actionIncreaseWindowSize->setObjectName(QString::fromUtf8("actionIncreaseWindowSize"));
+    _actionIncreaseWindowSize->setIcon(QIcon(":/icons/drawing/increaseSizeWindow.png"));
+
+    _actionDecreaseWindowSize = new QAction(this);
+    _actionDecreaseWindowSize->setObjectName(QString::fromUtf8("actionDecreaseWindowSize"));
+    _actionDecreaseWindowSize->setIcon(QIcon(":/icons/drawing/decreaseSizeWindow.png"));
+
+    _actionAddBackgroundPicture = new QAction(this);
+    _actionAddBackgroundPicture->setObjectName(QString::fromUtf8("actionAddBackgroundPicture"));
+
+    _actionTransformBackgroundPicture = new QAction(this);
+    _actionTransformBackgroundPicture->setObjectName(QString::fromUtf8("actionAddBackgroundPicture"));
+    _actionTransformBackgroundPicture->setCheckable(true);
+
+    _actionRemoveBackgroundPicture = new QAction(this);
+    _actionRemoveBackgroundPicture->setObjectName(QString::fromUtf8("actionRemoveBackgroundPicture"));
+
+    _enlargeBackgroundPictureSize = new QAction(this);
+    _enlargeBackgroundPictureSize->setObjectName(QString::fromUtf8("enlargeBackgroundPictureSize"));
+    _enlargeBackgroundPictureSize->setDisabled(true);
+
+    _reduceBackgroundPictureSize = new QAction(this);
+    _reduceBackgroundPictureSize->setObjectName(QString::fromUtf8("reduceBackgroundPictureSize"));
+    _reduceBackgroundPictureSize->setDisabled(true);
+
     // TOOLBAR
     _toolBarArea = Qt::LeftToolBarArea;
     _toolBar = new QToolBar();
     _toolBar->setObjectName(QString::fromUtf8("mainToolBar"));
     _toolBar->setFloatable(false);
     _toolBar->setAllowedAreas(Qt::LeftToolBarArea);
+    _toolBar->addAction(_actionUndo);
+    _toolBar->addAction(_actionRedo);
+    _toolBar->addSeparator();
     _toolBar->addAction(_actionCreatePolygon);
     _toolBar->addAction(_actionCleanPolygon);
     _toolBar->addSeparator();
     _toolBar->addAction(_actionAddControl);
     _toolBar->addAction(_actionRemoveControl);
     _toolBar->addAction(_actionAddPoint);
+    _toolBar->addAction(_actionRemovePoints);
     _toolBar->addSeparator();
     _toolBar->addAction(_actionAlignTangents);
     _toolBar->addSeparator();
+    _toolBar->addAction(_actionMagnet);
+    _toolBar->addSeparator();
+    _toolBar->addAction(_actionSimplifyView);
+    _toolBar->addAction(_actionSwitchColors);
+    _toolBar->addAction(_actionIncreaseWindowSize);
+    _toolBar->addAction(_actionDecreaseWindowSize);
+    _toolBar->addSeparator();
     _toolBar->addAction(_actionInsertLayer);
     _toolBar->addAction(_actionRemoveLayer);
+    _toolBar->addSeparator();
+    _toolBar->addAction(_actionAddBackgroundPicture);
+    _toolBar->addAction(_actionRemoveBackgroundPicture);
+    _toolBar->addAction(_actionTransformBackgroundPicture);
+    _toolBar->addAction(_enlargeBackgroundPictureSize);
+    _toolBar->addAction(_reduceBackgroundPictureSize);
 }
 
 void Monofin::initialize()
@@ -524,14 +719,30 @@ void Monofin::retranslateUi()
 {
     // TOOLBAR
     _toolBar->setWindowTitle(tr("Draw toolbar"));
+    _actionUndo->setText(tr("Undo"));
+    _actionRedo->setText(tr("Redo"));
     _actionAddControl->setText(tr("Add control point"));
     _actionAddPoint->setText(tr("Add point"));
+    _actionRemovePoints->setText(tr("Remove selected points"));
     _actionCreatePolygon->setText(tr("Create polygon"));
     _actionCleanPolygon->setText(tr("Clean polygon"));
     _actionRemoveControl->setText(tr("Remove control point"));
     _actionAlignTangents->setText(tr("Align tangents"));
+    _actionSimplifyView->setText(tr("Simplify the view"));
+    _actionMagnet->setText(tr("Activate / Deactivate the magnet"));
+    _actionSwitchColors->setText(tr("Switch colors"));
+    _actionSwitchToBlack->setText(tr("Black"));
+    _actionSwitchToRed->setText(tr("Red"));
+    _actionSwitchToWhite->setText(tr("White"));
     _actionInsertLayer->setText(tr("Add a layer"));
     _actionRemoveLayer->setText(tr("Remove a layer"));
+    _actionIncreaseWindowSize->setText(tr("Increase size of the drawing zone"));
+    _actionDecreaseWindowSize->setText(tr("Decrease size of the drawing zone"));
+    _actionAddBackgroundPicture->setText(tr("Add a background picture"));
+    _actionTransformBackgroundPicture->setText(tr("Transform the background picture"));
+    _actionRemoveBackgroundPicture->setText(tr("Remove the background picture"));
+    _enlargeBackgroundPictureSize->setText(tr("Enlarge picture size"));
+    _reduceBackgroundPictureSize->setText(tr("Reduce picture size"));
 }
 
 /*!
@@ -551,11 +762,28 @@ bool Monofin::saveFile(const QString &fileName)
 void Monofin::setConnections()
 {
     // TOOLBAR
+    connect(_actionUndo, SIGNAL(triggered()), this, SLOT(undo()));
+    connect(_actionRedo, SIGNAL(triggered()), this, SLOT(redo()));
     connect(_actionCreatePolygon, SIGNAL(toggled(bool)), this, SLOT(beginLine(bool)));
     connect(_actionCleanPolygon, SIGNAL(triggered()), this, SLOT(clean()));
     connect(_actionAddControl, SIGNAL(toggled(bool)), this, SLOT(activeAddControl(bool)));
     connect(_actionRemoveControl, SIGNAL(toggled(bool)), this, SLOT(activateRemoveControl(bool)));
     connect(_actionAddPoint, SIGNAL(toggled(bool)), this, SLOT(activeAddPoint(bool)));
+    connect(_actionRemovePoints, SIGNAL(triggered()), this, SLOT(removeSelectedPoints()));
+    connect(_actionIncreaseWindowSize, SIGNAL(triggered()), this, SLOT(increaseWindowSize()));
+    connect(_actionDecreaseWindowSize, SIGNAL(triggered()), this, SLOT(decreaseWindowSize()));
+    connect(_actionMagnet, SIGNAL(toggled(bool)), this, SLOT(activateMagnet(bool)));
+    connect(_actionSimplifyView, SIGNAL(toggled(bool)), this, SLOT(simplifyView(bool)));
+    connect(_actionAddBackgroundPicture, SIGNAL(triggered()), this, SLOT(addBackgroundPicture()));
+    connect(_actionTransformBackgroundPicture, SIGNAL(toggled(bool)), this, SLOT(activateModifyBackgroundPicture(bool)));
+    connect(_actionTransformBackgroundPicture, SIGNAL(toggled(bool)), this, SLOT(activeModifyBackgroundPicture(bool)));
+    connect(_actionRemoveBackgroundPicture, SIGNAL(triggered()), this, SLOT(removeBackgroundPicture()));
+    connect(_actionSwitchToBlack, SIGNAL(triggered()), this, SLOT(switchToBlack()));
+    connect(_actionSwitchToRed, SIGNAL(triggered()), this, SLOT(switchToRed()));
+    connect(_actionSwitchToWhite, SIGNAL(triggered()), this, SLOT(switchToWhite()));
+    connect(_enlargeBackgroundPictureSize, SIGNAL(triggered()), this, SLOT(zoomInOnBackgroundPicture()));
+    connect(_reduceBackgroundPictureSize, SIGNAL(triggered()), this, SLOT(zoomOutOnBackgroundPicture()));
+
 
     // SCENE
     connect(_scene.data(), SIGNAL(lineFinished(bool)), _actionCreatePolygon, SLOT(toggle()));

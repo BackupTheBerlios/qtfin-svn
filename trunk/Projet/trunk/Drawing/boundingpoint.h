@@ -77,17 +77,32 @@ public:
     **/
     QPointF coord() const{return *_pos;}
 
+    /**
+    *@return true if the left line of the point has been set ;
+    * otherwise return false
+    **/
     bool hasLeftLine(){return _hasLeftLine;}
+
+    /**
+    *@return true if the right line of the point has been set ;
+    * otherwise return false
+    **/
     bool hasRightLine(){return _hasRightLine;}
 
     /**
-    * Functions used when a line is deleted : the line first
-    * hide itself to the point before being deleted.
-    * The pointer _leftLine or _rightLine will probably become null
-    * after the use of this function, but the boolean
-    * _hasLeftLine or _hasRightLine is set to false.
+    * Function used when a line is deleted : the line first hide itself to
+    * the point before being deleted. The pointer _leftLine will probably
+    * become null after the use of this function, but the boolean _hasLeftLine
+    * or is set to false.
     **/
     void hideLeftLine(){_hasLeftLine = false;}
+
+    /**
+    * Function used when a line is deleted : the line first hide itself to
+    * the point before being deleted. The pointer _rightLine will probably
+    * become null after the use of this function, but the boolean _hasRightLine
+    * or is set to false.
+    **/
     void hideRightLine(){_hasRightLine = false;}
 
     /**
@@ -99,7 +114,16 @@ public:
     **/
     int internalKey(){return _internalKey;}
 
+    /**
+    *@return true if the new given x-position is in the zone where the
+    * bounding points are allowed to move ; otherwise return false
+    **/
     bool isAllowedToMoveAtPosX(qreal posX);
+
+    /**
+    *@return true if the new given y-position is in the zone where the
+    * bounding points are allowed to move ; otherwise return false
+    **/
     bool isAllowedToMoveAtPosY(qreal posY);
 
     /**
@@ -178,10 +202,15 @@ public:
 
 
     /**
-    * Hides the line to the bounding point (set the boolean to false)
-    * and calls the function removeLine of the scene.
+    * Hides the left line to the bounding point (set the boolean to false)
+    * and calls the function removeLine of the scene with the left line.
     **/
     void removeLeftLine();
+    
+    /**
+    * Hides the right line to the bounding point (set the boolean to false)
+    * and calls the function removeLine of the scene with the right line.
+    **/
     void removeRightLine();
 
     /**
@@ -266,12 +295,28 @@ public:
     **/
     int type() const{return Type;}
 
-    bool willMoveToGoCloseToPosX(qreal posX);
-    bool willMoveToGoCloseToPosY(qreal posY);
+    /*bool willMoveToGoCloseToPosX(qreal posX);
+    bool willMoveToGoCloseToPosY(qreal posY);*/
 
 protected:
+    /**
+    * Receives the mouse move event and place the point under the mouse if it
+    * is allowed to move. It also moves all the others selected points, and
+    * the concerned control points (see the mousePressEvent).
+    * See mouseMoveEvent of the QGraphicsItem.
+    **/
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* event);
+
+    /**
+    * Receives the mouse press event, and if the user has clicked with the
+    * left button, it decides if the point is allowed to move or not. If it is,
+    * it gets back from the scene the list of the control points which will
+    * move with this point.
+    * See mousePressEvent of the QGraphicsItem
+    **/
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* event);
+
+
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent* event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent* event);

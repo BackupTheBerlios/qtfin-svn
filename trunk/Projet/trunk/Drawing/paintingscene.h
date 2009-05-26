@@ -353,7 +353,7 @@ public slots:
     * the value is positive, the rectangle will be larger, and if the value
     * is negative, the rectangle will be smaller
     **/
-    void ajustSceneRect(qreal dx, qreal dy);
+    void adjustSceneRect(qreal dx, qreal dy);
 
     /**
     * Calls the function alignTangents() on every selected points. It is

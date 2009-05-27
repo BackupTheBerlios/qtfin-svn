@@ -11,11 +11,11 @@ namespace Scripting {
 	public:
 		/* Constants */
 
-		const static float DEFAULT_MONOFIN_LENGTH = 25; // cm
-		const static float DEFAULT_LAYER_THICKNESS = 1; // cm
-		const static float DEFAULT_LAYER_E = 200000;	// MPa
-		const static float DEFAULT_LAYER_NU = 0.33;		// ratio
-		const static float DEFAULT_LAYER_RHO = 7850;	// Kg/m^3
+		const static float DEFAULT_MONOFIN_LENGTH;
+		const static float DEFAULT_LAYER_THICKNESS;
+		const static float DEFAULT_LAYER_E;
+		const static float DEFAULT_LAYER_NU;
+		const static float DEFAULT_LAYER_RHO;
 
 		/**
 		  * Write the bloc path of the script. It just indicate COMSOL where to find the

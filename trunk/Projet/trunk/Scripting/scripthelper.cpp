@@ -8,6 +8,12 @@
 
 using namespace Scripting;
 
+const /*static*/ float ScriptHelper::DEFAULT_MONOFIN_LENGTH = 25; // cm
+const /*static*/ float ScriptHelper::DEFAULT_LAYER_THICKNESS = 1; // cm
+const /*static*/ float ScriptHelper::DEFAULT_LAYER_E = 200000;	// MPa
+const /*static*/ float ScriptHelper::DEFAULT_LAYER_NU = 0.33;		// ratio
+const /*static*/  float ScriptHelper::DEFAULT_LAYER_RHO = 7850;	// Kg/m^3
+
 void ScriptHelper::writePath(QTextStream& script, Data::ProjectFile& data)
 {
 	script

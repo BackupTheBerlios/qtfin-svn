@@ -156,10 +156,21 @@ void MainWindow::newFile()
 
 void MainWindow::newProjectFromImage()
 {
-    QMdiSubWindow *msw = createMonofin();
+    qDebug("MainWindow::newProjectFromImage()");
+    Data::ProjectFile *projectFile = new Data::ProjectFile;
+    if (_graphicView.isNull())
+        _graphicView = new Graphic(0, projectFile, 800, 600);
+    else
+        _graphicView->setProjectFile(projectFile);
+    projectFile->startHistory(Data::MonofinSurface);
+    projectFile->clearSurface();
+    projectFile->stopHistory(Data::MonofinSurface);
+    _graphicView->show();
+
+    QMdiSubWindow *msw = createMonofin(projectFile);
     Monofin *monofin = static_cast<Monofin *>(msw->widget());
-    if(monofin->newFileFromImage())
-        monofin->show();
+    monofin->newFileFromImage();
+    monofin->show();
 }
 
 void MainWindow::open()
@@ -167,9 +178,9 @@ void MainWindow::open()
     qDebug("MainWindow::open()");
     QMdiSubWindow *msw = createMonofin();
     Monofin *monofin = static_cast<Monofin *>(msw->widget());
+    monofin->show();
     if(monofin->open()) {
         updateToolBars();
-        monofin->show();
     }
     else {
         msw->close();
@@ -178,8 +189,8 @@ void MainWindow::open()
 
 void MainWindow::openRecentFile()
 {
-    if(activeMonofin() && !activeMonofin()->okToContinue())
-        return;
+    /*if(activeMonofin() && !activeMonofin()->okToContinue())
+        return;*/
     QAction *action = qobject_cast<QAction *>(sender());
     if (action)
         loadFile(action->data().toString());
@@ -441,10 +452,10 @@ void MainWindow::createMenus()
     _menuBar->addAction(_menuHelp->menuAction());
 }
 
-QMdiSubWindow *MainWindow::createMonofin()
+QMdiSubWindow *MainWindow::createMonofin(Data::ProjectFile *projectFile)
 {
     qDebug("MainWindow::createMonofin()");
-    Monofin *monofin = new Monofin();
+    Monofin *monofin = new Monofin(projectFile);
     connect(monofin, SIGNAL(currentFileChanged()), this, SLOT(updateRecentFileActions()));
 
     QMdiSubWindow *msw = _mdiArea->addSubWindow(monofin);

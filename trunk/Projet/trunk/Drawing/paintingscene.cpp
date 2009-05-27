@@ -646,6 +646,7 @@ void PaintingScene::redo(){
     _structure->redo(Data::MonofinSurface);
 
     this->getMonofinFromStructure();
+    emit this->somethingChanged(this->ActionNoAction);
 }
 
 void PaintingScene::removeBackgroundPicture(){
@@ -751,7 +752,7 @@ void PaintingScene::undo(){
     _structure->undo(Data::MonofinSurface);
 
     this->getMonofinFromStructure();
-
+    emit this->somethingChanged(this->ActionNoAction);
 }
 
 void PaintingScene::zoomOnBackgroundPicture(qreal factor){

@@ -89,7 +89,7 @@ void DrawPreview::paintEvent(QPaintEvent *event){
 }
 
 void DrawPreview::closeEvent(QCloseEvent* event){
-    this->doNotKeep();
+    //this->doNotKeep();
 }
 
 void DrawPreview::keep(){

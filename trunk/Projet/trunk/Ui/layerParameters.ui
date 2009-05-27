@@ -29,6 +29,9 @@
      <property name="suffix">
       <string> kg.m-3</string>
      </property>
+     <property name="maximum">
+      <double>9999.989999999999782</double>
+     </property>
     </widget>
    </item>
    <item row="1" column="0">

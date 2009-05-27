@@ -41,6 +41,7 @@ Monofin::Monofin(Data::ProjectFile *projectFile, QWidget *parent)
 
     _viewer = new Geometry3DViewer(*_projectFile);
     _generator = new GenerateComsolFile(*_projectFile);
+    createToolBar();
 }
 /*!
     Destroys the monofin.
@@ -92,20 +93,23 @@ bool Monofin::newFileFromImage()
 {
     qDebug("Monofin::newFileFromImage()");
     newFile();
-    if (_graphicView.isNull())
+    /*if (_graphicView.isNull())
         _graphicView = new Graphic(0, _projectFile, _scene->width(), _scene->height());
     _projectFile->startHistory(Data::MonofinSurface);
     _projectFile->clearSurface();
     _projectFile->stopHistory(Data::MonofinSurface);
     int res = _graphicView->exec();
     if (res) {
-        qDebug("Graphic.exec) return true");
+        qDebug("Graphic.exec() return true");
         _scene->updateMonofinDrawing();
         return true;
     } else {
+        qDebug("Graphic.exec() return false");
         _projectFile->undo(Data::MonofinSurface);
         return false;
-    }
+    }*/
+    _scene->updateMonofinDrawing();
+    return true;
 }
 
 /*!
@@ -674,7 +678,8 @@ void Monofin::createToolBar()
 
     // TOOLBAR
     _toolBarArea = Qt::LeftToolBarArea;
-    _toolBar = new QToolBar();
+    _toolBar = new QToolBar;
+    _toolBar->setIconSize(QSize(48, 48));
     _toolBar->setObjectName(QString::fromUtf8("mainToolBar"));
     _toolBar->setFloatable(false);
     _toolBar->setAllowedAreas(Qt::LeftToolBarArea);
@@ -711,16 +716,17 @@ void Monofin::createToolBar()
 void Monofin::initialize()
 {
     qDebug("Monofin::initialize()");
-    if (!_layerView.isNull())
+    if (!_layerView.isNull()) {
+        _layout->removeWidget(_layerView.data());
         _layerView->close();
+    }
     _layerView = new LayerView(_projectFile);
     if (!_scene.isNull())
         _scene->deleteLater();
-    _scene = new PaintingScene(1024, 768, _projectFile);
+    _scene = new PaintingScene(800, 600, _projectFile);
 
     _layout->addWidget(new PaintingView(_scene.data(), this));
     _layout->addWidget(_layerView.data());
-    createToolBar();
     retranslateUi();
     setLayout(_layout);
     setConnections();
@@ -745,7 +751,9 @@ void Monofin::retranslateUi()
     // TOOLBAR
     _toolBar->setWindowTitle(tr("Draw toolbar"));
     _actionUndo->setText(tr("Undo"));
+    _actionUndo->setShortcut(tr("Ctrl+Z"));
     _actionRedo->setText(tr("Redo"));
+    _actionRedo->setShortcut(tr("Ctrl+Shift+Z"));
     _actionAddControl->setText(tr("Add control point"));
     _actionAddPoint->setText(tr("Add point"));
     _actionRemovePoints->setText(tr("Remove selected points"));
@@ -826,7 +834,7 @@ void Monofin::setConnections()
 */
 void Monofin::setCurrentFile(const QString &fileName)
 {
-    qDebug("entering Monofin::setCurrentFile(%s)...", fileName.toStdString().c_str());
+    qDebug() << QString("entering Monofin::setCurrentFile(%1)...").arg(fileName);
     _curFile = fileName;
     setWindowModified(false);
 
@@ -835,6 +843,7 @@ void Monofin::setCurrentFile(const QString &fileName)
 
     if (!_curFile.isEmpty()) {
         shownName = strippedName(_curFile);
+        qDebug() << QString("setting current file name %1").arg(shownName);
         _isUntitled = false;
         emit currentFileChanged();
     }

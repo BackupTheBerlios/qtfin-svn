@@ -13,6 +13,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 
     QTimer *timer = new QTimer;
+    timer->setSingleShot(true);
     QSplashScreen *splash = new QSplashScreen;
     splash->setAttribute(Qt::WA_DeleteOnClose);
     MainWindow* mainWin = new MainWindow;
@@ -23,7 +24,7 @@ int main(int argc, char *argv[])
     splash->setPixmap(QPixmap(":/images/splashScreen.png"));
     splash->show();
 
-    timer->start(2000);
+    timer->start(1600);
 
     Qt::Alignment topRight = Qt::AlignRight | Qt::AlignTop;
     splash->showMessage(QObject::tr("Setting up the main window..."),

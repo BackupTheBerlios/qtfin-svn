@@ -7,7 +7,6 @@
 
 #include "Drawing/layerview.h"
 #include "Drawing/paintingscene.h"
-#include "EdgeDetection/graphic.h"
 
 class QAction;
 class QActionGroup;
@@ -117,7 +116,7 @@ private:
     bool _isEmpty;
     bool _isUntitled;
     QVBoxLayout *_layout;
-    QPointer<Graphic> _graphicView;
+    //QPointer<Graphic> _graphicView;
     QPointer<LayerView> _layerView;
     ParametersDialog *_paramDiag;
     Data::ProjectFile *_projectFile;

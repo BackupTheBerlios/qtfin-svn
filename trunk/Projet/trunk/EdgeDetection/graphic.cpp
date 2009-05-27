@@ -8,9 +8,9 @@
 using namespace Data;
 
 Graphic::Graphic(QWidget *parent, ProjectFile* monofin, qreal width, qreal height) :
-    QDialog(parent), _monofin(monofin), _preview(NULL)
+    QWidget(parent), _monofin(monofin), _preview(NULL)
 {
-    //this->setWindowModality(Qt::WindowModal);
+    this->setWindowModality(Qt::ApplicationModal);
     _graphic.setupUi(this);
     this->resize(1024,800);
     if(width == 0 || height == 0){
@@ -179,7 +179,7 @@ void Graphic::kept(){
      * voir si on ferme la fenetre ou si on la cache
      */
     _monofin->saveProject("./resultats/MaMonopalme", "test");
-    this->accept();
+    this->close();
 }
 
 void Graphic::doNotKept(){

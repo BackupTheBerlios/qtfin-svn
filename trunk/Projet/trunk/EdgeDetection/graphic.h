@@ -3,7 +3,6 @@
 
 #include <QApplication>
 #include <QtGui/QWidget>
-#include <QDialog>
 #include "ui_graphic.h"
 
 #include "edgesextractionscene.h"
@@ -17,7 +16,7 @@
 
 
 
-class Graphic : public QDialog {
+class Graphic : public QWidget {
     Q_OBJECT
 
 public:
@@ -37,6 +36,12 @@ public:
      * @param height : the height of the scene
      */
     void setSize(qreal width, qreal height);
+
+    /**
+     * setter
+     * @param monofin : the project file
+     */
+    void setProjectFile(Data::ProjectFile *monofin) { _monofin = monofin; }
 
 
 public slots:

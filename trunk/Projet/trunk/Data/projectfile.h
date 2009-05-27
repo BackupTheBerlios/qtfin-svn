@@ -107,7 +107,7 @@ namespace Data{
 
         void loadForm(const QString &path);
 
-        QImage getImage(const QString &path);
+        static QImage getImage(const QString &path);
     };
 
 } // namespace Data

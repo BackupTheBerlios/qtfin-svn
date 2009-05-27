@@ -49,8 +49,10 @@ MainWindow::MainWindow(QWidget *parent)
 
 #ifdef Q_OS_MAC
     _qmPath = qApp->applicationDirPath() + ":/translations";
+    _libraryPath = qApp->applicationDirPath() + ":/library";
 #else
     _qmPath = qApp->applicationDirPath() + "/translations";
+    _libraryPath = qApp->applicationDirPath() + "/library";
 #endif // Q_OS_MAC
 
     _appTranslator.load("monofin_" + QLocale::system().name(),
@@ -61,6 +63,7 @@ MainWindow::MainWindow(QWidget *parent)
     createActions();
     createMenus();
     createDocks();
+    updateLibrary();
     createStatusBar();
     createToolBars();
     setConnections();
@@ -107,8 +110,26 @@ void MainWindow::about()
 {
     QMessageBox::about(this, tr("About Monofin"),
                        tr("<h2>Monofin %1.%2</h2>"
-                          "<p>Copyright &copy; 2009 Barbec_Guys</p>")
+                          "<p>Copyright &copy; 2009</p>"
+                          "<p> Chaudet Yoann </p>"
+                          "<p> Garcia Paul</p>"
+                          "<p> Gautier Quentin </p>"
+                          "<p> Le Squer Nicolas</p>"
+                          "<p> Musset Nicolas</p>"
+                          "<p> Villoing Xavier</p>")
                        .arg(_majorVersion).arg(_minorVersion));
+}
+
+void MainWindow::addFormToLibrary()
+{
+    if(this->activeMonofin() != NULL){
+        if(!this->activeMonofin()->isEmpty()){
+            QString name = QInputDialog::getText(this, tr("Choose form name"), tr("Enter a name for the form:"));
+            if(!name.isEmpty()){
+                this->activeMonofin()->saveForm(name.insert(0, _libraryPath.append("/")).append(".finf"));
+            }
+        }
+    }
 }
 
 void MainWindow::launch()
@@ -156,21 +177,10 @@ void MainWindow::newFile()
 
 void MainWindow::newProjectFromImage()
 {
-    qDebug("MainWindow::newProjectFromImage()");
-    Data::ProjectFile *projectFile = new Data::ProjectFile;
-    if (_graphicView.isNull())
-        _graphicView = new Graphic(0, projectFile, 800, 600);
-    else
-        _graphicView->setProjectFile(projectFile);
-    projectFile->startHistory(Data::MonofinSurface);
-    projectFile->clearSurface();
-    projectFile->stopHistory(Data::MonofinSurface);
-    _graphicView->show();
-
-    QMdiSubWindow *msw = createMonofin(projectFile);
+    QMdiSubWindow *msw = createMonofin();
     Monofin *monofin = static_cast<Monofin *>(msw->widget());
-    monofin->newFileFromImage();
-    monofin->show();
+    if(monofin->newFileFromImage())
+        monofin->show();
 }
 
 void MainWindow::open()
@@ -178,9 +188,9 @@ void MainWindow::open()
     qDebug("MainWindow::open()");
     QMdiSubWindow *msw = createMonofin();
     Monofin *monofin = static_cast<Monofin *>(msw->widget());
-    monofin->show();
     if(monofin->open()) {
         updateToolBars();
+        monofin->show();
     }
     else {
         msw->close();
@@ -189,8 +199,8 @@ void MainWindow::open()
 
 void MainWindow::openRecentFile()
 {
-    /*if(activeMonofin() && !activeMonofin()->okToContinue())
-        return;*/
+    if(activeMonofin() && !activeMonofin()->okToContinue())
+        return;
     QAction *action = qobject_cast<QAction *>(sender());
     if (action)
         loadFile(action->data().toString());
@@ -212,6 +222,13 @@ bool MainWindow::saveAs()
         return false;
 }
 
+void MainWindow::showGrid(bool a)
+{
+    if(activeMonofin() != 0){
+        this->activeMonofin()->showGrid(a);
+    }
+}
+
 void MainWindow::switchLanguage(QAction *action)
 {
     QString locale = action->data().toString();
@@ -219,6 +236,7 @@ void MainWindow::switchLanguage(QAction *action)
     _currentLanguage = _appTranslator.translate("MainWindow", "English");
     retranslateUi();
 }
+
 
 void MainWindow::updateMenus()
 {
@@ -228,11 +246,21 @@ void MainWindow::updateMenus()
 
     if (hasMonofin) {
         _menuDrawExt->clear();
-        _menuDrawExt->addActions(activeMonofin()->toolBar()->actions());
+        _menuView->clear();
+        QList<QToolBar*> l = activeMonofin()->toolBar();
+        if(l.size() >= 1){
+            _menuDrawExt->addActions(l.first()->actions());
+            if(l.size() >= 2){
+                _menuView->addActions(l.at(1)->actions());
+            }
+        }
         _menuDrawExt->setEnabled(true);
+        _menuView->setEnabled(true);
     }
-    else
+    else{
         _menuDrawExt->setEnabled(false);
+        _menuView->setEnabled(false);
+    }
 }
 
 void MainWindow::updateRecentFileActions()
@@ -270,10 +298,28 @@ void MainWindow::updateToolBars()
     if(_mainToolBar) {
         removeToolBar(_mainToolBar);
     }
+
+    if(_viewToolBar) {
+        removeToolBar(_viewToolBar);
+    }
+
     if (activeMonofin()) {
-        _mainToolBar = activeMonofin()->toolBar();
-        addToolBar(activeMonofin()->toolBarArea(), _mainToolBar);
-        _mainToolBar->setVisible(true);
+        QList<QToolBar*> l = activeMonofin()->toolBar();
+        if(l.size() >= 1){
+            _mainToolBar = l.first();
+            addToolBar(activeMonofin()->toolBarDrawArea(), _mainToolBar);
+            _mainToolBar->setVisible(true);
+            if(l.size() >= 2){
+                _viewToolBar = l.at(1);
+                addToolBar(activeMonofin()->toolBarViewArea(), _viewToolBar);
+                _viewToolBar->setVisible(true);
+            }else{
+                qDebug("No view toolbar to show");
+            }
+        }else{
+            qDebug("No toolBar to show");
+        }
+
     }
 }
 
@@ -339,6 +385,10 @@ void MainWindow::createActions()
     _actionAbout->setObjectName(QString::fromUtf8("actionAbout"));
     _actionAboutQt = new QAction(this);
     _actionAboutQt->setObjectName(QString::fromUtf8("actionAboutQt"));
+
+    //FORM LIBRARY
+    _buttonAddToFormLibrary = new QPushButton(this);
+    _buttonAddToFormLibrary->setObjectName(QString::fromUtf8("actionAddToFormLibrary"));
 }
 
 void MainWindow::createDocks()
@@ -349,8 +399,17 @@ void MainWindow::createDocks()
     _dockFormLibrary->setFeatures(QDockWidget::AllDockWidgetFeatures);
     _dockFormLibrary->setAllowedAreas(Qt::AllDockWidgetAreas);
 
+    _listWidgetForms = new QListWidget();
+
+    _layoutLibrary = new QGridLayout();
+    _layoutLibrary->setObjectName(QString::fromUtf8("layoutLibrary"));
+    _layoutLibrary->addWidget(_buttonAddToFormLibrary, 1,0);
+    _layoutLibrary->addWidget(_listWidgetForms, 0, 0);
+
     _dockWidgetContents = new QWidget();
     _dockWidgetContents->setObjectName(QString::fromUtf8("dockWidgetContents"));
+    _dockWidgetContents->setLayout(_layoutLibrary);
+
     _dockFormLibrary->setWidget(_dockWidgetContents);
     addDockWidget(Qt::RightDockWidgetArea, _dockFormLibrary);
 }
@@ -433,6 +492,10 @@ void MainWindow::createMenus()
     _menuWin = new QtWindowListMenu(_menuBar);
     _menuWin->attachToMdiArea(_mdiArea);
 
+    //MENU VIEW
+    _menuView = new QMenu(_menuBar);
+    _menuView->setObjectName(QString::fromUtf8("menuView"));
+
     // MENU LANGUAGE
     createLanguageMenu();
 
@@ -448,14 +511,15 @@ void MainWindow::createMenus()
     _menuBar->addAction(_menuDraw->menuAction());
     _menuBar->addAction(_menuSimulation->menuAction());
     _menuBar->addAction(_menuWin->menuAction());
+    _menuBar->addAction(_menuView->menuAction());
     _menuBar->addAction(_menuLanguage->menuAction());
     _menuBar->addAction(_menuHelp->menuAction());
 }
 
-QMdiSubWindow *MainWindow::createMonofin(Data::ProjectFile *projectFile)
+QMdiSubWindow *MainWindow::createMonofin()
 {
     qDebug("MainWindow::createMonofin()");
-    Monofin *monofin = new Monofin(projectFile);
+    Monofin *monofin = new Monofin();
     connect(monofin, SIGNAL(currentFileChanged()), this, SLOT(updateRecentFileActions()));
 
     QMdiSubWindow *msw = _mdiArea->addSubWindow(monofin);
@@ -473,6 +537,7 @@ void MainWindow::createStatusBar()
 void MainWindow::createToolBars()
 {
     _mainToolBar = NULL;
+    _viewToolBar = NULL;
 }
 
 
@@ -514,12 +579,14 @@ void MainWindow::retranslateUi()
     _actionProperties->setText(QApplication::translate("MainWindow", "&Properties...", 0, QApplication::UnicodeUTF8));
     _actionAbout->setText(QApplication::translate("MainWindow", "&About", 0, QApplication::UnicodeUTF8));
     _actionAboutQt->setText(QApplication::translate("MainWindow", "About &Qt", 0, QApplication::UnicodeUTF8));
+    _buttonAddToFormLibrary->setText(QApplication::translate("MainWindow", "&Add form", 0, QApplication::UnicodeUTF8));
 
     // menus
     _menuFile->setTitle(QApplication::translate("MainWindow", "&File", 0, QApplication::UnicodeUTF8));
     _menuDraw->setTitle(QApplication::translate("MainWindow", "&Draw", 0, QApplication::UnicodeUTF8));
     _menuDrawExt->setTitle(QApplication::translate("MainWindow", "&Actions", 0, QApplication::UnicodeUTF8));
     _menuSimulation->setTitle(QApplication::translate("MainWindow", "&Simulation", 0, QApplication::UnicodeUTF8));
+    _menuView->setTitle(QApplication::translate("MainWindow", "&View", 0, QApplication::UnicodeUTF8));
     _menuLanguage->setTitle(QApplication::translate("MainWindow", "&Language", 0, QApplication::UnicodeUTF8));
     _menuHelp->setTitle(QApplication::translate("MainWindow", "&Help", 0, QApplication::UnicodeUTF8));
 
@@ -540,6 +607,9 @@ void MainWindow::setConnections()
     connect(_actionLaunch, SIGNAL(triggered()), this, SLOT(launch()));
     connect(_actionAbout, SIGNAL(triggered()), this, SLOT(about()));
     connect(_actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+    connect(_actionShowGrid, SIGNAL(toggled(bool)), this, SLOT(showGrid(bool)));
+    connect(_buttonAddToFormLibrary, SIGNAL(clicked()), this, SLOT(addFormToLibrary()));
+
 
     QMetaObject::connectSlotsByName(this);
 }
@@ -547,6 +617,36 @@ void MainWindow::setConnections()
 QString MainWindow::strippedName(const QString &fullFileName)
 {
     return QFileInfo(fullFileName).fileName();
+}
+
+void MainWindow::updateLibrary()
+{
+    _listWidgetForms->clear();
+    /*foreach(QListWidgetItem* i, _listItems){
+        _listItems.removeOne(i);
+        delete i;
+    }
+    _listItems.clear();*/
+
+    QDir dir(_libraryPath);
+    QStringList fileNames =
+            dir.entryList(QStringList("*.finf"));
+
+    for (int i=0; i<fileNames.size(); ++i) {
+
+        QString locale = fileNames[i].insert(0,_libraryPath.append("/"));
+        QListWidgetItem* item = new QListWidgetItem(
+                QIcon(QPixmap::fromImage(Data::ProjectFile::getImage(locale))),
+                QString("title"));
+
+        if(Data::ProjectFile::getImage(locale).isNull())
+            qDebug("image null");
+        qDebug() << locale;
+
+        _listWidgetForms->addItem(item);
+
+    }
+
 }
 
 void MainWindow::writeSettings()

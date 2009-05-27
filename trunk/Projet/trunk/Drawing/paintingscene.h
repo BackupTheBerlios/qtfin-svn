@@ -53,6 +53,9 @@ public:
                        ActionDeleteBoundingPoint,
                        ActionDeleteControlPoint,
                        ActionRemoveSomePoints,
+                       ActionUndo,
+                       ActionRedo,
+                       ActionLoadStructure,
                        ActionNoAction
                    };
 
@@ -441,6 +444,12 @@ public slots:
     }
 
     /**
+    * Draws or not the grid
+    *@param a if true, the grid is drawn : if false, it is not
+    **/
+    void showGrid(bool a){_showGrid = a; this->update(this->sceneRect());}
+
+    /**
     * Changes the way the items are painted.
     *@param a if true, the items are more simply drawn ; if false, the items
     * are painted as usually
@@ -465,7 +474,7 @@ public slots:
     * Removes all the points from the scene (NOT from the structure) if there
     * is any, and get new one from the internal structure.
     **/
-    void updateMonofinDrawing(){this->getMonofinFromStructure();}
+    void updateMonofinDrawing();
 
     /**
     * Multiply the scale of the background picture by the given factor
@@ -567,6 +576,7 @@ protected:
     RotateCircle* _rotCircle;
     qreal _scaleFactor;
     SelectionRect* _selectionRect;
+    bool _showGrid;
     SceneState _state;
     Data::ProjectFile* _structure;
 

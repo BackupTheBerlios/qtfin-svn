@@ -1,12 +1,15 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QtCore/QPointer>
 #include <QtCore/QTranslator>
 #include <QtGui/QMainWindow>
+#include <QtGui/QGridLayout>
+#include <QtGui/QPushButton>
+#include <QtGui/QInputDialog>
+#include <QtGui/QListWidget>
+#include <QtGui/QListWidgetItem>
 
 #include "Data/projectfile.h"
-#include "EdgeDetection/graphic.h"
 
 class Monofin;
 class PaintingScene;
@@ -37,6 +40,7 @@ protected:
 
 private slots:
     void about();
+    void addFormToLibrary();
     void launch();
     void preview3D();
     void newEmptyProject();
@@ -46,6 +50,7 @@ private slots:
     void openRecentFile();
     bool save();
     bool saveAs();
+    void showGrid(bool a);
     void switchLanguage(QAction *action);
 
     void updateMenus();
@@ -59,7 +64,7 @@ private:
     void createDocks();
     void createLanguageMenu();
     void createMenus();
-    QMdiSubWindow *createMonofin(Data::ProjectFile *projectFile = new Data::ProjectFile());
+    QMdiSubWindow *createMonofin();
     void createStatusBar();
     void createToolBars();
     bool loadFile(const QString &fileName);
@@ -67,6 +72,7 @@ private:
     void retranslateUi();
     void setConnections();
     QString strippedName(const QString &fullFileName);
+    void updateLibrary();
     void writeSettings();
 
 private:
@@ -91,14 +97,21 @@ private:
     QMenu *_menuDrawExt;
     QMenu *_menuSimulation;
     QtWindowListMenu *_menuWin;
+    QMenu *_menuView;
     QMenu *_menuLanguage;
     QMenu *_menuHelp;
 
     QToolBar *_mainToolBar;
+    QToolBar *_viewToolBar;
     QStatusBar *_statusBar;
 
     QDockWidget *_dockFormLibrary;
     QWidget *_dockWidgetContents;
+    QPushButton *_buttonAddToFormLibrary;
+    QGridLayout *_layoutLibrary;
+    QListWidget *_listWidgetForms;
+    //QList<QListWidgetItem*> _listItems;
+    QString _libraryPath;
 
     QMdiArea *_mdiArea;
 
@@ -113,7 +126,6 @@ private:
     QAction *_separatorAction;
 
     StartupDialog *_startupDialog;
-    QPointer<Graphic> _graphicView;
 };
 
 #endif // MAINWINDOW_H

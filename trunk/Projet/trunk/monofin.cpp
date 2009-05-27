@@ -285,9 +285,19 @@ void Monofin::configurate()
     }
 }
 
+void Monofin::decreaseGridUnitSize()
+{
+    _scene->setGridUnit(_scene->gridUnit() - 1);
+}
+
 void Monofin::decreaseWindowSize()
 {
     _scene->adjustSceneRect(-20,-20);
+}
+
+void Monofin::increaseGridUnitSize()
+{
+    _scene->setGridUnit(_scene->gridUnit() + 1);
 }
 
 void Monofin::increaseWindowSize()
@@ -328,9 +338,18 @@ void Monofin::removeSelectedPoints()
     _scene->removeSelectedPoints();
 }
 
+void Monofin::saveForm(QString path){
+    QImage image = _scene->getPictureOfTheScene(64,64).toImage();
+    _projectFile->saveForm(path, QString("Untitled"), image);
+}
+
 void Monofin::simplifyView(bool a)
 {
     _scene->simplifyView(a);
+}
+
+void Monofin::showGrid(bool a){
+    _scene->showGrid(a);
 }
 
 void Monofin::switchToBlack()
@@ -559,9 +578,11 @@ void Monofin::createToolBar()
 
     _actionUndo = new QAction(this);
     _actionUndo->setObjectName(QString::fromUtf8("actionUndo"));
+    _actionUndo->setIcon(QIcon(":/icons/drawing/undo.png"));
 
     _actionRedo = new QAction(this);
     _actionRedo->setObjectName(QString::fromUtf8("actionRedo"));
+    _actionRedo->setIcon(QIcon(":/icons/drawing/redo.png"));
 
     _actionAddControl = new QAction(this);
     _actionAddControl->setObjectName(QString::fromUtf8("actionAddControl"));
@@ -576,6 +597,7 @@ void Monofin::createToolBar()
     _actionRemovePoints = new QAction(this);
     _actionRemovePoints->setObjectName(QString::fromUtf8("actionRemovePoint"));
     _actionRemovePoints->setIcon(QIcon(":/icons/drawing/erasePoint.png"));
+    _actionRemovePoints->setShortcut(QKeySequence(QKeySequence::Delete));
 
     _actionCreatePolygon = new QAction(this);
     _actionCreatePolygon->setObjectName(QString::fromUtf8("actionCreatePolygon"));
@@ -656,61 +678,94 @@ void Monofin::createToolBar()
     _actionDecreaseWindowSize->setObjectName(QString::fromUtf8("actionDecreaseWindowSize"));
     _actionDecreaseWindowSize->setIcon(QIcon(":/icons/drawing/decreaseSizeWindow.png"));
 
+    _increaseGridUnitSize = new QAction(this);
+    _increaseGridUnitSize->setObjectName(QString::fromUtf8("increaseGridUnitSize"));
+    _increaseGridUnitSize->setShortcut(QKeySequence(Qt::Key_Plus));
+    _increaseGridUnitSize->setIcon(QIcon(":/icons/drawing/increaseGridUnit.png"));
+
+    _decreaseGridUnitSize = new QAction(this);
+    _decreaseGridUnitSize->setObjectName(QString::fromUtf8("decreaseGridUnitSize"));
+    _decreaseGridUnitSize->setShortcut(QKeySequence(Qt::Key_Minus));
+    _decreaseGridUnitSize->setIcon(QIcon(":/icons/drawing/decreaseGridUnit.png"));
+
     _actionAddBackgroundPicture = new QAction(this);
     _actionAddBackgroundPicture->setObjectName(QString::fromUtf8("actionAddBackgroundPicture"));
+    _actionAddBackgroundPicture->setIcon(QIcon(":/icons/drawing/background.png"));
 
     _actionTransformBackgroundPicture = new QAction(this);
     _actionTransformBackgroundPicture->setObjectName(QString::fromUtf8("actionAddBackgroundPicture"));
     _actionTransformBackgroundPicture->setCheckable(true);
-    //_actionTransformBackgroundPicture->setDisabled(true);
+    _actionTransformBackgroundPicture->setIcon(QIcon(":/icons/drawing/transformBackground.png"));
 
 
     _actionRemoveBackgroundPicture = new QAction(this);
     _actionRemoveBackgroundPicture->setObjectName(QString::fromUtf8("actionRemoveBackgroundPicture"));
+    _actionRemoveBackgroundPicture->setIcon(QIcon(":/icons/drawing/removeBackground.png"));
 
     _enlargeBackgroundPictureSize = new QAction(this);
     _enlargeBackgroundPictureSize->setObjectName(QString::fromUtf8("enlargeBackgroundPictureSize"));
     _enlargeBackgroundPictureSize->setDisabled(true);
+    _enlargeBackgroundPictureSize->setIcon(QIcon(":/icons/drawing/enlargeBackgroundSize.png"));
 
     _reduceBackgroundPictureSize = new QAction(this);
     _reduceBackgroundPictureSize->setObjectName(QString::fromUtf8("reduceBackgroundPictureSize"));
     _reduceBackgroundPictureSize->setDisabled(true);
+    _reduceBackgroundPictureSize->setIcon(QIcon(":/icons/drawing/reduceBackgroundSize.png"));
 
     // TOOLBAR
-    _toolBarArea = Qt::LeftToolBarArea;
-    _toolBar = new QToolBar;
-    _toolBar->setIconSize(QSize(48, 48));
-    _toolBar->setObjectName(QString::fromUtf8("mainToolBar"));
-    _toolBar->setFloatable(false);
-    _toolBar->setAllowedAreas(Qt::LeftToolBarArea);
-    _toolBar->addAction(_actionUndo);
-    _toolBar->addAction(_actionRedo);
-    _toolBar->addSeparator();
-    _toolBar->addAction(_actionCreatePolygon);
-    _toolBar->addAction(_actionCleanPolygon);
-    _toolBar->addSeparator();
-    _toolBar->addAction(_actionAddControl);
-    _toolBar->addAction(_actionRemoveControl);
-    _toolBar->addAction(_actionAddPoint);
-    _toolBar->addAction(_actionRemovePoints);
-    _toolBar->addSeparator();
-    _toolBar->addAction(_actionAlignTangents);
-    _toolBar->addSeparator();
-    _toolBar->addAction(_actionMagnet);
-    _toolBar->addSeparator();
-    _toolBar->addAction(_actionSimplifyView);
-    _toolBar->addAction(_actionSwitchColors);
-    _toolBar->addAction(_actionIncreaseWindowSize);
-    _toolBar->addAction(_actionDecreaseWindowSize);
-    _toolBar->addSeparator();
-    _toolBar->addAction(_actionInsertLayer);
-    _toolBar->addAction(_actionRemoveLayer);
-    _toolBar->addSeparator();
-    _toolBar->addAction(_actionAddBackgroundPicture);
-    _toolBar->addAction(_actionRemoveBackgroundPicture);
-    _toolBar->addAction(_actionTransformBackgroundPicture);
-    _toolBar->addAction(_enlargeBackgroundPictureSize);
-    _toolBar->addAction(_reduceBackgroundPictureSize);
+    _toolBarDrawArea = Qt::TopToolBarArea;
+    _toolBarViewArea = Qt::LeftToolBarArea;
+
+    QToolBar *toolBarDraw = new QToolBar();
+
+    toolBarDraw->setIconSize(QSize(48, 48));
+    toolBarDraw->setObjectName(QString::fromUtf8("mainToolBar"));
+    toolBarDraw->setFloatable(false);
+    toolBarDraw->setAllowedAreas(_toolBarDrawArea);
+
+
+    QToolBar *toolBarView = new QToolBar();
+    toolBarView->setIconSize(QSize(48, 48));
+    toolBarView->setObjectName(QString::fromUtf8("viewToolBar"));
+    toolBarView->setFloatable(false);
+    toolBarView->setAllowedAreas(_toolBarViewArea);
+
+    toolBarDraw->addAction(_actionUndo);
+    toolBarDraw->addAction(_actionRedo);
+    toolBarDraw->addSeparator();
+    toolBarDraw->addAction(_actionCreatePolygon);
+    toolBarDraw->addAction(_actionCleanPolygon);
+    toolBarDraw->addSeparator();
+    toolBarDraw->addAction(_actionAddControl);
+    toolBarDraw->addAction(_actionRemoveControl);
+    toolBarDraw->addAction(_actionAddPoint);
+    toolBarDraw->addAction(_actionRemovePoints);
+    toolBarDraw->addSeparator();
+    toolBarDraw->addAction(_actionAlignTangents);
+    toolBarDraw->addSeparator();
+    toolBarDraw->addAction(_actionMagnet);
+    toolBarDraw->addSeparator();
+    toolBarDraw->addAction(_actionInsertLayer);
+    toolBarDraw->addAction(_actionRemoveLayer);
+    toolBarDraw->addSeparator();
+    toolBarDraw->addAction(_actionAddBackgroundPicture);
+    toolBarDraw->addAction(_actionRemoveBackgroundPicture);
+    toolBarDraw->addAction(_actionTransformBackgroundPicture);
+    toolBarDraw->addAction(_enlargeBackgroundPictureSize);
+    toolBarDraw->addAction(_reduceBackgroundPictureSize);
+
+
+
+    toolBarView->addAction(_actionSimplifyView);
+    toolBarView->addAction(_actionSwitchColors);
+    toolBarView->addAction(_actionIncreaseWindowSize);
+    toolBarView->addAction(_actionDecreaseWindowSize);
+    toolBarView->addAction(_increaseGridUnitSize);
+    toolBarView->addAction(_decreaseGridUnitSize);
+
+
+    _toolBars.append(toolBarDraw); //first
+    _toolBars.append(toolBarView); //second
 }
 
 void Monofin::initialize()
@@ -749,7 +804,12 @@ bool Monofin::readFile(const QString &fileName)
 void Monofin::retranslateUi()
 {
     // TOOLBAR
-    _toolBar->setWindowTitle(tr("Draw toolbar"));
+    if(_toolBars.size() >= 1){
+        _toolBars.first()->setWindowTitle(tr("Draw toolbar"));
+        if(_toolBars.size() >= 2){
+            _toolBars.at(1)->setWindowTitle(tr("View toolbar"));
+        }
+    }
     _actionUndo->setText(tr("Undo"));
     _actionUndo->setShortcut(tr("Ctrl+Z"));
     _actionRedo->setText(tr("Redo"));
@@ -776,6 +836,8 @@ void Monofin::retranslateUi()
     _actionRemoveBackgroundPicture->setText(tr("Remove the background picture"));
     _enlargeBackgroundPictureSize->setText(tr("Enlarge picture size"));
     _reduceBackgroundPictureSize->setText(tr("Reduce picture size"));
+    _increaseGridUnitSize->setText(tr("Increase size of the grid unit"));
+    _decreaseGridUnitSize->setText(tr("Decrease size of the grid unit"));
 }
 
 /*!
@@ -817,6 +879,8 @@ void Monofin::setConnections()
     connect(_actionSwitchToWhite, SIGNAL(triggered()), this, SLOT(switchToWhite()));
     connect(_enlargeBackgroundPictureSize, SIGNAL(triggered()), this, SLOT(zoomInOnBackgroundPicture()));
     connect(_reduceBackgroundPictureSize, SIGNAL(triggered()), this, SLOT(zoomOutOnBackgroundPicture()));
+    connect(_increaseGridUnitSize, SIGNAL(triggered()), this, SLOT(increaseGridUnitSize()));
+    connect(_decreaseGridUnitSize, SIGNAL(triggered()), this, SLOT(decreaseGridUnitSize()));
 
 
     // SCENE

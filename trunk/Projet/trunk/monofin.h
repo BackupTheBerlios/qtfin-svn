@@ -37,8 +37,9 @@ public:
     bool save();
     bool saveAs();
     QSize sizeHint() const;
-    QToolBar *toolBar() const { return _toolBar; }
-    Qt::ToolBarArea toolBarArea() const { return _toolBarArea; }
+    QList<QToolBar*> toolBar() const { return _toolBars; }
+    Qt::ToolBarArea toolBarDrawArea() const { return _toolBarDrawArea; }
+    Qt::ToolBarArea toolBarViewArea() const { return _toolBarViewArea; }
 
 public slots:
     void activateAddControl(bool a);
@@ -51,7 +52,9 @@ public slots:
     void alignTangents();
     void cleanPoints();
     void configurate();
+    void decreaseGridUnitSize();
     void decreaseWindowSize();
+    void increaseGridUnitSize();
     void increaseWindowSize();
     void keepBezierCurve(bool a);
     void launch();
@@ -59,7 +62,9 @@ public slots:
     void redo();
     void removeBackgroundPicture();
     void removeSelectedPoints();
+    void saveForm(QString path);
     void simplifyView(bool a);
+    void showGrid(bool a);
     void switchToBlack();
     void switchToRed();
     void switchToWhite();
@@ -99,7 +104,8 @@ private slots:
     void on_actionInsertLayer_triggered();
     void on_actionRemoveLayer_triggered();
 
-    void setToolBarArea(Qt::ToolBarArea tba) { _toolBarArea = tba; }
+    void setToolBarDrawArea(Qt::ToolBarArea tba) { _toolBarDrawArea = tba; }
+    void setToolBarViewArea(Qt::ToolBarArea tba) { _toolBarViewArea = tba; }
 
 private:
     void createToolBar();
@@ -143,6 +149,8 @@ private:
     QAction *_actionSimplifyView;
     QAction *_actionIncreaseWindowSize;
     QAction *_actionDecreaseWindowSize;
+    QAction *_increaseGridUnitSize;
+    QAction *_decreaseGridUnitSize;
     QAction *_actionInsertLayer;
     QAction *_actionRemoveLayer;
     QAction *_actionAddBackgroundPicture;
@@ -151,8 +159,9 @@ private:
     QAction *_enlargeBackgroundPictureSize;
     QAction *_reduceBackgroundPictureSize;
     QActionGroup *_actionGroupDraw;
-    QToolBar *_toolBar;
-    Qt::ToolBarArea _toolBarArea;
+    QList<QToolBar*> _toolBars;
+    Qt::ToolBarArea _toolBarDrawArea;
+    Qt::ToolBarArea _toolBarViewArea;
 };
 
 #endif // MONOFIN_H

@@ -22,8 +22,8 @@ PaintingScene::PaintingScene(qreal width,
     _isModifyingBackgroundPicture(false), _isMultiSelectionKeyActivated(false),
     _isRemoveControlPointActivated(false), _isRenderingPicture(false),
     _isSimplifyViewActivated(false), _keepBezierCurve(true),
-    _lastPlacedPoint(0), _pixmap(0),
-    _scaleFactor(1), _state(NormalState), _structure(structure){
+    _lastPlacedPoint(0), _pixmap(0), _scaleFactor(1), _showGrid(true),
+    _state(NormalState), _structure(structure){
 
      this->setSceneRect(0,-height/2,width, height);
 
@@ -646,7 +646,7 @@ void PaintingScene::redo(){
     _structure->redo(Data::MonofinSurface);
 
     this->getMonofinFromStructure();
-    emit this->somethingChanged(this->ActionNoAction);
+    emit this->somethingChanged(ActionRedo);
 }
 
 void PaintingScene::removeBackgroundPicture(){
@@ -752,7 +752,13 @@ void PaintingScene::undo(){
     _structure->undo(Data::MonofinSurface);
 
     this->getMonofinFromStructure();
-    emit this->somethingChanged(this->ActionNoAction);
+    emit this->somethingChanged(this->ActionUndo);
+
+}
+
+void PaintingScene::updateMonofinDrawing(){
+    this->getMonofinFromStructure();
+    emit this->somethingChanged(ActionLoadStructure);
 }
 
 void PaintingScene::zoomOnBackgroundPicture(qreal factor){
@@ -835,20 +841,23 @@ void PaintingScene::drawBackground(QPainter* painter, const QRectF& rect){
         painter->drawRect(this->sceneRect());
         painter->drawRect(this->pointsBoundingZone());
 
-        painter->setPen(Qt::DotLine);
-        painter->setOpacity(0.2);
-        QRect r = this->sceneRect().toRect();
-        qreal gridUnit = this->gridUnit();
-        for(qreal i = 0; i < r.bottomRight().x(); i+=gridUnit){
-            painter->drawLine(QLineF(i, r.bottomLeft().y(), i, r.topLeft().y()));
-        }
-        for(qreal i = 0; i > r.topLeft().y(); i-=gridUnit){
-            painter->drawLine(QLineF(r.bottomLeft().x(), i, r.bottomRight().x(), i));
-        }
-        for(qreal i = 0; i < r.bottomLeft().y(); i+=gridUnit){
-            painter->drawLine(QLineF(r.bottomLeft().x(), i, r.bottomRight().x(), i));
-        }
-    }
+        if(_showGrid){
+            painter->setPen(Qt::DotLine);
+            painter->setOpacity(0.2);
+            QRect r = this->sceneRect().toRect();
+            qreal gridUnit = this->gridUnit();
+            for(qreal i = 0; i < r.bottomRight().x(); i+=gridUnit){
+                painter->drawLine(QLineF(i, r.bottomLeft().y(), i, r.topLeft().y()));
+            }
+            for(qreal i = 0; i > r.topLeft().y(); i-=gridUnit){
+                painter->drawLine(QLineF(r.bottomLeft().x(), i, r.bottomRight().x(), i));
+            }
+            for(qreal i = 0; i < r.bottomLeft().y(); i+=gridUnit){
+                painter->drawLine(QLineF(r.bottomLeft().x(), i, r.bottomRight().x(), i));
+            }
+        }//if showGrid
+
+    }//if !isRenderingPicture
 
 
 }
@@ -1016,12 +1025,12 @@ void PaintingScene::getMonofinFromStructure(){
 void PaintingScene::keyPressEvent(QKeyEvent* event){
 
 //SUPPR
-    if(event->key() == Qt::Key_Delete){
+    /*if(event->key() == Qt::Key_Delete){
         qDebug("suppr");
         this->removeSelectedPoints();
 
 //CTRL
-    }else if(event->key() == Qt::Key_Control){
+    }else */if(event->key() == Qt::Key_Control){
         _isMultiSelectionKeyActivated = true;
 
 //P
@@ -1033,7 +1042,7 @@ void PaintingScene::keyPressEvent(QKeyEvent* event){
         this->stopCreateLine();*/
 
 //+
-    }else if(event->key() == Qt::Key_Plus){
+    /*}else if(event->key() == Qt::Key_Plus){
         this->adjustSceneRect(20,20);
 
 
@@ -1050,7 +1059,7 @@ void PaintingScene::keyPressEvent(QKeyEvent* event){
 //DOWN
     else if(event->key() == Qt::Key_Down){
         this->setGridUnit(this->gridUnit() - 1);
-    }
+    */}
 
 //PAGE UP
     else if(event->key() == Qt::Key_PageUp){

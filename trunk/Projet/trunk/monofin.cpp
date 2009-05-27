@@ -781,6 +781,7 @@ void Monofin::initialize()
     _scene = new PaintingScene(800, 600, _projectFile);
 
     _layout->addWidget(new PaintingView(_scene.data(), this));
+    _layout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Ignored, QSizePolicy::MinimumExpanding));
     _layout->addWidget(_layerView.data());
     retranslateUi();
     setLayout(_layout);

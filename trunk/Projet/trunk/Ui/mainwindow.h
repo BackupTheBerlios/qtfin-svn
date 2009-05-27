@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QtCore/QPointer>
 #include <QtCore/QTranslator>
 #include <QtGui/QMainWindow>
 #include <QtGui/QGridLayout>
@@ -10,6 +11,7 @@
 #include <QtGui/QListWidgetItem>
 
 #include "Data/projectfile.h"
+#include "EdgeDetection/graphic.h"
 
 class Monofin;
 class PaintingScene;
@@ -64,7 +66,7 @@ private:
     void createDocks();
     void createLanguageMenu();
     void createMenus();
-    QMdiSubWindow *createMonofin();
+    QMdiSubWindow *createMonofin(Data::ProjectFile *projectFile = new Data::ProjectFile());
     void createStatusBar();
     void createToolBars();
     bool loadFile(const QString &fileName);
@@ -126,6 +128,7 @@ private:
     QAction *_separatorAction;
 
     StartupDialog *_startupDialog;
+    QPointer<Graphic> _graphicView;
 };
 
 #endif // MAINWINDOW_H

@@ -29,10 +29,6 @@ MainWindow::MainWindow(QWidget *parent)
     if (objectName().isEmpty())
         setObjectName(QString::fromUtf8("MainWindow"));
 
-    // set the current version
-    _majorVersion = 0;
-    _minorVersion = 1;
-
     // set the user interface
     _mdiArea = new QMdiArea(this);
     _mdiArea->setViewMode(QMdiArea::TabbedView);
@@ -108,16 +104,18 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::about()
 {
-    QMessageBox::about(this, tr("About Monofin"),
-                       tr("<h2>Monofin %1.%2</h2>"
-                          "<p>Copyright &copy; 2009</p>"
-                          "<p> Chaudet Yoann </p>"
-                          "<p> Garcia Paul</p>"
-                          "<p> Gautier Quentin </p>"
-                          "<p> Le Squer Nicolas</p>"
-                          "<p> Musset Nicolas</p>"
-                          "<p> Villoing Xavier</p>")
-                       .arg(_majorVersion).arg(_minorVersion));
+    QMessageBox::about(this, tr("About %1").arg(QApplication::applicationName()),
+                       tr("<h2>Monofin %1</h2>"
+                          "<p>Copyright &copy; 2009 %2</p>"
+                          "<p>"
+                          "Chaudet Yoann <br/>"
+                          "Garcia Paul <br/>"
+                          "Gautier Quentin <br/>"
+                          "e Squer Nicolas <br/>"
+                          "Musset Nicolas <br/>"
+                          "Villoing Xavier <br/>"
+                          "</p>")
+                       .arg(QApplication::applicationVersion()).arg(QApplication::organizationName()));
 }
 
 void MainWindow::addFormToLibrary()
@@ -177,10 +175,20 @@ void MainWindow::newFile()
 
 void MainWindow::newProjectFromImage()
 {
-    QMdiSubWindow *msw = createMonofin();
+    Data::ProjectFile *projectFile = new Data::ProjectFile;
+    if (_graphicView.isNull())
+        _graphicView = new Graphic(0, projectFile, 800, 600);
+    else
+        _graphicView->setProjectFile(projectFile);
+    projectFile->startHistory(Data::MonofinSurface);
+    projectFile->clearSurface();
+    projectFile->stopHistory(Data::MonofinSurface);
+    _graphicView->show();
+
+    QMdiSubWindow *msw = createMonofin(projectFile);
     Monofin *monofin = static_cast<Monofin *>(msw->widget());
-    if(monofin->newFileFromImage())
-        monofin->show();
+    monofin->show();
+    monofin->newFileFromImage();
 }
 
 void MainWindow::open()
@@ -188,9 +196,9 @@ void MainWindow::open()
     qDebug("MainWindow::open()");
     QMdiSubWindow *msw = createMonofin();
     Monofin *monofin = static_cast<Monofin *>(msw->widget());
+    monofin->show();
     if(monofin->open()) {
         updateToolBars();
-        monofin->show();
     }
     else {
         msw->close();
@@ -199,8 +207,6 @@ void MainWindow::open()
 
 void MainWindow::openRecentFile()
 {
-    if(activeMonofin() && !activeMonofin()->okToContinue())
-        return;
     QAction *action = qobject_cast<QAction *>(sender());
     if (action)
         loadFile(action->data().toString());
@@ -516,7 +522,7 @@ void MainWindow::createMenus()
     _menuBar->addAction(_menuHelp->menuAction());
 }
 
-QMdiSubWindow *MainWindow::createMonofin()
+QMdiSubWindow *MainWindow::createMonofin(Data::ProjectFile *projectFile)
 {
     qDebug("MainWindow::createMonofin()");
     Monofin *monofin = new Monofin();

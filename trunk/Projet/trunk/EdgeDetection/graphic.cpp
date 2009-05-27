@@ -44,7 +44,7 @@ void Graphic::setSize(qreal width, qreal height){
     EdgesExtractionScene* newScene = new EdgesExtractionScene(_graphic.graphicWidget, width, height);
     _graphicsView->setScene(newScene);
     _graphicsView->reScale();
-    delete _graphicsScene;
+    _graphicsScene->deleteLater();
     _graphicsScene = newScene;
 }
 
@@ -81,12 +81,12 @@ void Graphic::setPixmap(){
         QPixmap pix(file);
         _graphicsScene->setPixmap(pix);
 
-        _graphic.posXSpinBox->setValue((int)_graphicsScene->pixItem()->boundingRect().center().x());
-        _graphic.posYSpinBox->setValue((int)_graphicsScene->pixItem()->boundingRect().center().y());
+        _graphic.posXSpinBox->setValue(_graphicsScene->pixItem()->boundingRect().center().toPoint().x());
+        _graphic.posYSpinBox->setValue(_graphicsScene->pixItem()->boundingRect().center().toPoint().y());
         _graphic.scaleSpinBox->setValue(100);
 
-        _graphic.posXSpinBox->setValue((int)_graphicsScene->pixItem()->boundingRect().center().x());
-        _graphic.posYSpinBox->setValue((int)_graphicsScene->pixItem()->boundingRect().center().y());
+        _graphic.posXSpinBox->setValue(_graphicsScene->pixItem()->boundingRect().center().toPoint().x());
+        _graphic.posYSpinBox->setValue(_graphicsScene->pixItem()->boundingRect().center().toPoint().y());
         _graphic.scaleSpinBox->setValue(100);
 
         _algo = new AlgoSnake(_graphicsScene->pixItem()->scircle());

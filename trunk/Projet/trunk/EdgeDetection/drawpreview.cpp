@@ -85,7 +85,7 @@ void DrawPreview::paintEvent(QPaintEvent *event){
     float x, y;
     _preview->getIntersectionPoint(lp, x , y);
     y = this->height() / 2 - y;
-    painter.drawPoint((int)x, (int)y);
+    painter.drawPoint(QPointF(x, y));
 }
 
 void DrawPreview::closeEvent(QCloseEvent* event){

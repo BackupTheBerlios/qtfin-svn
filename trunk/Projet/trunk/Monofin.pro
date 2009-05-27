@@ -126,8 +126,11 @@ FORMS += Ui/layerParameters.ui \
 TRANSLATIONS = translations/monofin_de.ts \
     translations/monofin_en.ts \
     translations/monofin_fr.ts
-target.path = .
-INSTALLS += target
 RESOURCES += resources/images.qrc \
     resources/icons.qrc
 mac:RESOURCES += resources/translations.qrc
+
+target.path = .
+INSTALLS += target
+
+RC_FILE = resources/monofin.rc

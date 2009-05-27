@@ -2,31 +2,43 @@
     <qresource prefix="/" >
         <file>icons/drawing/addLayer.png</file>
         <file>icons/drawing/alignTangent.png</file>
+        <file>icons/drawing/background.png</file>
         <file>icons/drawing/beginLine.png</file>
         <file>icons/drawing/clear.png</file>
         <file>icons/drawing/createControlPoint.png</file>
         <file>icons/drawing/createPoint.png</file>
+        <file>icons/drawing/decreaseGridUnit.png</file>
         <file>icons/drawing/decreaseSizeWindow.png</file>
+        <file>icons/drawing/enlargeBackgroundSize.png</file>
         <file>icons/drawing/eraseControlPoint.png</file>
         <file>icons/drawing/erasePoint.png</file>
+        <file>icons/drawing/increaseGridUnit.png</file>
         <file>icons/drawing/increaseSizeWindow.png</file>
         <file>icons/drawing/magnet.png</file>
         <file>icons/drawing/moveControlPoint.png</file>
         <file>icons/drawing/movePoint.png</file>
         <file>icons/drawing/noPreview.png</file>
         <file>icons/drawing/preview.png</file>
+        <file>icons/drawing/redo.png</file>
+        <file>icons/drawing/reduceBackgroundSize.png</file>
+        <file>icons/drawing/removeBackground.png</file>
         <file>icons/drawing/removeLayer.png</file>
         <file>icons/drawing/switchColor.png</file>
+        <file>icons/drawing/transformBackground.png</file>
+        <file>icons/drawing/undo.png</file>
         <file>icons/drawing/zoomIn.png</file>
         <file>icons/drawing/zoomOut.png</file>
         <file>icons/general/3DView.png</file>
         <file>icons/general/config.png</file>
         <file>icons/general/launch_v1.png</file>
+        <file>icons/general/logo.png</file>
         <file>icons/general/moins.png</file>
+        <file>icons/general/moins128.png</file>
         <file>icons/general/newEmptyProject.png</file>
         <file>icons/general/newFromImage.png</file>
         <file>icons/general/openProject.png</file>
         <file>icons/general/plus.png</file>
+        <file>icons/general/plus128.png</file>
         <file>icons/snake/snakeLaunch.png</file>
         <file>icons/snake/snakeLoadImage.png</file>
         <file>icons/snake/snakeNotOK.png</file>

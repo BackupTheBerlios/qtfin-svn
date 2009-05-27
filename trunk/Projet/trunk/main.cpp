@@ -11,6 +11,10 @@ int main(int argc, char *argv[])
      * Application.
      */
     QApplication app(argc, argv);
+    app.setWindowIcon(QIcon(":/icons/general/logo.png"));
+    app.setApplicationName(QApplication::tr("Monofin"));
+    app.setApplicationVersion(QApplication::tr("1.0"));
+    app.setOrganizationName(QApplication::tr("INSA Rennes"));
 
     QTimer *timer = new QTimer;
     timer->setSingleShot(true);
@@ -31,5 +35,5 @@ int main(int argc, char *argv[])
                         topRight, Qt::white);
 
     qDebug("entering the main event loop");
-    return app.exec();;
+    return app.exec();
 }

@@ -108,7 +108,6 @@ bool Monofin::newFileFromImage()
         _projectFile->undo(Data::MonofinSurface);
         return false;
     }*/
-    _scene->updateMonofinDrawing();
     return true;
 }
 

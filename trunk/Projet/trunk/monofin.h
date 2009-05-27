@@ -107,6 +107,8 @@ private slots:
     void setToolBarDrawArea(Qt::ToolBarArea tba) { _toolBarDrawArea = tba; }
     void setToolBarViewArea(Qt::ToolBarArea tba) { _toolBarViewArea = tba; }
 
+    void updateScene() { _scene->updateMonofinDrawing(); }
+
 private:
     void createToolBar();
     void initialize();

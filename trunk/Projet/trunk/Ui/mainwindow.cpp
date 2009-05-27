@@ -175,20 +175,26 @@ void MainWindow::newFile()
 
 void MainWindow::newProjectFromImage()
 {
+    qDebug("MainWindow::newProjectFromImage()");
     Data::ProjectFile *projectFile = new Data::ProjectFile;
-    if (_graphicView.isNull())
+    if (_graphicView.isNull()) {
+        qDebug("graphicview not existing, creating a new one.");
         _graphicView = new Graphic(0, projectFile, 800, 600);
-    else
+    } else {
+        qDebug("existing graphicview.");
         _graphicView->setProjectFile(projectFile);
+    }
     projectFile->startHistory(Data::MonofinSurface);
     projectFile->clearSurface();
     projectFile->stopHistory(Data::MonofinSurface);
-    _graphicView->show();
 
     QMdiSubWindow *msw = createMonofin(projectFile);
     Monofin *monofin = static_cast<Monofin *>(msw->widget());
     monofin->show();
     monofin->newFileFromImage();
+    connect(_graphicView, SIGNAL(kept()), monofin, SLOT(updateScene()));
+
+    _graphicView->show();
 }
 
 void MainWindow::open()

@@ -96,13 +96,16 @@ public slots:
      * the draw detected by the algorithm is kept
      * close the graphic
      */
-    void kept();
+    //void kept();
 
     /**
      * the draw detected by the algorithm is not kept
      * the graphic is still open
      */
     void doNotKept();
+
+signals:
+    void kept();
 
 
 protected:

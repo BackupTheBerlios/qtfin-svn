@@ -33,8 +33,10 @@ Graphic::Graphic(QWidget *parent, ProjectFile* monofin, qreal width, qreal heigh
     QObject::connect(_graphic.CancelButton, SIGNAL(clicked()),
                      this, SLOT(close()));
 
-    if(_monofin == 0)
+    if(_monofin == 0) {
+        qDebug("project file is empty, making new one.");
         _monofin = new ProjectFile();
+    }
 
 }
 
@@ -174,7 +176,8 @@ void Graphic::startAlgo(){
             _algo->reinitialize();
         }else{
             _preview = new DrawPreview(this, _monofin, _graphicsScene->width(), _graphicsScene->height());
-            QObject::connect(_preview, SIGNAL(kept()), this, SLOT(kept()));
+            QObject::connect(_preview, SIGNAL(kept()), this, SIGNAL(kept()));
+            QObject::connect(_preview, SIGNAL(kept()), this, SLOT(close()));
             QObject::connect(_preview, SIGNAL(doNotKept()), this, SLOT(doNotKept()));
             _preview->show();
         }
@@ -182,16 +185,16 @@ void Graphic::startAlgo(){
     qDebug("quit");
 }
 
-void Graphic::kept(){
-    /**
-     * voir si on ferme la fenetre ou si on la cache
-     */
-    _monofin->saveProject("./resultats/MaMonopalme", "test");
+/* void Graphic::kept(){
+     // voir si on ferme la fenetre ou si on la cache
+    qDebug("MaMonopalme");
+    _monofin->saveProject("./MaMonopalme", "test");
     this->close();
-}
+}*/
 
 void Graphic::doNotKept(){
-    QObject::disconnect(_preview, SIGNAL(kept()), this, SLOT(kept()));
+    QObject::disconnect(_preview, SIGNAL(kept()), this, SIGNAL(kept()));
+    QObject::disconnect(_preview, SIGNAL(kept()), this, SLOT(close()));
     QObject::disconnect(_preview, SIGNAL(doNotKept()), this, SLOT(doNotKept()));
     _algo->reinitialize();
 }

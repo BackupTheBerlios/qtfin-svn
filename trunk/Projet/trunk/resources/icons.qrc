@@ -27,5 +27,9 @@
         <file>icons/general/newFromImage.png</file>
         <file>icons/general/openProject.png</file>
         <file>icons/general/plus.png</file>
+        <file>icons/snake/snakeLaunch.png</file>
+        <file>icons/snake/snakeLoadImage.png</file>
+        <file>icons/snake/snakeNotOK.png</file>
+        <file>icons/snake/snakeOK.png</file>
     </qresource>
 </RCC>

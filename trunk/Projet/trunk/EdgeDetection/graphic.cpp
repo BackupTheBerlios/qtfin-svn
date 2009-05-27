@@ -68,7 +68,15 @@ void Graphic::setPixmap(){
         QObject::disconnect(_graphic.posYSpinBox, SIGNAL(valueChanged(int)),
                      this, SLOT(setPixmapPositionY(int)));
     }
-    QString file = QFileDialog::getOpenFileName(this, "Ouvrir un fichier", QString(), "Images (*.png *.bmp)");
+    QString file = QFileDialog::getOpenFileName(this, tr("Open a file"), QString(),
+                                                tr("Windows Bitmap (*.bmp);;"
+                                                   "Graphic Interchange Format (*.gif);;"
+                                                   "JPEG files (*.jpg *.jpeg);;"
+                                                   "Portable Network Graphics (*.png);;"
+                                                   "Portable Bitmap (*.pbm *.pgm *.ppm);;"
+                                                   "Tagged Image File Format (*.tiff);;"
+                                                   "X11 Format (*.xbm *.xpm);;"
+                                                   "All Supported Image Format (*.bmp *.gif *.jpg *.jpeg *.mng *.png *.pbm *.pgm *.ppm *.tiff *.xbm *.xpm"));
     if(file != ""){
         QPixmap pix(file);
         _graphicsScene->setPixmap(pix);

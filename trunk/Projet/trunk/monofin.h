@@ -86,9 +86,11 @@ private slots:
     void activeAddPoint(bool a);
     void activeModifyBackgroundPicture(bool a);
     void activateRemoveControl(bool a);
+    //void addABackgroundPicture();
     void beginLine(bool a);
     void clean();
     void finishedLine(bool a);
+    //void removeABackgroundPicture();
     void on_actionAddControl_toggled(bool a);
     void on_actionAddPoint_toggled(bool a);
     void on_actionCreatePolygon_toggled(bool a);

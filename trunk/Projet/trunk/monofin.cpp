@@ -242,6 +242,7 @@ void Monofin::addBackgroundPicture()
     if(!file.isNull()){
         QPixmap pix(file);
         _scene->setBackGroundPicture(pix);
+        //this->addABackgroundPicture();
     }
 }
 
@@ -383,6 +384,7 @@ void Monofin::activeAddControl(bool a){
     _actionCleanPolygon->setDisabled(a);
     _actionRemoveControl->setDisabled(a);
     _actionRemovePoints->setDisabled(a);
+    _actionTransformBackgroundPicture->setDisabled(a);
 }
 
 void Monofin::activeAddPoint(bool a){
@@ -392,9 +394,20 @@ void Monofin::activeAddPoint(bool a){
     _actionCleanPolygon->setDisabled(a);
     _actionRemoveControl->setDisabled(a);
     _actionRemovePoints->setDisabled(a);
+    _actionTransformBackgroundPicture->setDisabled(a);
 }
 
 void Monofin::activeModifyBackgroundPicture(bool a){
+    if(_isEmpty){
+        _actionCreatePolygon->setDisabled(a);
+    }
+    if(a){
+        _actionGroupDraw->setDisabled(true);
+    }else{
+        if(!_isEmpty){
+            _actionGroupDraw->setEnabled(true);
+        }
+    }
     _enlargeBackgroundPictureSize->setEnabled(a);
     _reduceBackgroundPictureSize->setEnabled(a);
 }
@@ -406,11 +419,16 @@ void Monofin::activateRemoveControl(bool a){
     _actionAlignTangents->setDisabled(a);
     _actionCleanPolygon->setDisabled(a);
     _actionRemovePoints->setDisabled(a);
+    _actionTransformBackgroundPicture->setDisabled(a);
 }
 
+/*void Monofin::addABackgroundPicture(){
+    _actionTransformBackgroundPicture->setEnabled(true);
+}*/
+
 void Monofin::beginLine(bool a){
-    //_actionCreatePolygon->setDisabled(a);
     _actionGroupDraw->setDisabled(a || !_actionCreatePolygon->isChecked());
+    _actionTransformBackgroundPicture->setDisabled(a);
 }
 
 void Monofin::clean(){
@@ -421,7 +439,12 @@ void Monofin::clean(){
 void Monofin::finishedLine(bool a){
     _actionCreatePolygon->setDisabled(a);
     _actionGroupDraw->setEnabled(a);
+    _isEmpty = !a;
 }
+
+/*void Monofin::removeABackgroundPicture(){
+    _actionTransformBackgroundPicture->setDisabled(true);
+}*/
 
 // PROTECTED
 
@@ -635,6 +658,8 @@ void Monofin::createToolBar()
     _actionTransformBackgroundPicture = new QAction(this);
     _actionTransformBackgroundPicture->setObjectName(QString::fromUtf8("actionAddBackgroundPicture"));
     _actionTransformBackgroundPicture->setCheckable(true);
+    //_actionTransformBackgroundPicture->setDisabled(true);
+
 
     _actionRemoveBackgroundPicture = new QAction(this);
     _actionRemoveBackgroundPicture->setObjectName(QString::fromUtf8("actionRemoveBackgroundPicture"));
@@ -778,6 +803,7 @@ void Monofin::setConnections()
     connect(_actionTransformBackgroundPicture, SIGNAL(toggled(bool)), this, SLOT(activateModifyBackgroundPicture(bool)));
     connect(_actionTransformBackgroundPicture, SIGNAL(toggled(bool)), this, SLOT(activeModifyBackgroundPicture(bool)));
     connect(_actionRemoveBackgroundPicture, SIGNAL(triggered()), this, SLOT(removeBackgroundPicture()));
+    //connect(_actionRemoveBackgroundPicture, SIGNAL(triggered()), this, SLOT(removeABackgroundPicture()));
     connect(_actionSwitchToBlack, SIGNAL(triggered()), this, SLOT(switchToBlack()));
     connect(_actionSwitchToRed, SIGNAL(triggered()), this, SLOT(switchToRed()));
     connect(_actionSwitchToWhite, SIGNAL(triggered()), this, SLOT(switchToWhite()));

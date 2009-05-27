@@ -473,11 +473,13 @@ bool BoundingPoint::willMoveToGoCloseToPosY(qreal posY){
 
 void BoundingPoint::mouseMoveEvent(QGraphicsSceneMouseEvent* event){
     if(_canMove){
+        QPointF oldPos(*_pos);
         QPointF pos(event->scenePos().x(), event->scenePos().y());
 
         bool canMoveOnX = true;
         bool canMoveOnY = true;
 
+        //we verify that all points are allowed to move to the new position
         QList<QGraphicsItem*> si = _scene->selectedItems();
         BoundingPoint* bp;
         ExtremityPoint* ep;
@@ -500,6 +502,7 @@ void BoundingPoint::mouseMoveEvent(QGraphicsSceneMouseEvent* event){
             }
         }//foreach
 
+        //same verification for the control points
         foreach(ControlPoint* cp, _movingControlPoints){
             QLineF l(cp->coord(), this->coord());
             canMoveOnX = canMoveOnX &&
@@ -516,37 +519,39 @@ void BoundingPoint::mouseMoveEvent(QGraphicsSceneMouseEvent* event){
             pos.setX(_pos->x());
         }
 
+
+        //we move this point
+        this->moveTo(pos);
+
+        //AFTER having moved this point, we move the others bounding
+        //points and the control points
         if(canMoveOnX || canMoveOnY){
             //QList<QGraphicsItem*> si = _scene->selectedItems();
             foreach(QGraphicsItem* item, si){
                 if(item->type() == BoundingPoint::Type && item != this){
                     QLineF l(qgraphicsitem_cast<BoundingPoint*>(item)->coord(),
-                             this->coord());
+                             oldPos);
                     qgraphicsitem_cast<BoundingPoint*>(item)->
-                            moveTo(pos - QPointF(l.dx(), l.dy()));
+                            moveTo(this->coord() - QPointF(l.dx(), l.dy()));
 
                 }else if(item->type() == ExtremityPoint::Type){
                     QLineF l(qgraphicsitem_cast<ExtremityPoint*>(item)->coord(),
-                             this->coord());
+                             oldPos);
                     qgraphicsitem_cast<ExtremityPoint*>(item)->
-                            moveTo(pos - QPointF(l.dx(), l.dy()));
+                            moveTo(this->coord() - QPointF(l.dx(), l.dy()));
                 }
             }//foreach
 
             foreach(ControlPoint* c, _movingControlPoints){
-                QLineF l(c->coord(), this->coord());
-                c->moveTo(pos - QPointF(l.dx(), l.dy()));
+                QLineF l(c->coord(), oldPos);
+                c->moveTo(this->coord() - QPointF(l.dx(), l.dy()));
             }//foreach
-
         }//if
 
-        //qDebug("number of selected items : %d", si.size());
 
-        if(pos != *_pos){
+        if(oldPos != this->coord()){
             _isMoving = true;
         }
-
-        this->moveTo(pos);
 
 
     }else{

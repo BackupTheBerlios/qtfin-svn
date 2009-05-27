@@ -31,7 +31,7 @@ public:
     /**
      * implementation of the edges detection algorithm
      */
-    virtual bool edgesDetection(qreal offserX);
+    virtual bool edgesDetection(qreal offserX, qreal offsetY);
 
     /**
      * implementation of the edges extraction algorithm

@@ -12,16 +12,17 @@ Graphic::Graphic(QWidget *parent, ProjectFile* monofin, qreal width, qreal heigh
 {
     //this->setWindowModality(Qt::WindowModal);
     _graphic.setupUi(this);
+    this->resize(1024,800);
     if(width == 0 || height == 0){
         _graphicsScene = new EdgesExtractionScene(_graphic.graphicWidget, 800, 600);
-        this->setMinimumSize(1200, 700);
+        this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     }
     else{
         _graphicsScene = new EdgesExtractionScene(_graphic.graphicWidget, width,
                                                   height);
-        this->setMinimumSize((int)width + 400, (int)height + 100);
     }
     _graphicsView = new EdgesExtractionView(_graphicsScene);
+    //_graphicsView->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
 
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->addWidget(_graphicsView);
@@ -30,7 +31,7 @@ Graphic::Graphic(QWidget *parent, ProjectFile* monofin, qreal width, qreal heigh
     QObject::connect(_graphic.OpenButton, SIGNAL(clicked()),
                      this, SLOT(setPixmap()));
     QObject::connect(_graphic.CancelButton, SIGNAL(clicked()),
-                     this, SLOT(reject()));
+                     this, SLOT(close()));
 
     if(_monofin == 0)
         _monofin = new ProjectFile();
@@ -42,9 +43,9 @@ Graphic::~Graphic(){}
 void Graphic::setSize(qreal width, qreal height){
     EdgesExtractionScene* newScene = new EdgesExtractionScene(_graphic.graphicWidget, width, height);
     _graphicsView->setScene(newScene);
+    _graphicsView->reScale();
     delete _graphicsScene;
     _graphicsScene = newScene;
-    this->setMinimumSize((int)width + 200, (int)height + 100);
 }
 
 void Graphic::setPixmap(){
@@ -67,7 +68,7 @@ void Graphic::setPixmap(){
         QObject::disconnect(_graphic.posYSpinBox, SIGNAL(valueChanged(int)),
                      this, SLOT(setPixmapPositionY(int)));
     }
-    QString file = QFileDialog::getOpenFileName(this, "Ouvrir un fichier", QString(), "Images (*.png *.bmp *.jpg *gif)");
+    QString file = QFileDialog::getOpenFileName(this, "Ouvrir un fichier", QString(), "Images (*.png *.bmp)");
     if(file != ""){
         QPixmap pix(file);
         _graphicsScene->setPixmap(pix);
@@ -154,7 +155,7 @@ void Graphic::setPixmapPositionY(int y){
 }
 
 void Graphic::startAlgo(){
-    bool ok =_algo->edgesDetection(_graphicsScene->width());
+    bool ok =_algo->edgesDetection(_graphicsScene->width(), _graphicsScene->height());
     if(!ok){
         QMessageBox::warning(this, "Over position", "Warning, the image is positionned badly !\nSome points detected are not in the scene !");
         _algo->reinitialize();
@@ -177,6 +178,7 @@ void Graphic::kept(){
     /**
      * voir si on ferme la fenetre ou si on la cache
      */
+    _monofin->saveProject("./resultats/MaMonopalme", "test");
     this->accept();
 }
 

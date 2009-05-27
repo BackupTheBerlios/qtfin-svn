@@ -11,9 +11,16 @@ DrawPreview::DrawPreview(QWidget* parent, ProjectFile* preview, qreal width, qre
         QWidget(parent, Qt::Window), _width(width), _height(height), _preview(preview)
 {
     this->setWindowModality(Qt::WindowModal);
-    this->setFixedSize((int)width, (int)height + 20);
-    _keepButton = new QPushButton("Keep", this);
-    _doNotKeepButton = new QPushButton("Do not keep", this);
+    this->resize(1024, 600);
+    _keepButton = new QPushButton(this);
+    _keepButton->setIcon(QIcon("../resources/icons/SnakeOK"));
+    _keepButton->setIconSize(QSize(50, 50));
+    _keepButton->setToolTip(tr("Keep the form"));
+    _doNotKeepButton = new QPushButton(this);
+    _doNotKeepButton->setIcon(QIcon("../resources/icons/SnakeNotOK"));
+    _doNotKeepButton->setIconSize(QSize(50, 50));
+    _doNotKeepButton->setToolTip(tr("Do not keep the form"));
+    _doNotKeepButton->setDefault(true);
     QSpacerItem* spacerV = new QSpacerItem(10, (int)_height, QSizePolicy::Expanding, QSizePolicy::Expanding);
     QSpacerItem* spacerH1 = new QSpacerItem(10, 10, QSizePolicy::Expanding, QSizePolicy::Expanding);
     QSpacerItem* spacerH2 = new QSpacerItem(10, 10, QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -35,7 +42,7 @@ DrawPreview::DrawPreview(QWidget* parent, ProjectFile* preview, qreal width, qre
 void DrawPreview::paintEvent(QPaintEvent *event){
     QPainter painter(this);
     painter.setPen(QPen(QBrush("red"), 3));
-    painter.drawLine(QPointF(0, _height / 2), QPointF(_width, _height / 2));
+    painter.drawLine(QPointF(0, this->height() / 2), QPointF(this->width(), this->height() / 2));
     QList<int> listSeg = _preview->getAllSegmentKeys();
     for(int i = 0; i < listSeg.size(); i++){
         int p1;
@@ -46,20 +53,20 @@ void DrawPreview::paintEvent(QPaintEvent *event){
         float p1x;
         float p1y;
         _preview->getIntersectionPoint(p1, p1x, p1y);
-        float p1yS = _height / 2 + p1y;
-        p1y = _height / 2 - p1y;
+        float p1yS = this->height() / 2 + p1y;
+        p1y = this->height() / 2 - p1y;
 
         float p2x;
         float p2y;
         _preview->getIntersectionPoint(p2, p2x, p2y);
-        float p2yS = _height / 2 + p2y;
-        p2y = _height / 2 - p2y;
+        float p2yS = this->height() / 2 + p2y;
+        p2y = this->height() / 2 - p2y;
 
         float cx;
         float cy;
         _preview->getControlPoint(c, cx, cy);
-        float cyS = _height / 2 + cy;
-        cy = _height / 2 - cy;
+        float cyS = this->height() / 2 + cy;
+        cy = this->height() / 2 - cy;
 
         QPainterPath bezier(QPointF(p1x, p1y));
         bezier.cubicTo(cx, cy, cx, cy, p2x, p2y);
@@ -71,14 +78,14 @@ void DrawPreview::paintEvent(QPaintEvent *event){
         painter.drawPath(bezierS);
 
         painter.setPen(QPen(QBrush("blue"), 4));
-        painter.drawPoint(p1x, p1y);
+        painter.drawPoint((int)p1x, (int)p1y);
     }
     int p, lp, c;
     _preview->getSegment(listSeg.last(), p, lp, c);
     float x, y;
     _preview->getIntersectionPoint(lp, x , y);
-    y = _height / 2 - y;
-    painter.drawPoint(x, y);
+    y = this->height() / 2 - y;
+    painter.drawPoint((int)x, (int)y);
 }
 
 void DrawPreview::closeEvent(QCloseEvent* event){

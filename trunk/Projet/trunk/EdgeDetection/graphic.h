@@ -2,8 +2,8 @@
 #define GRAPHIC_H
 
 #include <QApplication>
-#include <QtGui/QDialog>
-
+#include <QtGui/QWidget>
+#include <QDialog>
 #include "ui_graphic.h"
 
 #include "edgesextractionscene.h"
@@ -99,8 +99,6 @@ public slots:
      */
     void doNotKept();
 
-signals:
-    void formDetected();
 
 protected:
     Ui::Form _graphic; // the graphic's interface

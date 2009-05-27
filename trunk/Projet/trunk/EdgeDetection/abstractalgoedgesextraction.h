@@ -22,7 +22,7 @@ public:
      * Detect the form's edges on a picture
      * This form has to be unique
      */
-    virtual bool edgesDetection(qreal offsetX) = 0;
+    virtual bool edgesDetection(qreal offsetX, qreal offsetY) = 0;
 
     /**
      * Extract the form detected previously and transform this form into a Monofin struture

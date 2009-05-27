@@ -18,8 +18,14 @@ public:
      */
     EdgesExtractionView(EdgesExtractionScene* scene, QWidget* parent = NULL);
 
+    void reScale();
+
 protected:
+    //void resizeEvent(QResizeEvent *event);
     EdgesExtractionScene* _scene; // the scene contained in the view
+
+    qreal _initHeight;
+    qreal _initWidth;
 
 };
 

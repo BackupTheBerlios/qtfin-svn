@@ -27,7 +27,7 @@ void AlgoSnake::setImage(QImage* image){
         _image = image;
 }
 
-bool AlgoSnake::edgesDetection(qreal offsetX){
+bool AlgoSnake::edgesDetection(qreal offsetX, qreal offsetY){
     QPointF offsetI = _scircle->pixmapItem()->offset();
     if(_scircle != NULL && _image != NULL){
         for(qreal i = _scircle->radius(); i > 0  && !_scircle->isAllPointsFixed(); i--){
@@ -49,7 +49,7 @@ bool AlgoSnake::edgesDetection(qreal offsetX){
         for(int i = 0; i < _scircle->getSPointNb(); i++){
             QPointF point = _scircle->getQPointRotate(i, _scircle->pixmapItem()->rotationAngle(),
                                          _scircle->pixmapItem()->getScale()) + offsetI;
-            if(point.y() < 0 || point.x() > offsetX)
+            if((point.y() < 0 && point.x() > offsetX /10) || (point.x() > offsetX && point.y() < offsetY / 2))
                 return false;
         }
     }
@@ -260,8 +260,8 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal offsetX, qreal offse
         /**
          * ajout du troisième point
          */
-        QPointF np1 = (_scircle->getQPointRotate(controlPointsToKeep.value(2), angle, scale) + offsetI
-                      + secondP) / 2; // np1 : next point 1
+        QPointF np1 = (9 * (_scircle->getQPointRotate(controlPointsToKeep.value(2), angle, scale) + offsetI)
+                      + secondP) / 10; // np1 : next point 1
         int npk1 = monofin->addIntersectionPoint(np1.x(), offsetY - np1.y());// npk1 : next point key 1
 
         /**
@@ -320,8 +320,8 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal offsetX, qreal offse
          * ajout de l'avant dernier point dans monofin
          */
         controlPointsToKeep.removeLast();
-        QPointF npll = (_scircle->getQPointRotate(controlPointsToKeep.last(), angle, scale) + offsetI
-                      + lastP) / 2; // np1 : next point 1
+        QPointF npll = (9 * (_scircle->getQPointRotate(controlPointsToKeep.last(), angle, scale) + offsetI)
+                      + lastP) / 10; // np1 : next point 1
         int npkll = monofin->addIntersectionPoint(npll.x(), offsetY - npll.y());
          /**
          * calcul de la position du point de controle
@@ -365,8 +365,8 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal offsetX, qreal offse
         /**
          * ajout du second point
          */
-        QPointF np1 = (_scircle->getQPointRotate(controlPointsToKeep.value(2), angle, scale) + offsetI
-                      + firstP) / 2; // np1 : next point 1
+        QPointF np1 = (9 * (_scircle->getQPointRotate(controlPointsToKeep.value(2), angle, scale) + offsetI)
+                      + firstP) / 10; // np1 : next point 1
         int npk1 = monofin->addIntersectionPoint(np1.x(), offsetY - np1.y());// npk1 : next point key 1
 
         /**
@@ -423,8 +423,8 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal offsetX, qreal offse
          * ajout de l'avant dernier point dans monofin
          */
         controlPointsToKeep.removeLast();
-        QPointF npll = (_scircle->getQPointRotate(controlPointsToKeep.last(), angle, scale) + offsetI
-                      + lastP) / 2; // np1 : next point 1
+        QPointF npll = (9 * (_scircle->getQPointRotate(controlPointsToKeep.last(), angle, scale) + offsetI)
+                      + lastP) / 10; // np1 : next point 1
         int npkll = monofin->addIntersectionPoint(npll.x(), offsetY - npll.y());
          /**
          * calcul de la position du point de controle
@@ -461,7 +461,6 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal offsetX, qreal offse
          */
         monofin->addSegment(npkll, npk2, fcpk);
     }
-    monofin->saveProject("MaMonopalme", "test");
     monofin->stopHistory(Data::MonofinSurface);
     return true;
 }

@@ -19,6 +19,7 @@ public:
     EdgesExtractionView(EdgesExtractionScene* scene, QWidget* parent = NULL);
 
     void reScale();
+    qreal getScale();
 
 protected:
     //void resizeEvent(QResizeEvent *event);

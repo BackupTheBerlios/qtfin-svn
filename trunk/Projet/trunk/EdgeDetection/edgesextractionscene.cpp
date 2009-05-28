@@ -16,7 +16,9 @@ EdgesExtractionScene::EdgesExtractionScene(QWidget* parent, qreal width, qreal h
 
     QGraphicsRectItem* rect1 = addRect(0, 0, _heal, height);
     rect1->setPen(QPen(QBrush("red"), 2));
-    rect1->setBrush(QBrush("red",Qt::Dense4Pattern));
+    //rect1->setBrush(QBrush("red",Qt::Dense4Pattern));
+    rect1->setBrush(QBrush("red"));
+    rect1->setOpacity(0.5);
     rect1->setZValue(4);
 
     QGraphicsRectItem* rect2 = addRect(this->sceneRect());

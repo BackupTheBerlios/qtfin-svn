@@ -10,11 +10,15 @@
 #include <QHash>
 #include <QLineF>
 
+#define PI 3.14159265358979323846
+
 using namespace Data;
 
 AlgoSnake::AlgoSnake(SCircle* scircle):
         AbstractAlgoEdgesExtraction(), _scircle(scircle), _image(NULL){
-    _scircle->addSPoint(500);
+    qreal nbPoints = _scircle->radius();
+    qDebug("nombre points snake : %f", nbPoints);
+    _scircle->addSPoint((int)nbPoints);
 }
 
 int AlgoSnake::valAbs(int v){

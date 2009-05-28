@@ -58,6 +58,7 @@ void RotateCircle::hoverEnterEvent(QGraphicsSceneHoverEvent * event){
     _isMoved = true;
     this->setCursor(QCursor(Qt::OpenHandCursor));
     this->scene()->update(this->rect());
+    this->update();
 }
 
 void RotateCircle::hoverLeaveEvent(QGraphicsSceneHoverEvent * event){
@@ -65,6 +66,7 @@ void RotateCircle::hoverLeaveEvent(QGraphicsSceneHoverEvent * event){
     _isMoved = false;
     this->setCursor(QCursor(Qt::ArrowCursor));
     this->scene()->update(this->rect());
+    this->update();
 }
 
 void RotateCircle::setPosition(qreal angle){

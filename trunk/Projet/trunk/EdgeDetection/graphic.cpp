@@ -8,14 +8,12 @@
 using namespace Data;
 
 Graphic::Graphic(QWidget *parent, ProjectFile* monofin, qreal width, qreal height) :
-    QWidget(parent), _monofin(monofin), _preview(NULL)
+    QWidget(parent, Qt::Window), _monofin(monofin), _preview(NULL)
 {
-    this->setWindowModality(Qt::ApplicationModal);
+    this->setWindowModality(Qt::WindowModal);
     _graphic.setupUi(this);
-    this->resize(1024,800);
     if(width == 0 || height == 0){
         _graphicsScene = new EdgesExtractionScene(_graphic.graphicWidget, 800, 600);
-        this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     }
     else{
         _graphicsScene = new EdgesExtractionScene(_graphic.graphicWidget, width,
@@ -33,14 +31,11 @@ Graphic::Graphic(QWidget *parent, ProjectFile* monofin, qreal width, qreal heigh
     QObject::connect(_graphic.CancelButton, SIGNAL(clicked()),
                      this, SLOT(close()));
 
-    if(_monofin == 0) {
-        qDebug("project file is empty, making new one.");
+    if(_monofin == 0)
         _monofin = new ProjectFile();
-    }
 
 }
 
-Graphic::~Graphic(){}
 
 void Graphic::setSize(qreal width, qreal height){
     EdgesExtractionScene* newScene = new EdgesExtractionScene(_graphic.graphicWidget, width, height);
@@ -175,7 +170,7 @@ void Graphic::startAlgo(){
             QMessageBox::warning(this, "No edge detected", "Warning, the image is positionned badly !\nThe axe of symetry is not detected !");
             _algo->reinitialize();
         }else{
-            _preview = new DrawPreview(this, _monofin, _graphicsScene->width(), _graphicsScene->height());
+            _preview = new DrawPreview(this, _monofin, _graphicsScene->width(), _graphicsScene->height(), _graphicsView->getScale());
             QObject::connect(_preview, SIGNAL(kept()), this, SIGNAL(kept()));
             QObject::connect(_preview, SIGNAL(kept()), this, SLOT(close()));
             QObject::connect(_preview, SIGNAL(doNotKept()), this, SLOT(doNotKept()));

@@ -3,6 +3,7 @@
 
 #include <QApplication>
 #include <QtGui/QWidget>
+#include <QDialog>
 #include "ui_graphic.h"
 
 #include "edgesextractionscene.h"
@@ -28,7 +29,6 @@ public:
      * @param parent : the parent of the graphic
      */
     Graphic(QWidget *parent = 0, Data::ProjectFile* monofin = 0, qreal width = 0, qreal height = 0);
-    ~Graphic();
 
     /**
      * setter
@@ -42,7 +42,6 @@ public:
      * @param monofin : the project file
      */
     void setProjectFile(Data::ProjectFile *monofin) { _monofin = monofin; }
-
 
 public slots:
     /**
@@ -106,7 +105,6 @@ public slots:
 
 signals:
     void kept();
-
 
 protected:
     Ui::Form _graphic; // the graphic's interface

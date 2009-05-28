@@ -33,7 +33,6 @@ void EdgesExtractionView::reScale(){
     qreal scaleX = _initWidth / sceneWidth;
     qreal scaleY = _initHeight / sceneHeight;
 
-    qDebug("scaleX : %f\nscaleY : %f", scaleX, scaleY);
 
     if(scaleX <= scaleY){
         this->scale(scaleX / _scale, scaleX / _scale);
@@ -51,8 +50,6 @@ qreal EdgesExtractionView::getScale(){
 
     qreal scaleX = _initWidth / sceneWidth;
     qreal scaleY = _initHeight / sceneHeight;
-
-    qDebug("scaleX : %f\nscaleY : %f", scaleX, scaleY);
 
     if(scaleX <= scaleY)
         return scaleX;

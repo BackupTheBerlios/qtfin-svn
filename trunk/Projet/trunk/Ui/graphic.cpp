@@ -26,9 +26,7 @@ Graphic::Graphic(QWidget *parent, ProjectFile* monofin, qreal width, qreal heigh
     layout->addWidget(_graphicsView);
 
     _graphic.graphicWidget->layout()->deleteLater();
-    qDebug("Initialisation Layout");
     _graphic.graphicWidget->setLayout(layout);
-    qDebug("Ajout Layout");
     QObject::connect(_graphic.OpenButton, SIGNAL(clicked()),
                      this, SLOT(setPixmap()));
     QObject::connect(_graphic.CancelButton, SIGNAL(clicked()),
@@ -41,7 +39,7 @@ Graphic::Graphic(QWidget *parent, ProjectFile* monofin, qreal width, qreal heigh
 
     _preview = new DrawPreview(this, _monofin, _graphicsScene->width(), _graphicsScene->height());
     QObject::connect(_preview, SIGNAL(kept()), this, SIGNAL(kept()));
-    QObject::connect(_preview, SIGNAL(kept()), this, SLOT(close()));
+    QObject::connect(_preview, SIGNAL(kept()), this, SLOT(hide()));
     QObject::connect(_preview, SIGNAL(doNotKept()), this, SLOT(doNotKept()));
 
     _parametersDialog = new QDialog();
@@ -121,6 +119,11 @@ void Graphic::setPixmap(){
         _graphic.posYSpinBox->setValue(_graphicsScene->pixItem()->boundingRect().center().toPoint().y());
         _graphic.scaleSpinBox->setValue(100);
 
+        if(_algo != NULL){
+             QObject::disconnect(_graphic.StartButton, SIGNAL(clicked()),
+                         this, SLOT(startAlgo()));
+            delete _algo;
+        }
         _algo = new AlgoSnake(_graphicsScene->pixItem()->scircle());
         _algo->setImage(new QImage(_graphicsScene->pixItem()->pixmap().toImage()));
 
@@ -213,13 +216,11 @@ void Graphic::startAlgo(){
             _preview->show();
         }
     }
-    qDebug("quit");
 }
 
 /* void Graphic::kept(){
      // voir si on ferme la fenetre ou si on la cache
     qDebug("MaMonopalme");
-    _monofin->saveProject("./MaMonopalme", "test");
     this->close();
 }*/
 

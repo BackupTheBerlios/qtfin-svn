@@ -93,13 +93,10 @@ int SCircle::firstPoint(qreal angle, qreal offsetX, qreal offsetY, qreal scale, 
                                                                  cp),
                                                           fPoint);
                 if(intersect != QLineF::BoundedIntersection){
-                    qDebug("bien1 : %d", i);
                     intersect = QLineF(0, offsetY, offsetY * 10, offsetY).intersect(QLineF(this->getQPointRotate(i - 1, angle, scale) + offsetI,
                                                                  cp),
                                                           fPoint);
-                    qDebug("intersect : %d", intersect);
                     if(intersect != QLineF::BoundedIntersection){
-                        qDebug("bien2 : %d", i);
                         p = -1;
                     }
                 }

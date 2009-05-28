@@ -33,7 +33,6 @@ DrawPreview::DrawPreview(QWidget* parent, ProjectFile* preview, qreal width, qre
     layoutH->addWidget(_doNotKeepButton);
     layoutH->addSpacerItem(spacerH2);
     layoutV->addWidget(_view);
-    //layoutV->addSpacerItem(spacerV);
     layoutV->addLayout(layoutH);
     this->setLayout(layoutV);
 

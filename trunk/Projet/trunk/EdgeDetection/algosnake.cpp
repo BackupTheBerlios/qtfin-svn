@@ -79,7 +79,6 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal offsetX, qreal offse
 
     for(int i = 0; i < _scircle->getSPointNb(); i++){
         QPointF point = _scircle->getQPointRotate(i, angle, scale);
-        qDebug("point : (%f, %f)" , point.x(), point.y());
     }
 
     /**
@@ -136,7 +135,6 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal offsetX, qreal offse
     QPointF* nothingP = new QPointF();
     controlPointsToKeep.push_back(np);
     for(int i = np; i < _scircle->getSPointNb() && !finish; i++){
-        qDebug("test1");
         QPointF newPoint = _scircle->getQPointRotate(i, angle, scale) + offsetI;
 
         if(newPoint.y() >= offsetY){
@@ -168,23 +166,18 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal offsetX, qreal offse
                     path.push_back(temp);
                     path.push_back(newPoint);
                     controlPointsToKeep.push_back(i);
-                    qDebug("test1.5");
-                    qDebug("taille de la liste : %d", controlPointsToKeep.size());
                 }
             }
             if(!isCP){
                 path.push_back(newPoint);
                 controlPointsToKeep.removeLast();
                 controlPointsToKeep.push_back(i);
-                qDebug("test1.75");
-                qDebug("taille de la liste : %d", controlPointsToKeep.size());
             }
         }
     }
 
 
     for(int i = 0; i < np && !finish; i++){
-        qDebug("test2");
         QPointF newPoint = _scircle->getQPointRotate(i, angle, scale) + offsetI;
 
         if(newPoint.y() >= offsetY){
@@ -216,14 +209,12 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal offsetX, qreal offse
                     path.push_back(temp);
                     path.push_back(newPoint);
                     controlPointsToKeep.push_back(i);
-                    qDebug("test2.5");
                 }
             }
             if(!isCP){
                 path.push_back(newPoint);
                 controlPointsToKeep.removeLast();
                 controlPointsToKeep.push_back(i);
-                qDebug("test2.75");
             }
         }
     }
@@ -231,7 +222,6 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal offsetX, qreal offse
     if(!finish){
         return false;
     }
-    qDebug("test3");
 
     /**
      * Ajout des points dans le project File avec les points de contrôle
@@ -245,9 +235,7 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal offsetX, qreal offse
     /**
      * Vérifie si le second point est sur le talon
      */
-     qDebug("taille de la liste : %d", controlPointsToKeep.size());
      if(controlPointsToKeep.value(1) == secondPoint){
-         qDebug("test4");
         /**
          * le second point est sur le talon
          */
@@ -292,7 +280,6 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal offsetX, qreal offse
          * pour le reste des points sauf le dernier
          */
         for(int i = 3; i < controlPointsToKeep.size() - 1; i++){
-            qDebug("test4");
             /**
              * recherche de l'index du point de controle courant
              */

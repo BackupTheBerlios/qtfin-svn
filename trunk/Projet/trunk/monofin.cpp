@@ -311,36 +311,11 @@ void Monofin::keepBezierCurve(bool a)
 
 void Monofin::launch()
 {
-    if(this->_isEmpty){
-            QMessageBox msg;
-            msg.setText(tr("Painting zone is empty !"));
-            msg.setIcon(QMessageBox::Information);
-            msg.setStandardButtons(QMessageBox::Ok);
-            msg.setDefaultButton(QMessageBox::Ok);
-            msg.exec();
-        }else{
-            if(_scene->existIntersectionsBetweenLines()){
-                QMessageBox msg;
-                msg.setText(tr("Some lines are intersecting in the shape"));
-                msg.setInformativeText(tr("Do you still want to execute the simulation ?"));
-                msg.setIcon(QMessageBox::Warning);
-                msg.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-                msg.setDefaultButton(QMessageBox::No);
-                int ret = msg.exec();
-                if(ret == QMessageBox::Yes){
-                    _generator->show();
-                }
-            }else{
-            _generator->show();
-        }
-    }
+    _generator->show();
 }
 
 void Monofin::loadForm(QString path)
 {
-    if(_actionCreatePolygon->isChecked()){
-        _actionCreatePolygon->trigger();
-    }
     _projectFile->loadForm(path);
     this->updateScene();
 }
@@ -602,6 +577,7 @@ void Monofin::on_actionRemoveLayer_triggered()
 
 void Monofin::updateScene()
 {
+    _projectFile->saveProject("./Results/MaMonopalmeMonofin1", "test");
     _scene->updateMonofinDrawing();
 }
 
@@ -708,12 +684,10 @@ void Monofin::createToolBar()
 
     _actionIncreaseWindowSize = new QAction(this);
     _actionIncreaseWindowSize->setObjectName(QString::fromUtf8("actionIncreaseWindowSize"));
-    _actionIncreaseWindowSize->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Plus));
     _actionIncreaseWindowSize->setIcon(QIcon(":/icons/drawing/increaseSizeWindow.png"));
 
     _actionDecreaseWindowSize = new QAction(this);
     _actionDecreaseWindowSize->setObjectName(QString::fromUtf8("actionDecreaseWindowSize"));
-    _actionDecreaseWindowSize->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Minus));
     _actionDecreaseWindowSize->setIcon(QIcon(":/icons/drawing/decreaseSizeWindow.png"));
 
     _increaseGridUnitSize = new QAction(this);
@@ -814,7 +788,7 @@ void Monofin::initialize()
     _layerView = new LayerView(_projectFile);
     if (!_scene.isNull())
         _scene->deleteLater();
-    _scene = new PaintingScene(800, 600, _projectFile);
+    _scene = new PaintingScene(1024, 768, _projectFile);
 
     _layout->addWidget(new PaintingView(_scene.data(), this));
     _layout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Ignored, QSizePolicy::MinimumExpanding));

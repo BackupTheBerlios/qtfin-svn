@@ -133,10 +133,21 @@ void MainWindow::addFormToLibrary()
                     qDebug("Directory not existing");
                     dir.mkpath(_libraryPath);
                 }
-            if(QFile::exists(path)){
-            QMessageBox msg;
-            msg.setText(tr("File already existing"));
-            msg.setIcon(QMessageBox::Question);                    msg.setInformativeText(("Overwrite the file ?"));                    msg.setStandardButtons(QMessageBox::Yes | QMessageBox::No);                    msg.setDefaultButton(QMessageBox::No);                    int ret = msg.exec();                    if(ret == QMessageBox::Yes){                        this->activeMonofin()->saveForm(path);                    }                }else{                    this->activeMonofin()->saveForm(path);                }            }
+                if(QFile::exists(path)){
+                    QMessageBox msg;
+                    msg.setText(tr("File already existing"));
+                    msg.setIcon(QMessageBox::Question);
+                    msg.setInformativeText(("Overwrite the file ?"));
+                    msg.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+                    msg.setDefaultButton(QMessageBox::No);
+                    int ret = msg.exec();
+                    if(ret == QMessageBox::Yes){
+                        this->activeMonofin()->saveForm(path);
+                    }
+                }else{
+                    this->activeMonofin()->saveForm(path);
+                }
+            }
         }
     }
     this->updateLibrary();}
@@ -144,11 +155,22 @@ void MainWindow::addFormToLibrary()
 void MainWindow::launch()
 {
     if (activeMonofin()) {
-        activeMonofin()->launch();
+            activeMonofin()->launch();
     }
 }
 
-void MainWindow::loadForm(QListWidgetItem *item){    if(this->activeMonofin() == NULL){        this->newEmptyProject();    }        if(this->activeMonofin() != NULL){        if(item->type() == FormItem::Type){            this->activeMonofin()->loadForm(((FormItem*)item)->path());        }    }}void MainWindow::preview3D()
+void MainWindow::loadForm(QListWidgetItem *item){
+    if(this->activeMonofin() == NULL){
+        this->newEmptyProject();
+    }
+    if(this->activeMonofin() != NULL){
+        if(item->type() == FormItem::Type){
+            this->activeMonofin()->loadForm(((FormItem*)item)->path());
+        }
+    }
+}
+
+void MainWindow::preview3D()
 {
     if (activeMonofin()) {
         activeMonofin()->preview3D();
@@ -229,7 +251,30 @@ void MainWindow::openRecentFile()
         loadFile(action->data().toString());
 }
 
-void MainWindow::removeForm(){    QListWidgetItem* item = _listWidgetForms->currentItem();    if(item != NULL){        if(item->type() == FormItem::Type){            QString path(((FormItem*)item)->path());            QFile file(path);            if(file.exists()){                QMessageBox msg;                msg.setText(tr("Remove file"));                msg.setIcon(QMessageBox::Question);                msg.setInformativeText(("Are you sure ?"));                msg.setStandardButtons(QMessageBox::Yes | QMessageBox::No);                msg.setDefaultButton(QMessageBox::No);                int ret = msg.exec();                if(ret == QMessageBox::Yes){                    file.remove();                    this->updateLibrary();                }            }        }    }}bool MainWindow::save()
+void MainWindow::removeForm(){
+    QListWidgetItem* item = _listWidgetForms->currentItem();
+    if(item != NULL){
+        if(item->type() == FormItem::Type){
+            QString path(((FormItem*)item)->path());
+            QFile file(path);
+            if(file.exists()){
+                QMessageBox msg;
+                msg.setText(tr("Remove file"));
+                msg.setIcon(QMessageBox::Question);
+                msg.setInformativeText(("Are you sure ?"));
+                msg.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+                msg.setDefaultButton(QMessageBox::No);
+                int ret = msg.exec();
+                if(ret == QMessageBox::Yes){
+                    file.remove();
+                    this->updateLibrary();
+                }
+            }
+        }
+    }
+}
+
+bool MainWindow::save()
 {
     if (activeMonofin())
         return activeMonofin()->save();
@@ -667,10 +712,6 @@ void MainWindow::updateLibrary()
                 QIcon(QPixmap::fromImage(Data::ProjectFile::getImage(locale))),
                 fileNames[i].left(fileNames[i].size()-5),
                 locale);
-
-        if(Data::ProjectFile::getImage(locale).isNull())
-            qDebug("image null");
-        qDebug() << locale;
 
         _listWidgetForms->setIconSize(QSize(64,64));        _listWidgetForms->addItem(item);
 

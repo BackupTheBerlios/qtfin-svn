@@ -311,11 +311,36 @@ void Monofin::keepBezierCurve(bool a)
 
 void Monofin::launch()
 {
-    _generator->show();
+    if(this->_isEmpty){
+            QMessageBox msg;
+            msg.setText(tr("Painting zone is empty !"));
+            msg.setIcon(QMessageBox::Information);
+            msg.setStandardButtons(QMessageBox::Ok);
+            msg.setDefaultButton(QMessageBox::Ok);
+            msg.exec();
+        }else{
+            if(_scene->existIntersectionsBetweenLines()){
+                QMessageBox msg;
+                msg.setText(tr("Some lines are intersecting in the shape"));
+                msg.setInformativeText(tr("Do you still want to execute the simulation ?"));
+                msg.setIcon(QMessageBox::Warning);
+                msg.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+                msg.setDefaultButton(QMessageBox::No);
+                int ret = msg.exec();
+                if(ret == QMessageBox::Yes){
+                    _generator->show();
+                }
+            }else{
+            _generator->show();
+        }
+    }
 }
 
 void Monofin::loadForm(QString path)
 {
+    if(_actionCreatePolygon->isChecked()){
+        _actionCreatePolygon->trigger();
+    }
     _projectFile->loadForm(path);
     this->updateScene();
 }
@@ -683,10 +708,12 @@ void Monofin::createToolBar()
 
     _actionIncreaseWindowSize = new QAction(this);
     _actionIncreaseWindowSize->setObjectName(QString::fromUtf8("actionIncreaseWindowSize"));
+    _actionIncreaseWindowSize->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Plus));
     _actionIncreaseWindowSize->setIcon(QIcon(":/icons/drawing/increaseSizeWindow.png"));
 
     _actionDecreaseWindowSize = new QAction(this);
     _actionDecreaseWindowSize->setObjectName(QString::fromUtf8("actionDecreaseWindowSize"));
+    _actionDecreaseWindowSize->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Minus));
     _actionDecreaseWindowSize->setIcon(QIcon(":/icons/drawing/decreaseSizeWindow.png"));
 
     _increaseGridUnitSize = new QAction(this);

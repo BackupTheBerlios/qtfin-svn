@@ -211,7 +211,7 @@ void PixmapItem::rotate2(qreal angle){
 }
 
 void PixmapItem::scaled(qreal scale){
-    if(scale >= 0.01 && scale <= 2){
+    if(scale >= 0.01 && scale <= 10){
         _scale = scale;
         ((RotateCircle*)(this->childItems().first()))->setScale(_scale);
         X = dimInitWidth * _scale;
@@ -254,7 +254,7 @@ void PixmapItem::hoverEnterEvent(QGraphicsSceneHoverEvent * event){
 
 void PixmapItem::wheelEvent ( QGraphicsSceneWheelEvent * event ){
     event->accept();
-    if(event->delta() > 0 && _scale < 2)
+    if(event->delta() > 0 && _scale < 10)
         this->scaled(_scale + 0.01);
     if(event->delta() < 0 &&_scale > 0.01)
         this->scaled(_scale - 0.01);

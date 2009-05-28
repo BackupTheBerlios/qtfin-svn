@@ -41,7 +41,7 @@ public:
      * setter
      * @param monofin : the project file
      */
-    void setProjectFile(Data::ProjectFile *monofin) { _monofin = monofin; }
+    void setProjectFile(Data::ProjectFile *monofin, qreal width = 0, qreal height = 0);
 
 public slots:
     /**

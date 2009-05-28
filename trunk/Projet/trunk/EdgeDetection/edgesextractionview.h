@@ -22,11 +22,13 @@ public:
     qreal getScale();
 
 protected:
-    //void resizeEvent(QResizeEvent *event);
+    void resizeEvent(QResizeEvent *event);
     EdgesExtractionScene* _scene; // the scene contained in the view
 
     qreal _initHeight;
     qreal _initWidth;
+
+    qreal _scale;
 
 };
 

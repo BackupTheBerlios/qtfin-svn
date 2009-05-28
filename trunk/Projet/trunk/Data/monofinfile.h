@@ -165,8 +165,16 @@ namespace Data{
          */
         int getHowManyLayers();
 
+        /**
+         * return the value of the longest layer
+         *@return a float, corresponding to the longest value found for the attibute length
+         */
         float getLayerMaxLength();
 
+        /**
+         * return the value of the highest layer
+         *@return a float, corresponding to the highest value found for the attibute length
+         */
         float getLayerMaxHeight();
 
         /***********
@@ -199,10 +207,22 @@ namespace Data{
          */
         void getSegment(int segmentKey, int &intersectionPointKey1, int &intersectionPointKey2, int &controlPointKey);
 
+        /**
+         * returns the list of all the keys of all the segments
+         *@return a list of int, the keys of all the segments
+         */
         QList<int> getAllSegmentKeys();
 
+        /**
+         * returns the list of all the keys of all the intersectionPoints
+         *@return a list of int, the keys of all the intersectionPoints
+         */
         QList<int> getAllIntersectionPointKeys();
 
+        /**
+         * returns the list of all the keys of all the controlPoints
+         *@return a list of int, the keys of all the controlPoints
+         */
         QList<int> getAllControlPointKeys();
 
         /**
@@ -211,18 +231,51 @@ namespace Data{
           */
         QList<int> getExtremityPoint();
 
+        /**
+          * returns for one point the list of the segment which have this point for extremity
+          *@param pointKey an integer, the key of the point concerned
+          *@return QList<int>, list of the linked segments' keys
+          */
         QList<int> getSegmentKeysLinkedToPoint(int pointKey);
 
+       /**
+         * sends the startHistory request to the lower level
+         *@param t Modification (see DataConstants.h), sent regardless of t type
+         */
         void startHistory(Modification t);
 
+       /**
+         * sends the retrieveHistory request to the lower level
+         * gets the result of each lower class and merge it
+         *@param t Modification (see DataConstants.h), sent regardless of t type
+         *@return a list of historyHolders from all the lower classes
+         */
         QList<HistoryHolder<Modification> *> retrieveHistory(Modification t);
 
+        /**
+         * performs an undo operation using the list of HistoryHolder
+         * sends the undo command to the lower classes
+         *@param history a list of HistoryHolders which has to be of the MonofinSurface type
+         */
         void undo(QList<HistoryHolder<Modification> *> history);
 
+        /**
+         * allows the SaveVisitor to explore the lower level
+         * Call the accept method of lower classes
+         *@param sv pointer to a SaveVisitor, which is going to explore each lower class
+         */
         void accept(SaveVisitor * sv);
 
+        /**
+         * allows the LoadVisitor to explore the lower level
+         * Call the accept method of lower classes
+         *@param lv pointer to a LoadVisitor, which is going to explore each lower class
+         */
         void accept(LoadVisitor *lv);
 
+        /**
+         * clear all the structure (delete everything), undo/redo works on it
+         */
         void clearProfil();
 
     private:

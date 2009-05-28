@@ -48,13 +48,6 @@ protected:
     SCircle* _scircle; // the "snake circle" that be used to detect the form
     QImage* _image; // image that contains the form that will be detected
 
-
-    /**
-     * @param v integer
-     * @return the absolute value of a signed integer
-     */
-    int valAbs(int v);
-
 };
 
 inline void AlgoSnake::reinitialize(){

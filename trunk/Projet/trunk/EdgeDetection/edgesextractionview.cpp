@@ -1,5 +1,6 @@
 #include "edgesextractionview.h"
 #include <QPainter>
+#include <QRect>
 
 EdgesExtractionView::EdgesExtractionView(EdgesExtractionScene* scene, QWidget* parent):
         QGraphicsView(scene, parent), _scene(scene)
@@ -7,7 +8,6 @@ EdgesExtractionView::EdgesExtractionView(EdgesExtractionScene* scene, QWidget* p
     _initWidth = this->width() - 10;
     _initHeight = this->height() - 10;
 
-    //this->resize(1000, 700);
 
     qreal sceneWidth = this->scene()->width();
     qreal sceneHeight = this->scene()->height();
@@ -15,7 +15,6 @@ EdgesExtractionView::EdgesExtractionView(EdgesExtractionScene* scene, QWidget* p
     qreal scaleX = _initWidth / sceneWidth;
     qreal scaleY = _initHeight / sceneHeight;
 
-    qDebug("scaleX : %f\nscaleY : %f", this->scene()->width(), this->scene()->height());
 
     if(scaleX <= scaleY){
         this->scale(scaleX, scaleX);
@@ -68,4 +67,18 @@ void EdgesExtractionView::resizeEvent(QResizeEvent *event)
    _initWidth = this->width() - 10;
    _initHeight = this->height() - 10;
    this->reScale();
+}
+
+void EdgesExtractionView::drawForeground(QPainter *painter, const QRectF &rect){
+
+    painter->setBrush(QBrush("black"));
+    painter->setOpacity(0.75);
+
+    QPainterPath path1;
+    path1.addRect(rect);
+    QPainterPath path2;
+    path2.addRect(this->sceneRect());
+    path1 -= path2;
+    painter->drawPath(path1);
+
 }

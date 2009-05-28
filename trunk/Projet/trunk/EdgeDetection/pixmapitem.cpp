@@ -1,9 +1,9 @@
 #include <QGraphicsScene>
 #include <QTransform>
-//#include <stdio.h>
+#include <stdio.h>
 #include <math.h>
 #include <QLineF>
-#include <QPointF>
+#include <QpointF>
 #include "pixmapitem.h"
 #include "edgesextractionscene.h"
 

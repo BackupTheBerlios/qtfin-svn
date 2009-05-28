@@ -21,12 +21,6 @@ AlgoSnake::AlgoSnake(SCircle* scircle):
     _scircle->addSPoint((int)nbPoints);
 }
 
-int AlgoSnake::valAbs(int v){
-    if (v < 0)
-        return - v;
-    return v;
-}
-
 void AlgoSnake::setImage(QImage* image){
         _image = image;
 }
@@ -42,7 +36,7 @@ bool AlgoSnake::edgesDetection(qreal offsetX, qreal offsetY){
                 if(_image->valid(qp->toPoint())){
                     int gray = qGray(_image->pixel(qp->toPoint()));
                     if(sp->grayValue() != -1){
-                        int t = valAbs(sp->grayValue() - gray);
+                        int t = qAbs(sp->grayValue() - gray);
                         if(t > 25)
                         sp->setRadiusFixed(true);
                     }

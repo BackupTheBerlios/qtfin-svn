@@ -24,6 +24,7 @@ public:
 protected:
     void resizeEvent(QResizeEvent *event);
     EdgesExtractionScene* _scene; // the scene contained in the view
+    virtual void drawForeground(QPainter *painter, const QRectF &rect);
 
     qreal _initHeight;
     qreal _initWidth;

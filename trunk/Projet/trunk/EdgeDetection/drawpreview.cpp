@@ -7,13 +7,13 @@
 
 using namespace Data;
 
-DrawPreview::DrawPreview(QWidget* parent, ProjectFile* preview, qreal width, qreal height, qreal scale) :
+DrawPreview::DrawPreview(QWidget* parent, ProjectFile* preview, qreal width, qreal height) :
         QWidget(parent, Qt::Window), _preview(preview), _width(width), _height(height)
 {
     this->setWindowModality(Qt::WindowModal);
-    this->resize(1024, 600);
+    this->resize(1024, 768);
 
-    _view = new DrawPreviewView(this, preview, width, height, scale);
+    _view = new DrawPreviewView(this, preview, width, height);
 
     _keepButton = new QPushButton(this);
     _keepButton->setIcon(QIcon("../resources/icons/SnakeOK"));
@@ -24,9 +24,9 @@ DrawPreview::DrawPreview(QWidget* parent, ProjectFile* preview, qreal width, qre
     _doNotKeepButton->setIconSize(QSize(50, 50));
     _doNotKeepButton->setToolTip(tr("Do not keep the form"));
     _doNotKeepButton->setDefault(true);
-    QSpacerItem* spacerV = new QSpacerItem(10, 5, QSizePolicy::Fixed, QSizePolicy::Expanding);
-    QSpacerItem* spacerH1 = new QSpacerItem(10, 10, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    QSpacerItem* spacerH2 = new QSpacerItem(10, 10, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    QSpacerItem* spacerV = new QSpacerItem(10, 5, QSizePolicy::Minimum, QSizePolicy::Expanding);
+    QSpacerItem* spacerH1 = new QSpacerItem(10, 10, QSizePolicy::Expanding, QSizePolicy::Minimum);
+    QSpacerItem* spacerH2 = new QSpacerItem(10, 10, QSizePolicy::Expanding, QSizePolicy::Minimum);
     QVBoxLayout* layoutV = new QVBoxLayout(this);
     QHBoxLayout* layoutH= new QHBoxLayout(this);
     layoutH->addSpacerItem(spacerH1);

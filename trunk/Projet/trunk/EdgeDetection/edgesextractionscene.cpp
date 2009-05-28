@@ -63,3 +63,5 @@ void EdgesExtractionScene::itemPositionChanged(){
 void EdgesExtractionScene::itemScaleChanged(){
     emit this->scaleChanged();
 }
+
+    

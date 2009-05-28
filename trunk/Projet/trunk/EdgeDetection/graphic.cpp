@@ -34,6 +34,8 @@ Graphic::Graphic(QWidget *parent, ProjectFile* monofin, qreal width, qreal heigh
     if(_monofin == 0)
         _monofin = new ProjectFile();
 
+    this->resize(1024, 768);
+
 }
 
 
@@ -185,7 +187,7 @@ void Graphic::startAlgo(){
             QMessageBox::warning(this, "No edge detected", "Warning, the image is positionned badly !\nThe axe of symetry is not detected !");
             _algo->reinitialize();
         }else{
-            _preview = new DrawPreview(this, _monofin, _graphicsScene->width(), _graphicsScene->height(), _graphicsView->getScale());
+            _preview = new DrawPreview(this, _monofin, _graphicsScene->width(), _graphicsScene->height());
             QObject::connect(_preview, SIGNAL(kept()), this, SIGNAL(kept()));
             QObject::connect(_preview, SIGNAL(kept()), this, SLOT(close()));
             QObject::connect(_preview, SIGNAL(doNotKept()), this, SLOT(doNotKept()));

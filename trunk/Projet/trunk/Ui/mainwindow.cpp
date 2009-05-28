@@ -4,7 +4,7 @@
 #include "startupdialog.h"
 #include "lib/qtwindowlistmenu.h"
 #include "Drawing/paintingscene.h"
-#include "EdgeDetection/graphic.h"
+#include "Ui/graphic.h"
 
 #include <QtCore/QDebug>
 #include <QtCore/QDir>
@@ -190,7 +190,7 @@ void MainWindow::newProjectFromImage()
     Data::ProjectFile *projectFile = new Data::ProjectFile;
     if (_graphicView.isNull()) {
         qDebug("graphicview not existing, creating a new one.");
-        _graphicView = new Graphic(0, projectFile, 800, 600);
+        _graphicView = new Graphic(this, projectFile, 800, 600);
     } else {
         qDebug("existing graphicview.");
         _graphicView->setProjectFile(projectFile);

@@ -11,7 +11,7 @@
 #include <QtGui/QListWidgetItem>
 
 #include "Data/projectfile.h"
-#include "EdgeDetection/graphic.h"
+#include "Ui/graphic.h"
 #include "formitem.h"
 class Monofin;
 class PaintingScene;

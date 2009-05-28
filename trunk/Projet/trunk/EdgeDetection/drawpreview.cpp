@@ -24,7 +24,6 @@ DrawPreview::DrawPreview(QWidget* parent, ProjectFile* preview, qreal width, qre
     _doNotKeepButton->setIconSize(QSize(50, 50));
     _doNotKeepButton->setToolTip(tr("Do not keep the form"));
     _doNotKeepButton->setDefault(true);
-    QSpacerItem* spacerV = new QSpacerItem(10, 5, QSizePolicy::Minimum, QSizePolicy::Expanding);
     QSpacerItem* spacerH1 = new QSpacerItem(10, 10, QSizePolicy::Expanding, QSizePolicy::Minimum);
     QSpacerItem* spacerH2 = new QSpacerItem(10, 10, QSizePolicy::Expanding, QSizePolicy::Minimum);
     QVBoxLayout* layoutV = new QVBoxLayout(this);

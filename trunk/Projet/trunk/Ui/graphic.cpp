@@ -25,7 +25,10 @@ Graphic::Graphic(QWidget *parent, ProjectFile* monofin, qreal width, qreal heigh
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->addWidget(_graphicsView);
 
+    _graphic.graphicWidget->layout()->deleteLater();
+    qDebug("Initialisation Layout");
     _graphic.graphicWidget->setLayout(layout);
+    qDebug("Ajout Layout");
     QObject::connect(_graphic.OpenButton, SIGNAL(clicked()),
                      this, SLOT(setPixmap()));
     QObject::connect(_graphic.CancelButton, SIGNAL(clicked()),
@@ -66,7 +69,7 @@ void Graphic::setSize(qreal width, qreal height){
     _graphicsView->reScale();
     _graphicsScene->deleteLater();
     _graphicsScene = newScene;
-
+    _graphic.parametersButton->setDisabled(true);
 }
 
 void Graphic::setProjectFile(ProjectFile *monofin, qreal width, qreal height){

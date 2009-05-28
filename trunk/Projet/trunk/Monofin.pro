@@ -38,7 +38,6 @@ SOURCES += main.cpp \
     EdgeDetection/algosnake.cpp \
     EdgeDetection/drawpreview.cpp \
     EdgeDetection/drawpreviewview.cpp \
-    EdgeDetection/graphic.cpp \
     EdgeDetection/edgesextractionscene.cpp \
     EdgeDetection/edgesextractionview.cpp \
     EdgeDetection/pixmapitem.cpp \
@@ -58,7 +57,8 @@ SOURCES += main.cpp \
     Ui/generatecomsolfiledialog.cpp \
     Ui/insertlayerdialog.cpp \
     Ui/layerindexdialog.cpp \
-    Ui/formitem.cpp
+    Ui/formitem.cpp \
+    Ui/graphic.cpp
 HEADERS += monofin.h \
     lib/qtwindowlistmenu.h \
     Data/DataConstants.h \
@@ -95,7 +95,6 @@ HEADERS += monofin.h \
     EdgeDetection/algosnake.h \
     EdgeDetection/drawpreview.h \
     EdgeDetection/drawpreviewview.h \
-    EdgeDetection/graphic.h \
     EdgeDetection/edgesextractionscene.h \
     EdgeDetection/edgesextractionview.h \
     EdgeDetection/pixmapitem.h \
@@ -115,14 +114,16 @@ HEADERS += monofin.h \
     Ui/generatecomsolfiledialog.h \
     Ui/insertlayerdialog.h \
     Ui/layerindexdialog.h \
-    Ui/formitem.h
+    Ui/formitem.h \
+    Ui/graphic.h
 FORMS += Ui/layerParameters.ui \
     Ui/parametersDialog.ui \
     Ui/startupDialog.ui \
-    EdgeDetection/graphic.ui \
     Ui/insertlayerdialog.ui \
     Ui/layerindexdialog.ui \
-    Ui/generatecomsolfiledialog.ui
+    Ui/generatecomsolfiledialog.ui \
+    Ui/graphic.ui \
+    Ui/parametersModifier.ui
 TRANSLATIONS = translations/monofin_de.ts \
     translations/monofin_en.ts \
     translations/monofin_fr.ts

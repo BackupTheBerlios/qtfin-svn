@@ -20,7 +20,6 @@ AlgoSnake::AlgoSnake(SCircle* scircle):
 {
     int nbPoints = qRound(_scircle->radius());
     _numberPointsSnake = nbPoints;
-    qDebug("nombre points snake : %f", nbPoints);
     _scircle->addSPoint(nbPoints);
 }
 

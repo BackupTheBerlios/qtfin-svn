@@ -5,15 +5,14 @@
 #include <QtGui/QWidget>
 #include <QDialog>
 #include "ui_graphic.h"
-#include "ui_parametersModifier.h"
+#include "../ui_parametersModifier.h"
 
-#include "edgesextractionscene.h"
-#include "edgesextractionview.h"
-#include "pixmapitem.h"
-#include "rotatecircle.h"
-#include "algosnake.h"
-#include "drawpreview.h"
-#include "../Drawing/paintingscene.h"
+#include "../EdgeDetection/edgesextractionscene.h"
+#include "../EdgeDetection/edgesextractionview.h"
+#include "../EdgeDetection/pixmapitem.h"
+#include "../EdgeDetection/rotatecircle.h"
+#include "../EdgeDetection/algosnake.h"
+#include "../EdgeDetection/drawpreview.h"
 
 
 

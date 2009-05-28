@@ -673,6 +673,12 @@ namespace Data{
         toInsert->whereUsed.clear();
         toInsert->countUsage = 0;
         _intersectionPointTable.insert(key,toInsert);
+
+         //manage undo/redo history
+        HistoryHolder<Modification> * current = getCurrentHistoryHolder(MonofinSurface);
+        current->pushInt(key);
+        current->pushInt(AddIntersectionPoint);
+
         if (key>=_intersectionKey)
             _intersectionKey++;
     }
@@ -684,12 +690,19 @@ namespace Data{
         toInsert->whereUsed.clear();
         toInsert->countUsage = 0;
         _controlPointTable.insert(key,toInsert);
+
+         //manage undo/redo history
+        HistoryHolder<Modification> * current = getCurrentHistoryHolder(MonofinSurface);
+        current->pushInt(key);
+        current->pushInt(AddControlPoint);
+
         if (key>=_controlKey)
             _controlKey++;
     }
 
     void Surface::loadSegment(int segmentKey,int intersectionPointKey1, int intersectionPointKey2, int controlPointKey){
         insertSegment(segmentKey,intersectionPointKey1, intersectionPointKey2,controlPointKey);
+
         if(segmentKey>=_segmentKey)
             _segmentKey++;
     }

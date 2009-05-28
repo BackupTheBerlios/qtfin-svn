@@ -170,7 +170,7 @@ namespace Data{
         save.save(path.toStdString(),projectName.toStdString());
     }
 
-    void ProjectFile::saveForm(const QString &path, const QString &projectName, QImage picture){
+    void ProjectFile::saveForm(const QString &path, const QString &projectName, QImage &picture){
         XMLSaveVisitor save;
         _monofinGeometry->accept(&save);
         save.saveForm(path.toStdString(),projectName.toStdString(),picture);

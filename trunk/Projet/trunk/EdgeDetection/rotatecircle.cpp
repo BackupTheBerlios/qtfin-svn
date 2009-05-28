@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <QPen>
-#include <QgraphicsScene>
+#include <QGraphicsScene>
 #include "edgesextractionscene.h"
 
 #define PI 3.14159265358979323846

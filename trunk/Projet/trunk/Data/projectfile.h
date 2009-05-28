@@ -101,7 +101,7 @@ namespace Data{
 
         void saveProject(const QString &path, const QString &projectName = QString("Untitled"));
 
-        void saveForm(const QString &path, const QString &projectName = QString("Untitled"), QImage &picture = QImage());
+        void saveForm(const QString &path, const QString &projectName = QString("Untitled"), QImage picture = QImage());
 
         QString loadProject(const QString &path);
 

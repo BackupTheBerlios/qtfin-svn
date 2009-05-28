@@ -155,8 +155,8 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset>
-           <normaloff>../resources/icons/LaunchSnake.png</normaloff>../resources/icons/LaunchSnake.png</iconset>
+          <iconset resource="../resources/icons.qrc">
+           <normaloff>:/icons/snake/snakeLaunch.png</normaloff>:/icons/snake/snakeLaunch.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -181,8 +181,8 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset>
-           <normaloff>../resources/icons/SnakeLoadImage.png</normaloff>../resources/icons/SnakeLoadImage.png</iconset>
+          <iconset resource="../resources/icons.qrc">
+           <normaloff>:/icons/snake/snakeLoadImage.png</normaloff>:/icons/snake/snakeLoadImage.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -254,6 +254,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../resources/icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

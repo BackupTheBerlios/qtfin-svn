@@ -29,7 +29,8 @@ namespace Data{
         test.close();
     }
 
-    QImage XMLLoadVisitor::getImage(std::string path){
+    QImage XMLLoadVisitor::getImage(std::string path) const
+    {
         QFile xmlFile(QString(path.c_str()));
         QDomDocument main("picture");
         main.setContent(&xmlFile);

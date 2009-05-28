@@ -4,7 +4,7 @@
 #include "startupdialog.h"
 #include "lib/qtwindowlistmenu.h"
 #include "Drawing/paintingscene.h"
-#include "Edgedetection/graphic.h"
+#include "EdgeDetection/graphic.h"
 
 #include <QtCore/QDebug>
 #include <QtCore/QDir>
@@ -531,7 +531,7 @@ void MainWindow::createMenus()
 QMdiSubWindow *MainWindow::createMonofin(Data::ProjectFile *projectFile)
 {
     qDebug("MainWindow::createMonofin()");
-    Monofin *monofin = new Monofin();
+    Monofin *monofin = new Monofin(projectFile);
     connect(monofin, SIGNAL(currentFileChanged()), this, SLOT(updateRecentFileActions()));
 
     QMdiSubWindow *msw = _mdiArea->addSubWindow(monofin);

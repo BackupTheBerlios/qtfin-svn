@@ -5,6 +5,7 @@
 #include <QFile>
 #include <QIODevice>
 #include <QStringList>
+#include <QtCore/QDebug>
 
 using namespace Scripting;
 
@@ -123,6 +124,6 @@ void ScriptManager::_error(QProcess::ProcessError error) {
 
 void ScriptManager::_debug_output() {
 	while (process->canReadLine()) {
-		qDebug(process->readLine());
+                qDebug() << process->readLine();
 	}
 }

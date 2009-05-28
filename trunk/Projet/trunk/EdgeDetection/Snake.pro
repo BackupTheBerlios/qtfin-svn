@@ -15,8 +15,7 @@ HEADERS += abstractalgoedgesextraction.h \
     pixmapitem.h \
     rotatecircle.h \
     scircle.h \
-    spoint.h \
-    ui_snake.h
+    spoint.h
 FORMS += graphic.ui
 SOURCES += abstractalgoedgesextraction.cpp \
     algosnake.cpp \

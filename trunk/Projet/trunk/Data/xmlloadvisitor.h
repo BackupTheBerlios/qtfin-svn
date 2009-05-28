@@ -23,7 +23,7 @@ namespace Data{
 
         void load(std::string path);
         void loadForm(std::string path);
-        QImage getImage(std::string path);
+        QImage getImage(std::string path) const;
 
         void visitSurface(Surface *sf);
         void visitProfil(Profil *pr);

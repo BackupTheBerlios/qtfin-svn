@@ -19,7 +19,7 @@ namespace Data{
 
         virtual void load(std::string path) = 0;
         virtual void loadForm(std::string path) = 0;
-        virtual QImage getImage(std::string path) = 0;
+        virtual QImage getImage(std::string path) const = 0;
 
         virtual void visitSurface(Surface *sf) = 0;
         virtual void visitProfil(Profil *pr) = 0;

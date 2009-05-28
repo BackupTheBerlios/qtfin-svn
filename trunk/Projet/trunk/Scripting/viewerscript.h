@@ -6,7 +6,7 @@
 namespace Scripting {
 
 	/**
-	  * Class representing the viewer COMSOL script.
+          * Class representing the viewer COMSOL script.
 	  * The one that generate a picture of the 3D geometry.
 	  */
 	class ViewerScript : public ComsolScript
@@ -32,7 +32,7 @@ namespace Scripting {
 		/**
 		  * Write the settings of the script.
 		  */
-		void ViewerScript::writeMonofinSettings(QTextStream& script, Data::ProjectFile& data) const;
+                void writeMonofinSettings(QTextStream& script, Data::ProjectFile& data) const;
 
 		/**
 		  * Writes the entry point called of the script.

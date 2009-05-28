@@ -37,6 +37,7 @@ SOURCES += main.cpp \
     EdgeDetection/abstractalgoedgesextraction.cpp \
     EdgeDetection/algosnake.cpp \
     EdgeDetection/drawpreview.cpp \
+    EdgeDetection/drawpreviewview.cpp \
     EdgeDetection/graphic.cpp \
     EdgeDetection/edgesextractionscene.cpp \
     EdgeDetection/edgesextractionview.cpp \
@@ -94,6 +95,7 @@ HEADERS += monofin.h \
     EdgeDetection/abstractalgoedgesextraction.h \
     EdgeDetection/algosnake.h \
     EdgeDetection/drawpreview.h \
+    EdgeDetection/drawpreviewview.h \
     EdgeDetection/graphic.h \
     EdgeDetection/edgesextractionscene.h \
     EdgeDetection/edgesextractionview.h \

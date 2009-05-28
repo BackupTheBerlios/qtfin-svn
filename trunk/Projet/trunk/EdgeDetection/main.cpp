@@ -1,7 +1,7 @@
 #include <QtGui>
 #include <QApplication>
 #include <iostream>
-#include "SPoint.h"
+#include "spoint.h"
 #include "graphic.h"
 
 using namespace std;

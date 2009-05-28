@@ -10,7 +10,7 @@ using namespace Data;
 Graphic::Graphic(QWidget *parent, ProjectFile* monofin, qreal width, qreal height) :
     QWidget(parent, Qt::Window), _monofin(monofin), _preview(NULL)
 {
-    this->setWindowModality(Qt::WindowModal);
+    this->setWindowModality(Qt::ApplicationModal);
     _graphic.setupUi(this);
     if(width == 0 || height == 0){
         _graphicsScene = new EdgesExtractionScene(_graphic.graphicWidget, 800, 600);
@@ -66,14 +66,14 @@ void Graphic::setPixmap(){
                      this, SLOT(setPixmapPositionY(int)));
     }
     QString file = QFileDialog::getOpenFileName(this, tr("Open a file"), QString(),
-                                                tr("Windows Bitmap (*.bmp);;"
+                                                tr("All Supported Image Format (*.bmp *.gif *.jpg *.jpeg *.mng *.png *.pbm *.pgm *.ppm *.tiff *.xbm *.xp;;"
+                                                   "Windows Bitmap (*.bmp);;"
                                                    "Graphic Interchange Format (*.gif);;"
                                                    "JPEG files (*.jpg *.jpeg);;"
                                                    "Portable Network Graphics (*.png);;"
                                                    "Portable Bitmap (*.pbm *.pgm *.ppm);;"
                                                    "Tagged Image File Format (*.tiff);;"
-                                                   "X11 Format (*.xbm *.xpm);;"
-                                                   "All Supported Image Format (*.bmp *.gif *.jpg *.jpeg *.mng *.png *.pbm *.pgm *.ppm *.tiff *.xbm *.xpm"));
+                                                   "X11 Format (*.xbm *.xpm)"));
     if(file != ""){
         QPixmap pix(file);
         _graphicsScene->setPixmap(pix);

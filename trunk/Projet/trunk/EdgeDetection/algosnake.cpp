@@ -15,14 +15,24 @@
 using namespace Data;
 
 AlgoSnake::AlgoSnake(SCircle* scircle):
-        AbstractAlgoEdgesExtraction(), _scircle(scircle), _image(NULL){
-    qreal nbPoints = _scircle->radius();
+        AbstractAlgoEdgesExtraction(), _scircle(scircle), _image(NULL),
+        _coefficientDetectionSnake(25), _precisionPotrace(1.5)
+{
+    int nbPoints = qRound(_scircle->radius());
+    _numberPointsSnake = nbPoints;
     qDebug("nombre points snake : %f", nbPoints);
-    _scircle->addSPoint((int)nbPoints);
+    _scircle->addSPoint(nbPoints);
 }
 
 void AlgoSnake::setImage(QImage* image){
         _image = image;
+}
+
+void AlgoSnake::setParameters(int numberPointsSnake, int coefficientDetectionSnake, qreal precisionPotrace){
+    _numberPointsSnake = numberPointsSnake;
+    _scircle->changeSPointNb(_numberPointsSnake);
+    _coefficientDetectionSnake = coefficientDetectionSnake;
+    _precisionPotrace = precisionPotrace;
 }
 
 bool AlgoSnake::edgesDetection(qreal offsetX, qreal offsetY){
@@ -37,7 +47,7 @@ bool AlgoSnake::edgesDetection(qreal offsetX, qreal offsetY){
                     int gray = qGray(_image->pixel(qp->toPoint()));
                     if(sp->grayValue() != -1){
                         int t = qAbs(sp->grayValue() - gray);
-                        if(t > 25)
+                        if(t > _coefficientDetectionSnake)
                         sp->setRadiusFixed(true);
                     }
                     sp->setGrayValue(qGray(_image->pixel(qp->toPoint())));
@@ -148,8 +158,8 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal offsetX, qreal offse
             QLineF newSegment(path.first(), newPoint);
             bool isCP = false;
             for(int j = 1; j < path.size() && !isCP; j++){
-                QLineF lz1(path.value(j) + QPointF(-1.5, 0), path.value(j) + QPointF(1.5, 0));
-                QLineF lz2(path.value(j) + QPointF(0, -1.5), path.value(j) + QPointF(0, 1.5));
+                QLineF lz1(path.value(j) + QPointF(-_precisionPotrace, 0), path.value(j) + QPointF(_precisionPotrace, 0));
+                QLineF lz2(path.value(j) + QPointF(0, -_precisionPotrace), path.value(j) + QPointF(0, _precisionPotrace));
                 int intersect1 = newSegment.intersect(lz1, nothingP);
                 int intersect2 = newSegment.intersect(lz2, nothingP);
                 if(intersect1 != QLineF::BoundedIntersection && intersect2 != QLineF::BoundedIntersection){
@@ -196,8 +206,8 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal offsetX, qreal offse
             QLineF newSegment(path.first(), newPoint);
             bool isCP = false;
             for(int j = 1; j < path.size() && !isCP; j++){
-                QLineF lz1(path.value(j) + QPointF(-1.5, 0), path.value(j) + QPointF(1.5, 0));
-                QLineF lz2(path.value(j) + QPointF(0, -1.5), path.value(j) + QPointF(0, 1.5));
+                QLineF lz1(path.value(j) + QPointF(-_precisionPotrace, 0), path.value(j) + QPointF(_precisionPotrace, 0));
+                QLineF lz2(path.value(j) + QPointF(0, -_precisionPotrace), path.value(j) + QPointF(0, _precisionPotrace));
                 int intersect1 = newSegment.intersect(lz1, nothingP);
                 int intersect2 = newSegment.intersect(lz2, nothingP);
                 if(intersect1 != QLineF::BoundedIntersection && intersect2 != QLineF::BoundedIntersection){

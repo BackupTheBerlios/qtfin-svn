@@ -11,6 +11,8 @@ public:
 
     void reScale();
 
+    void setProjectFile(Data::ProjectFile *monofin, qreal width = 0, qreal height = 0);
+
 protected:
     Data::ProjectFile* _preview;
 

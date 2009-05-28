@@ -5,6 +5,7 @@
 #include <QtGui/QWidget>
 #include <QDialog>
 #include "ui_graphic.h"
+#include "ui_parametersModifier.h"
 
 #include "edgesextractionscene.h"
 #include "edgesextractionview.h"
@@ -103,11 +104,18 @@ public slots:
      */
     void doNotKept();
 
+    void changeParameters();
+
+    void doNotChangeParameters();
+
 signals:
     void kept();
 
 protected:
     Ui::Form _graphic; // the graphic's interface
+    QDialog* _parametersDialog;
+    Ui::Dialog _diag;
+
     EdgesExtractionScene* _graphicsScene; // the scene wich contains all of the items (image, "rotateCircle",...)
     EdgesExtractionView* _graphicsView; // the view wich contains the scene (_graphicsScene)
     AlgoSnake* _algo; // object wich contains the two algorithms working on the opened image

@@ -11,13 +11,15 @@ class DrawPreview : public QWidget{
 public:
     DrawPreview(QWidget* parent, Data::ProjectFile* preview, qreal width, qreal height);
 
+    void setProjectFile(Data::ProjectFile *monofin, qreal width = 0, qreal height = 0);
+
 protected:
     Data::ProjectFile* _preview;
 
     qreal _width;
     qreal _height;
 
-    QGraphicsView* _view;
+    DrawPreviewView* _view;
     QPushButton* _keepButton;
     QPushButton* _doNotKeepButton;
 

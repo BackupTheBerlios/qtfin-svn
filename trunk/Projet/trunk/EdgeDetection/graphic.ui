@@ -137,6 +137,23 @@
       </layout>
      </item>
      <item>
+      <widget class="QPushButton" name="parametersButton">
+       <property name="text">
+        <string>Parameters</string>
+       </property>
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="Line" name="line_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
         <widget class="QPushButton" name="StartButton">

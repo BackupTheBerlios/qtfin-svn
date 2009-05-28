@@ -43,10 +43,22 @@ public:
      */
     virtual void reinitialize();
 
+    void setParameters(int numberPointsSnake, int coefficientDetectionSnake, qreal precisionPotrace);
+
+    int numberPointsSnake(){return _numberPointsSnake;}
+
+    int coefficientDetectionSnake(){return _coefficientDetectionSnake;}
+
+    qreal precisionPotrace(){return _precisionPotrace;}
+
 protected:
 
     SCircle* _scircle; // the "snake circle" that be used to detect the form
     QImage* _image; // image that contains the form that will be detected
+
+    int _numberPointsSnake;
+    int _coefficientDetectionSnake;
+    qreal _precisionPotrace;
 
 };
 

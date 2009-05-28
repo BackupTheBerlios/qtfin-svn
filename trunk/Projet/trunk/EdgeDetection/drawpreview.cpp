@@ -43,6 +43,12 @@ DrawPreview::DrawPreview(QWidget* parent, ProjectFile* preview, qreal width, qre
     //QObject::connect(this->, SIGNAL(destroyed()), this, SLOT(doNotKeep()));
 }
 
+void DrawPreview::setProjectFile(ProjectFile *monofin, qreal width, qreal height){
+    _preview = monofin;
+    _width = width;
+    _height = height;
+    _view->setProjectFile(_preview, _width, _height);
+}
 
 void DrawPreview::closeEvent(QCloseEvent* event){
     _preview->undo(Data::MonofinSurface);
@@ -51,7 +57,7 @@ void DrawPreview::closeEvent(QCloseEvent* event){
 
 void DrawPreview::keep(){
     emit this->kept();
-    this->close();
+    this->hide();
 }
 
 void DrawPreview::doNotKeep(){

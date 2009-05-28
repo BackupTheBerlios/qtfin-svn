@@ -27,6 +27,12 @@ DrawPreviewView::DrawPreviewView(QWidget *parent, ProjectFile* preview, qreal wi
 
 }
 
+void DrawPreviewView::setProjectFile(Data::ProjectFile *monofin, qreal width, qreal height){
+    _preview = monofin;
+    _sceneWidth = width;
+    _sceneHeight = height;
+}
+
 void DrawPreviewView::reScale(){
 
     qreal scaleX = _initWidth / _sceneWidth;

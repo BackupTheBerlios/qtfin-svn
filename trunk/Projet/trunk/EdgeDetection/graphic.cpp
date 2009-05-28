@@ -36,6 +36,27 @@ Graphic::Graphic(QWidget *parent, ProjectFile* monofin, qreal width, qreal heigh
 
     this->resize(1024, 768);
 
+    _preview = new DrawPreview(this, _monofin, _graphicsScene->width(), _graphicsScene->height());
+    QObject::connect(_preview, SIGNAL(kept()), this, SIGNAL(kept()));
+    QObject::connect(_preview, SIGNAL(kept()), this, SLOT(close()));
+    QObject::connect(_preview, SIGNAL(doNotKept()), this, SLOT(doNotKept()));
+
+    _parametersDialog = new QDialog();
+
+    _diag = Ui::Dialog();
+    _diag.setupUi(_parametersDialog);
+    _parametersDialog->setModal(true);
+
+    _graphic.parametersButton->setDisabled(true);
+    _diag.coeffDetectSnake->setValue(25);
+    _diag.precisionPotrace->setValue(1.5);
+
+    QObject::connect(_diag.buttonBox, SIGNAL(accepted()), this, SLOT(changeParameters()));
+    QObject::connect(_diag.buttonBox, SIGNAL(rejected()), this, SLOT(doNotChangeParameters()));
+
+    //_parametersDialog->buttonBox
+
+     QObject::connect(_graphic.parametersButton, SIGNAL(clicked()), _parametersDialog, SLOT(show()));
 }
 
 
@@ -45,12 +66,6 @@ void Graphic::setSize(qreal width, qreal height){
     _graphicsView->reScale();
     _graphicsScene->deleteLater();
     _graphicsScene = newScene;
-    if(_preview !=NULL){
-        QObject::disconnect(_preview, SIGNAL(kept()), this, SIGNAL(kept()));
-        QObject::disconnect(_preview, SIGNAL(kept()), this, SLOT(close()));
-        QObject::disconnect(_preview, SIGNAL(doNotKept()), this, SLOT(doNotKept()));
-        _preview->deleteLater();
-    }
 
 }
 
@@ -105,6 +120,10 @@ void Graphic::setPixmap(){
 
         _algo = new AlgoSnake(_graphicsScene->pixItem()->scircle());
         _algo->setImage(new QImage(_graphicsScene->pixItem()->pixmap().toImage()));
+
+
+        _diag.numberPointsSnake->setValue(_algo->numberPointsSnake());
+        _graphic.parametersButton->setDisabled(false);
     }
 
     if(_graphicsScene->pixItem() != NULL){
@@ -187,10 +206,7 @@ void Graphic::startAlgo(){
             QMessageBox::warning(this, "No edge detected", "Warning, the image is positionned badly !\nThe axe of symetry is not detected !");
             _algo->reinitialize();
         }else{
-            _preview = new DrawPreview(this, _monofin, _graphicsScene->width(), _graphicsScene->height());
-            QObject::connect(_preview, SIGNAL(kept()), this, SIGNAL(kept()));
-            QObject::connect(_preview, SIGNAL(kept()), this, SLOT(close()));
-            QObject::connect(_preview, SIGNAL(doNotKept()), this, SLOT(doNotKept()));
+            _preview->setProjectFile(_monofin, _graphicsScene->width(), _graphicsScene->height());
             _preview->show();
         }
     }
@@ -205,8 +221,17 @@ void Graphic::startAlgo(){
 }*/
 
 void Graphic::doNotKept(){
-    QObject::disconnect(_preview, SIGNAL(kept()), this, SIGNAL(kept()));
-    QObject::disconnect(_preview, SIGNAL(kept()), this, SLOT(close()));
-    QObject::disconnect(_preview, SIGNAL(doNotKept()), this, SLOT(doNotKept()));
     _algo->reinitialize();
+}
+
+void Graphic::changeParameters(){
+    _algo->setParameters(_diag.numberPointsSnake->value(),
+                             _diag.coeffDetectSnake->value(),
+                             _diag.precisionPotrace->value());
+}
+
+void Graphic::doNotChangeParameters(){
+    _diag.numberPointsSnake->setValue(_algo->numberPointsSnake());
+    _diag.coeffDetectSnake->setValue(_algo->coefficientDetectionSnake());
+    _diag.precisionPotrace->setValue(_algo->precisionPotrace());
 }

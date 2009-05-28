@@ -16,11 +16,11 @@ DrawPreview::DrawPreview(QWidget* parent, ProjectFile* preview, qreal width, qre
     _view = new DrawPreviewView(this, preview, width, height);
 
     _keepButton = new QPushButton(this);
-    _keepButton->setIcon(QIcon("../resources/icons/SnakeOK"));
+    _keepButton->setIcon(QIcon(":/icons/snake/snakeOK.png"));
     _keepButton->setIconSize(QSize(50, 50));
     _keepButton->setToolTip(tr("Keep the form"));
     _doNotKeepButton = new QPushButton(this);
-    _doNotKeepButton->setIcon(QIcon("../resources/icons/SnakeNotOK"));
+    _doNotKeepButton->setIcon(QIcon(":/icons/snake/snakeNotOK.png"));
     _doNotKeepButton->setIconSize(QSize(50, 50));
     _doNotKeepButton->setToolTip(tr("Do not keep the form"));
     _doNotKeepButton->setDefault(true);

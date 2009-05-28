@@ -45,19 +45,20 @@ SOURCES += main.cpp \
     EdgeDetection/rotatecircle.cpp \
     EdgeDetection/scircle.cpp \
     EdgeDetection/spoint.cpp \
-    Ui/layerparameters.cpp \
-    Ui/mainwindow.cpp \
-    Ui/parametersdialog.cpp \
-    Ui/startupdialog.cpp \
-    Ui/geometry3dviewer.cpp \
     Scripting/comsolscript.cpp \
     Scripting/defaultscript.cpp \
     Scripting/scripthelper.cpp \
     Scripting/scriptmanager.cpp \
     Scripting/viewerscript.cpp \
+    Ui/layerparameters.cpp \
+    Ui/mainwindow.cpp \
+    Ui/parametersdialog.cpp \
+    Ui/startupdialog.cpp \
+    Ui/geometry3dviewer.cpp \
+    Ui/generatecomsolfiledialog.cpp \
     Ui/insertlayerdialog.cpp \
     Ui/layerindexdialog.cpp \
-    Ui/generatecomsolfiledialog.cpp
+    Ui/formitem.cpp
 HEADERS += monofin.h \
     lib/qtwindowlistmenu.h \
     Data/DataConstants.h \
@@ -101,19 +102,20 @@ HEADERS += monofin.h \
     EdgeDetection/rotatecircle.h \
     EdgeDetection/scircle.h \
     EdgeDetection/spoint.h \
-    Ui/layerparameters.h \
-    Ui/mainwindow.h \
-    Ui/parametersdialog.h \
-    Ui/startupdialog.h \
-    Ui/geometry3dviewer.h \
     Scripting/comsolscript.h \
     Scripting/defaultscript.h \
     Scripting/scripthelper.h \
     Scripting/scriptmanager.h \
     Scripting/viewerscript.h \
+    Ui/layerparameters.h \
+    Ui/mainwindow.h \
+    Ui/parametersdialog.h \
+    Ui/startupdialog.h \
+    Ui/geometry3dviewer.h \
+    Ui/generatecomsolfiledialog.h \
     Ui/insertlayerdialog.h \
     Ui/layerindexdialog.h \
-    Ui/generatecomsolfiledialog.h
+    Ui/formitem.h
 FORMS += Ui/layerParameters.ui \
     Ui/parametersDialog.ui \
     Ui/startupDialog.ui \
@@ -127,8 +129,6 @@ TRANSLATIONS = translations/monofin_de.ts \
 RESOURCES += resources/images.qrc \
     resources/icons.qrc
 mac:RESOURCES += resources/translations.qrc
-
 target.path = .
 INSTALLS += target
-
 RC_FILE = resources/monofin.rc

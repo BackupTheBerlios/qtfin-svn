@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/" >
+        <file>images/blueSatellite.png</file>
+        <file>images/redSatellite.png</file>
         <file>images/splashScreen.png</file>
     </qresource>
 </RCC>

@@ -1,12 +1,7 @@
 #include "parametersdialog.h"
 
-#include "../Data/layer.h"
-#include "layerparameters.h"
-
 #include <QtCore/QDebug>
 #include <QFileDialog>
-
-using namespace Data;
 
 ParametersDialog::ParametersDialog(QWidget *parent) :
     QDialog(parent)

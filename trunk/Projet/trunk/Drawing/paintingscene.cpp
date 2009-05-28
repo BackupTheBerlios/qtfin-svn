@@ -243,8 +243,6 @@ QPixmap PaintingScene::getPictureOfTheScene(unsigned int x, unsigned int y){
     _isRenderingPicture = false;
     painter.end();
     this->simplifyView(simpl);
-    //qDebug("save pixmap");
-    //pixmap.save("test.png","PNG");
 
     if(_state == ModifyBackgroundPictureState){
         this->addItem(_pixItem);
@@ -271,7 +269,6 @@ void PaintingScene::removeAllPoints(){
         delete p;
 
     }//foreach
-    qDebug("all points are removed");
 }
 
 void PaintingScene::removeControlPoint(ControlPoint* p, bool isInScene){
@@ -374,7 +371,6 @@ void PaintingScene::removePoint(BoundingPoint* p){
 
 void PaintingScene::scale(qreal factor){
     _scaleFactor *= factor;
-    qDebug("New scale factor : %f", _scaleFactor);
 }
 
 
@@ -522,7 +518,6 @@ void PaintingScene::cleanPoints(){
 }
 
 void PaintingScene::changeColor(int item, int type, const QColor& color){
-    qDebug("change color");
     switch(item){
 
         case BoundingPointColor:
@@ -642,7 +637,6 @@ void PaintingScene::modifyBackgroundPicture(bool on){
 }
 
 void PaintingScene::redo(){
-    qDebug("redo");
     _structure->redo(Data::MonofinSurface);
 
     this->getMonofinFromStructure();
@@ -748,7 +742,6 @@ void PaintingScene::stopCreateLine(){
 }
 
 void PaintingScene::undo(){
-    qDebug("undo");
     _structure->undo(Data::MonofinSurface);
 
     this->getMonofinFromStructure();
@@ -764,7 +757,7 @@ void PaintingScene::updateMonofinDrawing(){
 void PaintingScene::zoomOnBackgroundPicture(qreal factor){
     if(_state == ModifyBackgroundPictureState &&
        _pixItem->getScale()*factor > 0.01 &&
-       _pixItem->getScale()*factor < 2){
+       _pixItem->getScale()*factor < 10){
         _pixItem->scaled(_pixItem->getScale()*factor);
         this->update();
     }
@@ -1081,11 +1074,6 @@ void PaintingScene::keyReleaseEvent(QKeyEvent* event){
 
 void PaintingScene::mouseMoveEvent(QGraphicsSceneMouseEvent* event){
     //qDebug("(%f,%f)", event->scenePos().x(), event->scenePos().y());
-    /*if(this->existIntersectionsBetweenLines()){
-        qDebug("intersect !!");
-    }else{
-        qDebug("intersect not...");
-    }*/
 
 
     bool intersect = false; //useful for 'create line'
@@ -1099,7 +1087,7 @@ void PaintingScene::mouseMoveEvent(QGraphicsSceneMouseEvent* event){
         case CreatePointsState:
 
         if(_hasPlacedFirstPoint){
-            if(_pointList.isEmpty()){qDebug("empty list");}
+            if(_pointList.isEmpty()){}
             else{
                 QLineF templine(_pointList.last()->coord(), _ghostPoint->coord());
                 BrLine* bl;
@@ -1107,7 +1095,6 @@ void PaintingScene::mouseMoveEvent(QGraphicsSceneMouseEvent* event){
                     bl = _lineList.at(i);
                     if(bl->intersect(templine)){
                         intersect = true;
-                        qDebug("intersect");
                         break;
                     }
                 }
@@ -1165,8 +1152,6 @@ void PaintingScene::mouseMoveEvent(QGraphicsSceneMouseEvent* event){
 
 void PaintingScene::mousePressEvent(QGraphicsSceneMouseEvent* event){
     if(event->button() == Qt::LeftButton){
-
-        qDebug("click");
 
         //these two booleans are only useful for the case 'create line',
         //but must be initialized here
@@ -1227,7 +1212,6 @@ void PaintingScene::mousePressEvent(QGraphicsSceneMouseEvent* event){
 
                 int key = Data::MONOFIN_SURFACE_NOT_CREATED_POINT;
                 key = _structure->addIntersectionPoint(rect->coord().x(), rect->coord().y());
-                qDebug("point's key : %d", key);
 
                 rect->setInternalKey(key);
 
@@ -1250,7 +1234,6 @@ void PaintingScene::mousePressEvent(QGraphicsSceneMouseEvent* event){
                     segmentKey = _structure->addSegment(_lastPlacedPoint->internalKey(),
                                                         rect->internalKey(),
                                                         Data::MONOFIN_SURFACE_NO_CONTROL_POINT);
-                    qDebug("line's key : %d", segmentKey);
 
                     newLine->setInternalKey(segmentKey);
 
@@ -1277,7 +1260,6 @@ void PaintingScene::mousePressEvent(QGraphicsSceneMouseEvent* event){
                     isLastPoint = false;
                     emit lineFinished(true);
                     _isCreateLineActivated = false;
-                    qDebug("last point created");
 
                     _structure->stopHistory(Data::MonofinSurface);
                     emit this->somethingChanged(this->ActionCreateLine);
@@ -1365,8 +1347,6 @@ void PaintingScene::mousePressEvent(QGraphicsSceneMouseEvent* event){
                         //on crée deux nouvelles lignes
 
                         int newLineKey = _structure->subdivideSegment(oldLineKey, pointKey);
-
-                        qDebug("new line's key : %d ; old line's key : %d", newLineKey, oldLineKey);
 
 
                         BrLine* l1 = this->createLine(p1, bp);
@@ -1485,7 +1465,6 @@ void PaintingScene::mousePressEvent(QGraphicsSceneMouseEvent* event){
     //6.2 Nothing is highligthed
         //(selection rectangle)
             else if(_canCreateSelectionRect){
-                qDebug("create selection rect");
                 _isCreatingSelectionRect = true;
                 _selectionRect = new SelectionRect(QRectF(event->scenePos(), event->scenePos()));
                 this->addItem(_selectionRect);

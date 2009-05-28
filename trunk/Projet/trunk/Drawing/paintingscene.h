@@ -480,7 +480,7 @@ public slots:
     * Multiply the scale of the background picture by the given factor
     * (>1 will enlarge the picture, <1 will shrink it). The original scale of
     * the picture is 1. If this value becomes lower than 0.01 or greater
-    * than 2, the function will do nothing.
+    * than 10, the function will do nothing.
     *@param factor the factor by which we multply the scale of the picture
     **/
     void zoomOnBackgroundPicture(qreal factor);

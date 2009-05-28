@@ -9,6 +9,11 @@ class LayerParameters : public QWidget, public Ui::LayerParameters {
 public:
     explicit LayerParameters(QWidget *parent = 0);
 
+public slots:
+    void updateDensity(qreal density) { densityDoubleSpinBox->setValue(density); }
+    void updatePoissonRatio(qreal poisson) { poissonDoubleSpinBox->setValue(poisson); }
+    void updateYoungModulus(qreal modulus) { youngDoubleSpinBox->setValue(modulus); }
+
 protected:
     virtual void changeEvent(QEvent *e);
 };

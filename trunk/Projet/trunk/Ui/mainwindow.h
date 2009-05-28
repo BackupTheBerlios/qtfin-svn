@@ -12,7 +12,7 @@
 
 #include "Data/projectfile.h"
 #include "EdgeDetection/graphic.h"
-
+#include "formitem.h"
 class Monofin;
 class PaintingScene;
 class StartupDialog;
@@ -33,6 +33,9 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = 0);
 
+signals:
+    void updateMonofinScene();
+
 protected slots:
     void configurate();
 
@@ -44,13 +47,13 @@ private slots:
     void about();
     void addFormToLibrary();
     void launch();
-    void preview3D();
+    void loadForm(QListWidgetItem *item);    void preview3D();
     void newEmptyProject();
     void newFile();
     void newProjectFromImage();
     void open();
     void openRecentFile();
-    bool save();
+    void removeForm();    bool save();
     bool saveAs();
     void showGrid(bool a);
     void switchLanguage(QAction *action);
@@ -110,9 +113,8 @@ private:
     QDockWidget *_dockFormLibrary;
     QWidget *_dockWidgetContents;
     QPushButton *_buttonAddToFormLibrary;
-    QGridLayout *_layoutLibrary;
+    QPushButton *_buttonRemoveForm;    QGridLayout *_layoutLibrary;
     QListWidget *_listWidgetForms;
-    //QList<QListWidgetItem*> _listItems;
     QString _libraryPath;
 
     QMdiArea *_mdiArea;
@@ -129,6 +131,7 @@ private:
 
     StartupDialog *_startupDialog;
     QPointer<Graphic> _graphicView;
+
 };
 
 #endif // MAINWINDOW_H

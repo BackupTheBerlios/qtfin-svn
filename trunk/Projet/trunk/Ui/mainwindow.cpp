@@ -69,7 +69,7 @@ MainWindow::MainWindow(QWidget *parent)
     retranslateUi();
 
     setWindowTitle(tr("Monofin"));
-    setWindowIcon(QPixmap(":/images/icon.png"));
+    setWindowIcon(QIcon(":/icons/general/logo.png"));
 }
 
 #include "layerparameters.h"
@@ -123,12 +123,23 @@ void MainWindow::addFormToLibrary()
     if(this->activeMonofin() != NULL){
         if(!this->activeMonofin()->isEmpty()){
             QString name = QInputDialog::getText(this, tr("Choose form name"), tr("Enter a name for the form:"));
+            QString path(_libraryPath);
+            path.append("/");
+            path.append(name);
+            path.append(".finf");
             if(!name.isEmpty()){
-                this->activeMonofin()->saveForm(name.insert(0, _libraryPath.append("/")).append(".finf"));
-            }
+                QDir dir(_libraryPath);
+                if(!dir.exists()){
+                    qDebug("Directory not existing");
+                    dir.mkpath(_libraryPath);
+                }
+            if(QFile::exists(path)){
+            QMessageBox msg;
+            msg.setText(tr("File already existing"));
+            msg.setIcon(QMessageBox::Question);                    msg.setInformativeText(("Overwrite the file ?"));                    msg.setStandardButtons(QMessageBox::Yes | QMessageBox::No);                    msg.setDefaultButton(QMessageBox::No);                    int ret = msg.exec();                    if(ret == QMessageBox::Yes){                        this->activeMonofin()->saveForm(path);                    }                }else{                    this->activeMonofin()->saveForm(path);                }            }
         }
     }
-}
+    this->updateLibrary();}
 
 void MainWindow::launch()
 {
@@ -137,7 +148,7 @@ void MainWindow::launch()
     }
 }
 
-void MainWindow::preview3D()
+void MainWindow::loadForm(QListWidgetItem *item){    if(this->activeMonofin() == NULL){        this->newEmptyProject();    }        if(this->activeMonofin() != NULL){        if(item->type() == FormItem::Type){            this->activeMonofin()->loadForm(((FormItem*)item)->path());        }    }}void MainWindow::preview3D()
 {
     if (activeMonofin()) {
         activeMonofin()->preview3D();
@@ -192,7 +203,7 @@ void MainWindow::newProjectFromImage()
     Monofin *monofin = static_cast<Monofin *>(msw->widget());
     monofin->show();
     monofin->newFileFromImage();
-    connect(_graphicView, SIGNAL(kept()), monofin, SLOT(updateScene()));
+    connect(_graphicView, SIGNAL(kept()), this, SIGNAL(updateMonofinScene()));
 
     _graphicView->show();
 }
@@ -218,7 +229,7 @@ void MainWindow::openRecentFile()
         loadFile(action->data().toString());
 }
 
-bool MainWindow::save()
+void MainWindow::removeForm(){    QListWidgetItem* item = _listWidgetForms->currentItem();    if(item != NULL){        if(item->type() == FormItem::Type){            QString path(((FormItem*)item)->path());            QFile file(path);            if(file.exists()){                QMessageBox msg;                msg.setText(tr("Remove file"));                msg.setIcon(QMessageBox::Question);                msg.setInformativeText(("Are you sure ?"));                msg.setStandardButtons(QMessageBox::Yes | QMessageBox::No);                msg.setDefaultButton(QMessageBox::No);                int ret = msg.exec();                if(ret == QMessageBox::Yes){                    file.remove();                    this->updateLibrary();                }            }        }    }}bool MainWindow::save()
 {
     if (activeMonofin())
         return activeMonofin()->save();
@@ -401,7 +412,7 @@ void MainWindow::createActions()
     //FORM LIBRARY
     _buttonAddToFormLibrary = new QPushButton(this);
     _buttonAddToFormLibrary->setObjectName(QString::fromUtf8("actionAddToFormLibrary"));
-}
+    _buttonRemoveForm = new QPushButton(this);    _buttonRemoveForm->setObjectName(QString::fromUtf8("buttonRemoveForm"));}
 
 void MainWindow::createDocks()
 {
@@ -416,7 +427,8 @@ void MainWindow::createDocks()
     _layoutLibrary = new QGridLayout();
     _layoutLibrary->setObjectName(QString::fromUtf8("layoutLibrary"));
     _layoutLibrary->addWidget(_buttonAddToFormLibrary, 1,0);
-    _layoutLibrary->addWidget(_listWidgetForms, 0, 0);
+    _layoutLibrary->addWidget(_buttonRemoveForm, 1, 1);
+    _layoutLibrary->addWidget(_listWidgetForms, 0, 0, 1, 0);
 
     _dockWidgetContents = new QWidget();
     _dockWidgetContents->setObjectName(QString::fromUtf8("dockWidgetContents"));
@@ -533,6 +545,7 @@ QMdiSubWindow *MainWindow::createMonofin(Data::ProjectFile *projectFile)
     qDebug("MainWindow::createMonofin()");
     Monofin *monofin = new Monofin(projectFile);
     connect(monofin, SIGNAL(currentFileChanged()), this, SLOT(updateRecentFileActions()));
+    connect(this, SIGNAL(updateMonofinScene()), monofin, SLOT(updateScene()));
 
     QMdiSubWindow *msw = _mdiArea->addSubWindow(monofin);
     msw->setAttribute(Qt::WA_DeleteOnClose);
@@ -593,7 +606,7 @@ void MainWindow::retranslateUi()
     _actionAbout->setText(QApplication::translate("MainWindow", "&About", 0, QApplication::UnicodeUTF8));
     _actionAboutQt->setText(QApplication::translate("MainWindow", "About &Qt", 0, QApplication::UnicodeUTF8));
     _buttonAddToFormLibrary->setText(QApplication::translate("MainWindow", "&Add form", 0, QApplication::UnicodeUTF8));
-
+    _buttonRemoveForm->setText(QApplication::translate("MainWindow", "&Remove form", 0, QApplication::UnicodeUTF8));
     // menus
     _menuFile->setTitle(QApplication::translate("MainWindow", "&File", 0, QApplication::UnicodeUTF8));
     _menuDraw->setTitle(QApplication::translate("MainWindow", "&Draw", 0, QApplication::UnicodeUTF8));
@@ -622,8 +635,7 @@ void MainWindow::setConnections()
     connect(_actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(_actionShowGrid, SIGNAL(toggled(bool)), this, SLOT(showGrid(bool)));
     connect(_buttonAddToFormLibrary, SIGNAL(clicked()), this, SLOT(addFormToLibrary()));
-
-
+    connect(_listWidgetForms, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(loadForm(QListWidgetItem*)));    connect(_buttonRemoveForm, SIGNAL(clicked()), this, SLOT(removeForm()));
     QMetaObject::connectSlotsByName(this);
 }
 
@@ -647,16 +659,20 @@ void MainWindow::updateLibrary()
 
     for (int i=0; i<fileNames.size(); ++i) {
 
-        QString locale = fileNames[i].insert(0,_libraryPath.append("/"));
-        QListWidgetItem* item = new QListWidgetItem(
+        QString locale;
+        locale.append(_libraryPath);
+        locale.append("/");
+        locale.append(fileNames[i]);
+        QListWidgetItem* item = new FormItem(
                 QIcon(QPixmap::fromImage(Data::ProjectFile::getImage(locale))),
-                QString("title"));
+                fileNames[i].left(fileNames[i].size()-5),
+                locale);
 
         if(Data::ProjectFile::getImage(locale).isNull())
             qDebug("image null");
         qDebug() << locale;
 
-        _listWidgetForms->addItem(item);
+        _listWidgetForms->setIconSize(QSize(64,64));        _listWidgetForms->addItem(item);
 
     }
 

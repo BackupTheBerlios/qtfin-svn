@@ -2,10 +2,7 @@
 #define PARAMETERSDIALOG_H
 
 #include "../ui_parametersDialog.h"
-
-namespace Data {
-    class Layer;
-}
+#include "layerparameters.h"
 
 class ParametersDialog : public QDialog, public Ui::ParametersDialog {
     Q_OBJECT
@@ -14,6 +11,9 @@ public:
     explicit ParametersDialog(QWidget *parent = 0);
 
     void setNbLayers(int nb);
+    inline void updateLayerDensity(int layer, qreal density);
+    inline void updateLayerPoissonRatio(int layer, qreal poisson);
+    inline void updateLayerYoungModulus(int layer, qreal modulus);
 
 protected:
     virtual void changeEvent(QEvent *e);
@@ -21,9 +21,27 @@ protected:
 private:
     void setConnections();
     void _retranslateUi();
-
-private:
-    QList<Data::Layer*> m_strates;
 };
+
+inline void ParametersDialog::updateLayerDensity(int layer, qreal density)
+{
+    if (layer < layerTabWidget->count()) {
+        static_cast<LayerParameters*>(layerTabWidget->widget(layer))->updateDensity(density);
+    }
+}
+
+inline void ParametersDialog::updateLayerPoissonRatio(int layer, qreal poisson)
+{
+    if (layer < layerTabWidget->count()) {
+        static_cast<LayerParameters*>(layerTabWidget->widget(layer))->updatePoissonRatio(poisson);
+    }
+}
+
+inline void ParametersDialog::updateLayerYoungModulus(int layer, qreal modulus)
+{
+    if (layer < layerTabWidget->count()) {
+        static_cast<LayerParameters*>(layerTabWidget->widget(layer))->updateYoungModulus(modulus);
+    }
+}
 
 #endif // PARAMETERSDIALOG_H

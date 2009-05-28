@@ -586,6 +586,7 @@ void MainWindow::retranslateUi()
     _actionShowGrid->setText(QApplication::translate("Monofin", "&Show Grid", 0, QApplication::UnicodeUTF8));
     _actionShowGrid->setShortcut(QApplication::translate("Monofin", "Ctrl+Shift+G", 0, QApplication::UnicodeUTF8));
     _actionConfigurate->setText(QApplication::translate("Monofin", "&Configurate...", 0, QApplication::UnicodeUTF8));
+    _action3DPreview->setText(QApplication::translate("MainWindow", "&3D Preview", 0, QApplication::UnicodeUTF8));
     _actionLaunch->setText(QApplication::translate("Monofin", "&Launch", 0, QApplication::UnicodeUTF8));
     _actionLaunch->setShortcut(QApplication::translate("Monofin", "Ctrl+L", 0, QApplication::UnicodeUTF8));
     _actionProperties->setText(QApplication::translate("MainWindow", "&Properties...", 0, QApplication::UnicodeUTF8));

@@ -52,14 +52,12 @@ SOURCES += main.cpp \
     Ui/geometry3dviewer.cpp \
     Scripting/comsolscript.cpp \
     Scripting/defaultscript.cpp \
-    Scripting/defaultscriptmanager.cpp \
     Scripting/scripthelper.cpp \
     Scripting/scriptmanager.cpp \
     Scripting/viewerscript.cpp \
-    Scripting/viewerscriptmanager.cpp \
-    Ui/generatecomsolfile.cpp \
     Ui/insertlayerdialog.cpp \
-    Ui/layerindexdialog.cpp
+    Ui/layerindexdialog.cpp \
+    Ui/generatecomsolfiledialog.cpp
 HEADERS += monofin.h \
     lib/qtwindowlistmenu.h \
     Data/DataConstants.h \
@@ -110,21 +108,19 @@ HEADERS += monofin.h \
     Ui/geometry3dviewer.h \
     Scripting/comsolscript.h \
     Scripting/defaultscript.h \
-    Scripting/defaultscriptmanager.h \
     Scripting/scripthelper.h \
     Scripting/scriptmanager.h \
     Scripting/viewerscript.h \
-    Scripting/viewerscriptmanager.h \
-    Ui/generatecomsolfile.h \
     Ui/insertlayerdialog.h \
-    Ui/layerindexdialog.h
+    Ui/layerindexdialog.h \
+    Ui/generatecomsolfiledialog.h
 FORMS += Ui/layerParameters.ui \
     Ui/parametersDialog.ui \
     Ui/startupDialog.ui \
-    Ui/generatecomsolfile.ui \
     EdgeDetection/graphic.ui \
     Ui/insertlayerdialog.ui \
-    Ui/layerindexdialog.ui
+    Ui/layerindexdialog.ui \
+    Ui/generatecomsolfiledialog.ui
 TRANSLATIONS = translations/monofin_de.ts \
     translations/monofin_en.ts \
     translations/monofin_fr.ts

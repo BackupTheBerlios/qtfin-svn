@@ -6,8 +6,7 @@
 namespace Scripting {
 
 	/**
-	  * Class representing the default COMSOL script.
-	  * The one that run the simulation.
+	  * Class representing the default COMSOL script, the one that runs the modal simulation.
 	  */
 	class DefaultScript : public ComsolScript
 	{
@@ -18,17 +17,27 @@ namespace Scripting {
 		  * @param solve_problem
 		  *		Flag indicating if the script must solve the problem (run the simulation).
 		  * @param mesh_sizes
-		  *		An integer to describe the mesh sizes to use during the mesh process.
+		  *		An integer describing the mesh sizes to use during the mesh process.
 		  *		Only revelant if solve_problem is set to true.
 		  *		The value range is between 1 and 9 with a default of 5.
 		  *			1 : fine mesh sizes
 		  *			X : more and more coerced
 		  *			9 : coerce mesh sizes
 		  */
-		DefaultScript(bool solve_problem, int mesh_sizes, QString output_path);
+		DefaultScript(bool solve_problem = true, int mesh_sizes = 5, QString output_path = "");
 
 		/** Implementation. */
 		virtual void write(QTextStream& script, Data::ProjectFile& data) const;
+
+		// GET
+		bool getSolveProblem() const { return solve_problem; }
+		int getMeshSizes() const { return mesh_sizes; }
+		QString getOutputPath() const { return output_path; }
+
+		// SET
+		void setSolveProblem(bool value) { solve_problem = value; }
+		void setMeshSizes(int value) { mesh_sizes = value; }
+		void setOutputPath(QString value) { output_path = value; }
 
 	private:
 

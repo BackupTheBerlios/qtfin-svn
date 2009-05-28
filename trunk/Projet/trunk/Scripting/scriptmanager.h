@@ -6,6 +6,7 @@
 #include "comsolscript.h"
 #include "../Data/projectfile.h"
 
+#include <QObject>
 #include <QString>
 #include <QFile>
 #include <QProcess>
@@ -25,10 +26,7 @@ namespace Scripting {
 		  * @param data
 		  *		The data with wich the script will be build.
 		  */
-		ScriptManager(Data::ProjectFile& data);
-
-		/** Destructor */
-		~ScriptManager();
+		ScriptManager(Data::ProjectFile& data, QObject* parent = 0);
 
 		/**
 		  * Get a flag indicating if the process responsible for the script execution is running.
@@ -36,13 +34,28 @@ namespace Scripting {
 		  */
 		bool isRunning() const { return process->state() == QProcess::Running; }
 
+		/* STATIC members */
+
 		/**
-		  * A local directory where the external COMSOL Scripts needed are stored.
-		  * Temporary scripts will be put in this same directory.
+		  * Get the directory where the external COMSOL Scripts are.
+		  * @param filename
+		  *		An optional filename that will be append to the returned path.
 		  */
 		static QString getScriptDirectory(QString filename = "");
 
-	protected:
+		/** The filename of the ComsolEvaluator.java log file. */
+		const static QString COMSOL_EVALUATOR_LOG;
+
+		/**
+		  * Return the content of the ComsolEvaluator.log file created after a script execution.
+		  * If the file does not existe, QString::null is returned.
+		  */
+		static QString getCurrentLog();
+
+		/** Delete the current ComsolEvaluator.java log file, if it exists. */
+		static void deleteLog();
+
+	public slots:
 
 		/**
 		  * Slot starting the execution of the script.
@@ -53,9 +66,8 @@ namespace Scripting {
 		  * @return
 		  *		True if the script is executing, False otherwise.
 		  */
-		virtual bool execute(ComsolScript& script);
+		bool execute(ComsolScript& script);
 
-	public slots:
 		/**
 		  * Slot killing the process in case we want to cancel the script execution.
 		  */
@@ -76,16 +88,16 @@ namespace Scripting {
 
 		void _finished(int exitCode, QProcess::ExitStatus exitStatus);
 		void _error(QProcess::ProcessError error);
-		void _debug_output();
 
-	protected:
+	private:
 		/** The data to build the script uppon with. */
 		Data::ProjectFile& data;
 
 		/** The process responsible for the script execution. */
 		QProcess* process;
 
-	private:
+		/* QProcess's signals connection */
+
 		void disconnect();
 		void connect();
 	};

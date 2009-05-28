@@ -1,11 +1,13 @@
 #include "geometry3dviewer.h"
 
 #include "../Scripting/scriptmanager.h"
+#include "../Scripting/viewerscript.h"
 
 #include <QGridLayout>
 #include <QImage>
 #include <QDir>
 #include <QCloseEvent>
+#include <QMessageBox>
 
 Geometry3DViewer::Geometry3DViewer(Data::ProjectFile& data, QWidget *parent)
 {
@@ -23,37 +25,47 @@ Geometry3DViewer::Geometry3DViewer(Data::ProjectFile& data, QWidget *parent)
 	lState->setScaledContents(true);
 	layout()->addWidget(lState);
 
-	// vsm
-	vsm = new Scripting::ViewerScriptManager(data);
-	QObject::connect(vsm, SIGNAL(ended(bool)), this, SLOT(scriptExecutionEnded(bool)));
+	// ScriptManager
+	smanager = new Scripting::ScriptManager(data, this);
+	QObject::connect(smanager, SIGNAL(ended(bool)), this, SLOT(on_smanager_ended(bool)));
 }
 
 void Geometry3DViewer::show() {
 	QFrame::show();
+
 	lState->setText(tr("Retrieving the geometry preview, please wait..."));
-	// starting the script execution
-	if (!vsm->execute(Scripting::ScriptManager::getScriptDirectory("temp.png"))) {
-		emit(scriptExecutionEnded(false));
+
+	if (!smanager->execute(script)) {
+		lState->setText(tr("ERROR: Unable the create the process responsible for the script execution."));
 	}
 }
 
 void Geometry3DViewer::closeEvent(QCloseEvent *event) {
-	vsm->kill();
+	smanager->kill();
 	event->accept();
 }
 
-Geometry3DViewer::~Geometry3DViewer() {
-	delete lState;
-	delete vsm;
-}
-
-void Geometry3DViewer::scriptExecutionEnded(bool successed) {
+void Geometry3DViewer::on_smanager_ended(bool successed) {
 	if (!successed) {
-		lState->setText(tr("An error occured, unable to retrieve the geometry preview."));
+		// we retrieve the log and then show a message to the user
+
+		QString log = Scripting::ScriptManager::getCurrentLog();
+
+		QMessageBox msg(this);
+		msg.setIcon(QMessageBox::Critical);
+		if (!log.isNull()) {
+			msg.setText(tr("Error while executing the COMSOL script, please see the LOG file for further informations."));
+			msg.setDetailedText(log);
+		} else {
+			msg.setText("Error that cannot be logged while executing the COMSOL script.");
+		}
+		msg.exec();
+		close();
+
 	} else {
-		QImage image(Scripting::ScriptManager::getScriptDirectory("temp.png"));
+		QImage image(QDir::toNativeSeparators(script.getOutputPath()));
 		if (image.isNull()) {
-			lState->setText(tr("Unable to display the geometry preview image."));
+			lState->setText(tr("ERROR: Unable to display the geometry preview image."));
 		} else {
 			lState->setPixmap(QPixmap::fromImage(image));
 		}

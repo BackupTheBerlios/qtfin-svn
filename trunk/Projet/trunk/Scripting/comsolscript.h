@@ -16,9 +16,7 @@ namespace Scripting {
 	class ComsolScript {
 	public:
 
-		/**
-		  * Default constructor.
-		  */
+		/** Default constructor. */
 		ComsolScript();
 
 		/** Destructor. */
@@ -27,10 +25,10 @@ namespace Scripting {
 		/**
 		  * Abstract method used to write a script in a QTextStream.
 		  * @param script
-		  *		The stream in which to write down the script.
+		  *		The stream in which to write the script.
 		  * @param data
-		  *		The instance of Data::ProjectFile for which to write the script.
-		  *		It should contain all the needed informations necessary to build the script.
+		  *		The instance of Data::ProjectFile to use in order to write the script.
+		  *		It should contain all the needed informations to build the script.
 		  */
 		virtual void write(QTextStream& script, Data::ProjectFile& data) const = 0;
 	};

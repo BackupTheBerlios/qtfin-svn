@@ -2,11 +2,12 @@
 #define VIEWERSCRIPT_H
 
 #include "comsolscript.h"
+#include "scriptmanager.h"
 
 namespace Scripting {
 
 	/**
-          * Class representing the viewer COMSOL script.
+	  * Class representing the viewer COMSOL script.
 	  * The one that generate a picture of the 3D geometry.
 	  */
 	class ViewerScript : public ComsolScript
@@ -18,21 +19,23 @@ namespace Scripting {
 		  * @param output_path
 		  *		The output_path of the generated image with a 'png' extension.
 		  */
-		ViewerScript(QString output_path);
+		ViewerScript(QString output_path = ScriptManager::getScriptDirectory("temp.png"));
 
 		/** Implementation */
 		virtual void write(QTextStream& script, Data::ProjectFile& data) const;
 
-		/**
-		  * Return the output_path.
-		  */
+		// GET
 		QString getOutputPath() { return output_path; }
+
+		// SET
+		void setOutputPath(QString value) { output_path = value; }
+
 	private:
 
 		/**
 		  * Write the settings of the script.
 		  */
-                void writeMonofinSettings(QTextStream& script, Data::ProjectFile& data) const;
+		void writeMonofinSettings(QTextStream& script, Data::ProjectFile& data) const;
 
 		/**
 		  * Writes the entry point called of the script.

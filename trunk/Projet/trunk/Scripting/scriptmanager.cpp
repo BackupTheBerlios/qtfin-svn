@@ -5,23 +5,41 @@
 #include <QFile>
 #include <QIODevice>
 #include <QStringList>
-#include <QtCore/QDebug>
+#include <QMessageBox>
+
+#include <QString>
+#include <QTextStream>
+#include <QFile>
+#include <QIODevice>
 
 using namespace Scripting;
 
-QString ScriptManager::getScriptDirectory(QString filename) {
-	return QString("%1/scripts/%2")
-			.arg(QDir::currentPath())
-			.arg(filename);
-}
+#ifdef Q_OS_WIN32
 
-ScriptManager::ScriptManager(Data::ProjectFile& data)
-	: data(data)
+// On Windows if a batch (.bat) process spawned new process, for instance
+// java in comsolapi.bat, to kill the initial process won't kill the java process.
+// So on Windows we are unable to cancel a script execution.
+// To solve the problem, we use the workaround proposed here: http://lists.trolltech.com/qt-interest/2005-10/thread00706-0.html
+
+// from <windows.h>, it should work from Windows 2000 to newer
+// HANDLE replaced by int
+// DWORD replaced by unsigned long
+// Structure containing the PID of a process.
+typedef struct _PROCESS_INFORMATION {
+  int hProcess;
+  int hThread;
+  unsigned long dwProcessId;
+  unsigned long dwThreadId;
+} PROCESS_INFORMATION;
+
+#endif
+
+ScriptManager::ScriptManager(Data::ProjectFile& data, QObject* parent)
+	: QObject(parent), data(data)
 {
 	process = new QProcess(this);
-	//process->setStandardOutputFile("output.txt");
 
-	// signals connection
+	// connect the signals
 	connect();
 
 	// setting up the working directory
@@ -35,9 +53,6 @@ void ScriptManager::connect() {
 	QObject::connect(
 			process, SIGNAL(error(QProcess::ProcessError)),
 			this, SLOT(_error(QProcess::ProcessError)));
-	QObject::connect(
-			process, SIGNAL(readChannelFinished()),
-			this, SLOT(_debug_output()));
 }
 
 void ScriptManager::disconnect() {
@@ -47,13 +62,6 @@ void ScriptManager::disconnect() {
 	QObject::disconnect(
 			process, SIGNAL(error(QProcess::ProcessError)),
 			this, SLOT(_error(QProcess::ProcessError)));
-	QObject::disconnect(
-			process, SIGNAL(readChannelFinished()),
-			this, SLOT(_debug_output()));
-}
-
-ScriptManager::~ScriptManager() {
-	delete process;
 }
 
 bool ScriptManager::execute(ComsolScript& script)
@@ -61,26 +69,20 @@ bool ScriptManager::execute(ComsolScript& script)
 	if (process->state() != QProcess::NotRunning)
 		return false;
 
-	qDebug("ScriptManager::execute()");
+	// first, delete the last execution log
+	deleteLog();
 
-	// calling JAVA ComsolEvaluator to execute the script
-	// the exit code of the process will give us information about the success of the execution
 #ifdef Q_OS_WIN32
-	qDebug("WIN config");
-
-	// on Windows, we need to precise .bat extension...
 	process->start(
 			"comsolapi.bat",
 			QStringList() << "ComsolEvaluator");
 #else
-	qDebug("!WIN config");
-
 	process->start(
 			"comsolapi",
 			QStringList() << "ComsolEvaluator");
 #endif
 
-	// trying to open the process in order
+	// trying to open the process in order to send the script
 	if (process->open(QIODevice::ReadWrite)) {
 		// retrieve the process output stream
 		QTextStream stream(process);
@@ -90,40 +92,83 @@ bool ScriptManager::execute(ComsolScript& script)
 		process->closeWriteChannel();
 		return true;
 	} else {
-		qDebug("ScriptManager::execute() return false");
 		return false;
 	}
 }
 
 void ScriptManager::kill() {
-	// just kill the process if it's running
-	if (process->state() != QProcess::NotRunning) {
-		qDebug("ScriptManager::kill()");
-		disconnect();
-		process->kill();
-		process->waitForFinished();
-		connect();
-	}
+	if (process->state() == QProcess::NotRunning)
+		return;
+
+	// disconnect the signals
+	disconnect();
+
+#ifdef Q_OS_WIN32
+	// to properly kill the process tree (java is a leaf in this tree),
+	// we execute a TASKKILL instruction. We just need to retrieve the Windows PID
+	// of the QProcess. We use the PROCESS_INFORMATION structure to do so.
+	PROCESS_INFORMATION *pinfo = (PROCESS_INFORMATION*)process->pid();
+	QProcess p(this);
+	p.execute("TASKKILL",
+			  QStringList() << "/PID"
+							<< QString("%1").arg(pinfo->dwProcessId)
+							<< "/T"
+							<< "/F");
+#endif
+
+	// kill the process
+	process->kill();
+	// wait for the kill to be completed
+	process->waitForFinished();
+	// reconnect the signals
+	connect();
 }
 
 void ScriptManager::_finished(int exitCode, QProcess::ExitStatus exitStatus) {
-	// the process finished, we check the result and emit the 'ended' signal
-//	if (exitStatus == QProcess::CrashExit)
-//		return; // le slot _error a capturé un QProcess:Crashed
 	bool successed = exitStatus == QProcess::NormalExit && exitCode == 0;
-	qDebug("ended(%d)", successed);
 	emit ended(successed);
 }
 
 void ScriptManager::_error(QProcess::ProcessError error) {
-	// an error occured, we just emit the 'ended' signal
-	bool successed = false;
-	qDebug("ended(%d)", successed);
-	emit ended(successed);
+	emit ended(false);
 }
 
-void ScriptManager::_debug_output() {
-	while (process->canReadLine()) {
-                qDebug() << process->readLine();
+/* STATIC members */
+
+const QString ScriptManager::COMSOL_EVALUATOR_LOG = "ComsolEvaluator.log";
+
+QString ScriptManager::getScriptDirectory(QString filename) {
+	return QString("%1/scripts/%2")
+			.arg(QDir::currentPath())
+			.arg(filename);
+}
+
+QString ScriptManager::getCurrentLog() {
+	QString log = QString::null;
+
+	// writer to write append content to the QString log
+	QTextStream writer(&log, QIODevice::WriteOnly | QIODevice::Text);
+
+	// the log file
+	QFile file(Scripting::ScriptManager::getScriptDirectory(COMSOL_EVALUATOR_LOG));
+
+	// trying to open the log file
+	if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+		QTextStream reader(&file);
+		QString line;
+		while (!(line = reader.readLine()).isNull()) {
+			writer << line;
+			writer << endl;
+		}
+		file.close();
 	}
+
+	return log;
+}
+
+void ScriptManager::deleteLog() {
+	// try to delete the current log file
+	QString log = getScriptDirectory(COMSOL_EVALUATOR_LOG);
+	if (QFile::exists(log))
+		QFile::remove(log);
 }

@@ -33,6 +33,10 @@ end
 % Assemblage des courbes de Bézier en un solide (héritant de 'solid2') représentant la surface de la palme.
 s = geomcoerce('solid', curves);
 
+% Suppression des bordures internes à l'objet. Permet d'avoir une géométrie "propre" en cas de boucles sur les
+% courbes de Bézier.
+s = geomdel(s);
+
 % Calcul de la longueur de la palme sur son axe central de symétrie.
 % Cette valeur définie la longueur maximale d'une strate constituant la palme.
 L = data.metaSegments.absoluteLength;

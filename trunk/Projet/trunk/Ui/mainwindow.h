@@ -55,6 +55,7 @@ private slots:
     void openRecentFile();
     void removeForm();    bool save();
     bool saveAs();
+    void setFullScreenMode(bool enabled);
     void showGrid(bool a);
     void switchLanguage(QAction *action);
 
@@ -91,6 +92,7 @@ private:
     QAction *_actionSaveAs;
     QAction *_actionConfigurate;
     QAction *_actionLaunch;
+    QAction *_actionFullScreen;
     QAction *_action3DPreview;
     QAction *_actionShowGrid;
     QAction *_actionProperties;

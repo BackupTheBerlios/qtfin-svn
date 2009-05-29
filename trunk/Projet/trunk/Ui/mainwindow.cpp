@@ -8,6 +8,8 @@
 
 #include <QtCore/QDebug>
 #include <QtCore/QDir>
+#include <QtCore/QRect>
+#include <QtCore/QSettings>
 #include <QtGui/QAction>
 #include <QtGui/QActionGroup>
 #include <QtGui/QButtonGroup>
@@ -96,8 +98,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
     _mdiArea->closeAllSubWindows();
     if (activeMonofin())
         event->ignore();
-    else
+    else {
         event->accept();
+        writeSettings();
+    }
 }
 
 // PRIVATE SLOTS
@@ -133,10 +137,10 @@ void MainWindow::addFormToLibrary()
                     qDebug("Directory not existing");
                     dir.mkpath(_libraryPath);
                 }
-            if(QFile::exists(path)){
-            QMessageBox msg;
-            msg.setText(tr("File already existing"));
-            msg.setIcon(QMessageBox::Question);                    msg.setInformativeText(("Overwrite the file ?"));                    msg.setStandardButtons(QMessageBox::Yes | QMessageBox::No);                    msg.setDefaultButton(QMessageBox::No);                    int ret = msg.exec();                    if(ret == QMessageBox::Yes){                        this->activeMonofin()->saveForm(path);                    }                }else{                    this->activeMonofin()->saveForm(path);                }            }
+                if(QFile::exists(path)){
+                    QMessageBox msg;
+                    msg.setText(tr("File already existing"));
+                    msg.setIcon(QMessageBox::Question);                    msg.setInformativeText(("Overwrite the file ?"));                    msg.setStandardButtons(QMessageBox::Yes | QMessageBox::No);                    msg.setDefaultButton(QMessageBox::No);                    int ret = msg.exec();                    if(ret == QMessageBox::Yes){                        this->activeMonofin()->saveForm(path);                    }                }else{                    this->activeMonofin()->saveForm(path);                }            }
         }
     }
     this->updateLibrary();}
@@ -243,6 +247,14 @@ bool MainWindow::saveAs()
         return activeMonofin()->saveAs();
     else
         return false;
+}
+
+void MainWindow::setFullScreenMode(bool enabled)
+{
+    if (enabled)
+        setWindowState(windowState() ^ Qt::WindowFullScreen);
+    else
+        setWindowState(windowState() & ~Qt::WindowFullScreen);
 }
 
 void MainWindow::showGrid(bool a)
@@ -408,6 +420,12 @@ void MainWindow::createActions()
     _actionLaunch = new QAction(this);
     _actionLaunch->setObjectName(QString::fromUtf8("actionLaunch"));
 
+    // MENU WINDOW
+    _actionFullScreen = new QAction(this);
+    _actionFullScreen->setObjectName(QString::fromUtf8("actionFullScreen"));
+    _actionFullScreen->setCheckable(true);
+    _actionFullScreen->setChecked(false);
+
     // MENU HELP
     _actionAbout = new QAction(this);
     _actionAbout->setObjectName(QString::fromUtf8("actionAbout"));
@@ -513,6 +531,8 @@ void MainWindow::createMenus()
     // MENU WINDOW
     _menuWin = new QtWindowListMenu(_menuBar);
     _menuWin->attachToMdiArea(_mdiArea);
+    _menuWin->addAction(_actionFullScreen);
+    _menuWin->addSeparator();
 
     //MENU VIEW
     _menuView = new QMenu(_menuBar);
@@ -581,6 +601,20 @@ bool MainWindow::loadFile(const QString &fileName)
 
 void MainWindow::readSettings()
 {
+    QSettings settings(QApplication::organizationName(), QApplication::applicationName());
+
+    QRect rect = settings.value("geometry", QRect(100, 100, 900, 700)).toRect();
+    move(rect.topLeft());
+    resize(rect.size());
+
+    _recentFiles = settings.value("recentFiles").toStringList();
+    updateRecentFileActions();
+
+    setFullScreenMode(settings.value("fullScreen").toBool());
+
+    settings.setValue("geometry", geometry());
+    settings.setValue("recentFiles", _recentFiles);
+    settings.setValue("fullScreen", _actionFullScreen->isChecked());
 }
 
 void MainWindow::retranslateUi()
@@ -601,6 +635,8 @@ void MainWindow::retranslateUi()
     _action3DPreview->setText(QApplication::translate("MainWindow", "&3D Preview", 0, QApplication::UnicodeUTF8));
     _actionLaunch->setText(QApplication::translate("Monofin", "&Launch", 0, QApplication::UnicodeUTF8));
     _actionLaunch->setShortcut(QApplication::translate("Monofin", "Ctrl+L", 0, QApplication::UnicodeUTF8));
+    _actionFullScreen->setText(QApplication::translate("MainWindow", "&Fullscreen", 0, QApplication::UnicodeUTF8));
+    _actionFullScreen->setShortcut(QApplication::translate("MainWindow", "F12", 0, QApplication::UnicodeUTF8));
     _actionProperties->setText(QApplication::translate("MainWindow", "&Properties...", 0, QApplication::UnicodeUTF8));
     _actionAbout->setText(QApplication::translate("MainWindow", "&About", 0, QApplication::UnicodeUTF8));
     _actionAboutQt->setText(QApplication::translate("MainWindow", "About &Qt", 0, QApplication::UnicodeUTF8));
@@ -629,6 +665,7 @@ void MainWindow::setConnections()
     connect(_actionConfigurate, SIGNAL(triggered()), this, SLOT(configurate()));
     connect(_action3DPreview, SIGNAL(triggered()), this, SLOT(preview3D()));
     connect(_actionLaunch, SIGNAL(triggered()), this, SLOT(launch()));
+    connect(_actionFullScreen, SIGNAL(toggled(bool)), this, SLOT(setFullScreenMode(bool)));
     connect(_actionAbout, SIGNAL(triggered()), this, SLOT(about()));
     connect(_actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(_actionShowGrid, SIGNAL(toggled(bool)), this, SLOT(showGrid(bool)));
@@ -670,7 +707,8 @@ void MainWindow::updateLibrary()
             qDebug("image null");
         qDebug() << locale;
 
-        _listWidgetForms->setIconSize(QSize(64,64));        _listWidgetForms->addItem(item);
+        _listWidgetForms->setIconSize(QSize(64,64));
+        _listWidgetForms->addItem(item);
 
     }
 
@@ -678,4 +716,10 @@ void MainWindow::updateLibrary()
 
 void MainWindow::writeSettings()
 {
+    QSettings settings(QApplication::organizationName(), QApplication::applicationName());
+
+    setWindowState(windowState() & ~Qt::WindowFullScreen);
+    settings.setValue("geometry", geometry());
+    settings.setValue("recentFiles", _recentFiles);
+    settings.setValue("fullScreen", _actionFullScreen->isChecked());
 }

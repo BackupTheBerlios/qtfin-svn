@@ -268,7 +268,13 @@ void Monofin::cleanPoints()
 
 void Monofin::configurate()
 {
-    _paramDiag->setNbLayers(_layerView->nbLayers());
+    int nbLayers = _projectFile->getHowManyLayers();
+    _paramDiag->setNbLayers(nbLayers);
+    for (int i=0; i < nbLayers; ++i) {
+        _paramDiag->updateLayerDensity(i, _projectFile->getLayerConfigRho(i));
+        _paramDiag->updateLayerPoissonRatio(i, _projectFile->getLayerConfigPoisson(i));
+        _paramDiag->updateLayerYoungModulus(i, _projectFile->getLayerConfigYoung(i));
+    }
     if(_paramDiag->exec()) {
         QTabWidget *qtw = _paramDiag->layerTabWidget;
         if (qtw->count() > 0) {

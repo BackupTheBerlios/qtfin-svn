@@ -43,19 +43,19 @@ void StartupDialog::changeEvent(QEvent *e)
 bool StartupDialog::eventFilter(QObject *obj, QEvent *event)
 {
     if (obj == ui->newProjectCmdButton) {
-        if (event->type() == QEvent::MouseMove) {
+        if (event->type() == QEvent::Enter) {
             ui->label->setText(tr("Create a new empty project."));
             return true;
         } else
             return false;
     } else if (obj == ui->imageProjectCmdButton) {
-        if (event->type() == QEvent::MouseMove) {
+        if (event->type() == QEvent::Enter) {
             ui->label->setText(tr("Create a new project from an image."));
             return true;
         } else
             return false;
     } else if (obj == ui->openProjectCmdButton) {
-        if (event->type() == QEvent::MouseMove) {
+        if (event->type() == QEvent::Enter) {
             ui->label->setText(tr("Open an existing project."));
             return true;
         } else

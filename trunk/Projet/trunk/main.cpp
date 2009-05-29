@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     splash->setAttribute(Qt::WA_DeleteOnClose);
     MainWindow* mainWin = new MainWindow;
     mainWin->setAttribute(Qt::WA_DeleteOnClose);
-    QObject::connect(timer, SIGNAL(timeout()), mainWin, SLOT(show()));
+    QObject::connect(timer, SIGNAL(timeout()), mainWin, SLOT(showMaximized()));
     QObject::connect(timer, SIGNAL(timeout()), splash, SLOT(close()));
 
     splash->setPixmap(QPixmap(":/images/splashScreen.png"));

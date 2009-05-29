@@ -18,7 +18,7 @@ AlgoSnake::AlgoSnake(SCircle* scircle):
         AbstractAlgoEdgesExtraction(), _scircle(scircle), _image(NULL),
         _coefficientDetectionSnake(25), _precisionPotrace(1.5)
 {
-    int nbPoints = qRound(_scircle->radius());
+    int nbPoints = qRound(_scircle->radius() / 2);
     _numberPointsSnake = nbPoints;
     _scircle->addSPoint(nbPoints);
 }
@@ -46,7 +46,7 @@ bool AlgoSnake::edgesDetection(qreal offsetX, qreal offsetY){
                     int gray = qGray(_image->pixel(qp->toPoint()));
                     if(sp->grayValue() != -1){
                         int t = qAbs(sp->grayValue() - gray);
-                        if(t > _coefficientDetectionSnake)
+                        if(t > _coefficientDetectionSnake && t < 250)
                         sp->setRadiusFixed(true);
                     }
                     sp->setGrayValue(qGray(_image->pixel(qp->toPoint())));
@@ -98,6 +98,7 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal offsetX, qreal offse
     /**
      * si il n'y a pas de premier point, retourne faux
      */
+    qDebug("test");
     if(np == -1)
         return false;
 
@@ -219,9 +220,8 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal offsetX, qreal offse
         }
     }
 
-    if(!finish){
+    if(!finish)
         return false;
-    }
 
     /**
      * Ajout des points dans le project File avec les points de contrôle
@@ -255,14 +255,14 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal offsetX, qreal offse
         /**
          * ajout du troisième point
          */
-        QPointF np1 = (9 * (_scircle->getQPointRotate(controlPointsToKeep.value(2), angle, scale) + offsetI)
-                      + secondP) / 10; // np1 : next point 1
+        QPointF np1 = (_scircle->getQPointRotate(controlPointsToKeep.value(2), angle, scale)
+                      + _scircle->getQPointRotate(controlPointsToKeep.value(3), angle, scale)) / 2 + offsetI;
         int npk1 = monofin->addIntersectionPoint(np1.x(), offsetY - np1.y());// npk1 : next point key 1
 
         /**
          * calcul de la position du point de controle entre le second et le troisième point
          */
-        QPointF cp = (np1 + secondP) / 2;// control point
+        QPointF cp = _scircle->getQPointRotate(controlPointsToKeep.value(2), angle, scale) + offsetI;// control point
         /**
          * ajout point de controle entre le second et le troisième point
          */
@@ -272,6 +272,87 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal offsetX, qreal offse
          * ajout du second segment entre le second et troisième point
          */
         monofin->addSegment(spk, npk1, fcpk);
+
+        int p1 = controlPointsToKeep.value(3); // point 1
+        int p2, npk2; // point 2
+
+        /**
+         * pour le reste des points sauf le dernier
+         */
+        for(int i = 4; i < controlPointsToKeep.size() - 1; i++){
+            /**
+             * recherche de l'index du point de controle courant
+             */
+            p2 = controlPointsToKeep.value(i);
+            /**
+             * ajout du point courant
+             */
+            QPointF np2 = (_scircle->getQPointRotate(p2, angle, scale) +
+                           _scircle->getQPointRotate(p1, angle, scale)) / 2 + offsetI;
+            npk2 = monofin->addIntersectionPoint(np2.x(), offsetY - np2.y());
+            /**
+             * calcul de la position du point de controle entre le point courant et le point précédent
+             */
+            cp = _scircle->getQPointRotate(p1, angle, scale) + offsetI;
+            /**
+             * ajout du point de controle courant dans monofin
+             */
+            fcpk = monofin->addControlPoint(cp.x(), offsetY - cp.y());
+            /**
+             * ajout du segment courant dans monofin
+             */
+            monofin->addSegment(npk1, npk2, fcpk);
+
+            /**
+             * point courant devient point précédent et on recommence !!
+             */
+            p1 = p2;
+            npk1 = npk2;
+        }
+
+        /**
+         * ajout du dernier point dans monofin
+         */
+        npk2 = monofin->addIntersectionPoint(lastP.x(), offsetY - lastP.y());
+
+        /**
+         * calcul de la position du point de contrôle entre l'avant dernier et le dernier point
+         */
+        cp = _scircle->getQPointRotate(controlPointsToKeep.last(), angle, scale) + offsetI;
+
+        /**
+         * ajout du point de contrôle entre l'avant dernier et le dernier point dans monofin
+         */
+        fcpk = monofin->addControlPoint(cp.x(), offsetY - cp.y());
+
+        /**
+         * ajout du dernier segment
+         */
+        monofin->addSegment(npk1, npk2, fcpk);
+    }// fin second point sur talon
+    else{
+        /**
+         * le second point n'est pas sur le talon
+         */
+        /**
+         * ajout du second point
+         */
+        QPointF np1 = (_scircle->getQPointRotate(controlPointsToKeep.value(1), angle, scale)
+                      + _scircle->getQPointRotate(controlPointsToKeep.value(2), angle, scale)) / 2 + offsetI;
+        int npk1 = monofin->addIntersectionPoint(np1.x(), offsetY - np1.y());// npk1 : next point key 1
+
+        /**
+         * calcul de la position du point de controle entre le premier et le second point
+         */
+         QPointF cp = _scircle->getQPointRotate(controlPointsToKeep.value(1), angle, scale) + offsetI;// control point
+        /**
+         * ajout point de controle entre le premier et le second point
+         */
+        int fcpk = monofin->addControlPoint(cp.x(), offsetY - cp.y());
+        /**
+         * ajout du premier segment entre le premier et le second point
+         */
+        monofin->addSegment(fpk, npk1, fcpk);
 
         int p1 = controlPointsToKeep.value(2); // point 1
         int p2, npk2; // point 2
@@ -310,28 +391,7 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal offsetX, qreal offse
             npk1 = npk2;
         }
 
-        /**
-         * ajout de l'avant dernier point dans monofin
-         */
         controlPointsToKeep.removeLast();
-        QPointF npll = (9 * (_scircle->getQPointRotate(controlPointsToKeep.last(), angle, scale) + offsetI)
-                      + lastP) / 10; // np1 : next point 1
-        int npkll = monofin->addIntersectionPoint(npll.x(), offsetY - npll.y());
-         /**
-         * calcul de la position du point de controle
-         */
-        cp = _scircle->getQPointRotate(controlPointsToKeep.last(), angle, scale) + offsetI;
-        /**
-         * ajout point de controle
-         */
-        fcpk = monofin->addControlPoint(cp.x(), offsetY - cp.y());
-
-        /**
-         * ajout du second segment entre le second et troisième point
-         */
-        monofin->addSegment(npk1, npkll, fcpk);
-
-
         /**
          * ajout du dernier point dans monofin
          */
@@ -340,7 +400,7 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal offsetX, qreal offse
         /**
          * calcul de la position du point de contrôle entre l'avant dernier et le dernier point
          */
-        cp = (npll + lastP) / 2;
+        cp = _scircle->getQPointRotate(controlPointsToKeep.last(), angle, scale) + offsetI;
 
         /**
          * ajout du point de contrôle entre l'avant dernier et le dernier point dans monofin
@@ -350,110 +410,7 @@ bool AlgoSnake::edgesExtraction(ProjectFile* monofin, qreal offsetX, qreal offse
         /**
          * ajout du dernier segment
          */
-        monofin->addSegment(npkll, npk2, fcpk);
-    }// fin second point sur talon
-    else{
-        /**
-         * le second point n'est pas sur le talon
-         */
-        /**
-         * ajout du second point
-         */
-        QPointF np1 = (9 * (_scircle->getQPointRotate(controlPointsToKeep.value(2), angle, scale) + offsetI)
-                      + firstP) / 10; // np1 : next point 1
-        int npk1 = monofin->addIntersectionPoint(np1.x(), offsetY - np1.y());// npk1 : next point key 1
-
-        /**
-         * calcul de la position du point de controle entre le premier et le second point
-         */
-         QPointF cp = (np1 + firstP) / 2;// control point
-        /**
-         * ajout point de controle entre le premier et le second point
-         */
-        int fcpk = monofin->addControlPoint(cp.x(), offsetY - cp.y());
-        /**
-         * ajout du premier segment entre le premier et le second point
-         */
-        monofin->addSegment(fpk, npk1, fcpk);
-
-        int p1 = controlPointsToKeep.value(1); // point 1
-        int p2, npk2; // point 2
-
-        /**
-         * pour le reste des points sauf le dernier
-         */
-        for(int i = 2; i < controlPointsToKeep.size() - 1; i++){
-            /**
-             * recherche de l'index du point de controle courant
-             */
-            p2 = controlPointsToKeep.value(i);
-            /**
-             * ajout du point courant
-             */
-            QPointF np2 = (_scircle->getQPointRotate(p2, angle, scale) +
-                           _scircle->getQPointRotate(p1, angle, scale)) / 2 + offsetI;
-            npk2 = monofin->addIntersectionPoint(np2.x(), offsetY - np2.y());
-            /**
-             * calcul de la position du point de controle entre le point courant et le point précédent
-             */
-            cp = _scircle->getQPointRotate(p1, angle, scale) + offsetI;
-            /**
-             * ajout du point de controle courant dans monofin
-             */
-            fcpk = monofin->addControlPoint(cp.x(), offsetY - cp.y());
-            /**
-             * ajout du segment courant dans monofin
-             */
-            monofin->addSegment(npk1, npk2, fcpk);
-
-            /**
-             * point courant devient point précédent et on recommence !!
-             */
-            p1 = p2;
-            npk1 = npk2;
-        }
-
-        /**
-         * ajout de l'avant dernier point dans monofin
-         */
-        controlPointsToKeep.removeLast();
-        QPointF npll = (9 * (_scircle->getQPointRotate(controlPointsToKeep.last(), angle, scale) + offsetI)
-                      + lastP) / 10; // np1 : next point 1
-        int npkll = monofin->addIntersectionPoint(npll.x(), offsetY - npll.y());
-         /**
-         * calcul de la position du point de controle
-         */
-        cp = _scircle->getQPointRotate(controlPointsToKeep.last(), angle, scale) + offsetI;
-        /**
-         * ajout point de controle
-         */
-        fcpk = monofin->addControlPoint(cp.x(), offsetY - cp.y());
-
-        /**
-         * ajout du second segment entre le second et troisième point
-         */
-        monofin->addSegment(npk1, npkll, fcpk);
-
-
-        /**
-         * ajout du dernier point dans monofin
-         */
-        npk2 = monofin->addIntersectionPoint(lastP.x(), offsetY - lastP.y());
-
-        /**
-         * calcul de la position du point de contrôle entre l'avant dernier et le dernier point
-         */
-        cp = (npll + lastP) / 2;
-
-        /**
-         * ajout du point de contrôle entre l'avant dernier et le dernier point dans monofin
-         */
-        fcpk = monofin->addControlPoint(cp.x(), offsetY - cp.y());
-
-        /**
-         * ajout du dernier segment
-         */
-        monofin->addSegment(npkll, npk2, fcpk);
+        monofin->addSegment(npk1, npk2, fcpk);
     }
     monofin->stopHistory(Data::MonofinSurface);
     return true;

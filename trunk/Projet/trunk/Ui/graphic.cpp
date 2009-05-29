@@ -36,6 +36,7 @@ Graphic::Graphic(QWidget *parent, ProjectFile* monofin, qreal width, qreal heigh
         _monofin = new ProjectFile();
 
     this->resize(1024, 768);
+    this->move(50, 50);
 
     _preview = new DrawPreview(this, _monofin, _graphicsScene->width(), _graphicsScene->height());
     QObject::connect(_preview, SIGNAL(kept()), this, SIGNAL(kept()));
@@ -68,6 +69,8 @@ void Graphic::setSize(qreal width, qreal height){
     _graphicsScene->deleteLater();
     _graphicsScene = newScene;
     _graphic.parametersButton->setDisabled(true);
+    _diag.coeffDetectSnake->setValue(25);
+    _diag.precisionPotrace->setValue(1.5);
 }
 
 void Graphic::setProjectFile(ProjectFile *monofin, qreal width, qreal height){

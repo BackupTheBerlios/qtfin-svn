@@ -11,6 +11,7 @@ DrawPreview::DrawPreview(QWidget* parent, ProjectFile* preview, qreal width, qre
         QWidget(parent, Qt::Window), _preview(preview), _width(width), _height(height)
 {
     this->setWindowModality(Qt::WindowModal);
+    this->setObjectName("Preview Form");
     this->resize(1024, 768);
 
     _view = new DrawPreviewView(this, preview, width, height);

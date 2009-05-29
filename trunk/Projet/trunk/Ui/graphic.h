@@ -111,7 +111,7 @@ signals:
     void kept();
 
 protected:
-    Ui::Form _graphic; // the graphic's interface
+    Ui::EdgesExtraction _graphic; // the graphic's interface
     QDialog* _parametersDialog;
     Ui::Dialog _diag;
 

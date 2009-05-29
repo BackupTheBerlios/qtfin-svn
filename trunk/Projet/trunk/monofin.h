@@ -64,7 +64,7 @@ public slots:
     void redo();
     void removeBackgroundPicture();
     void removeSelectedPoints();
-    void saveForm(QString path);
+    void saveForm(QString path, QString name = QString("Untitled"));
     void simplifyView(bool a);
     void showGrid(bool a);
     void switchToBlack();

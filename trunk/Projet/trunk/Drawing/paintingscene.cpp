@@ -237,7 +237,7 @@ QPixmap PaintingScene::getPictureOfTheScene(unsigned int x, unsigned int y){
     painter.translate(0,y);
     painter.scale(1,-1);
     bool simpl = _isSimplifyViewActivated;
-    this->simplifyView(false);
+    this->simplifyView(true);
     _isRenderingPicture = true;
     this->render(&painter, QRectF(), this->itemsBoundingRect().adjusted(-20,-20,20,20));
     _isRenderingPicture = false;

@@ -111,7 +111,7 @@ void MainWindow::about()
                           "Chaudet Yoann <br/>"
                           "Garcia Paul <br/>"
                           "Gautier Quentin <br/>"
-                          "e Squer Nicolas <br/>"
+                          "Le Squer Nicolas <br/>"
                           "Musset Nicolas <br/>"
                           "Villoing Xavier <br/>"
                           "</p>")
@@ -168,16 +168,16 @@ void MainWindow::newFile()
     int res = 0;
     if (res = _startupDialog->exec()) {
         switch (res) {
-            case StartupDialog::empty:
-                newEmptyProject();
+        case StartupDialog::empty:
+            newEmptyProject();
             break;
-            case StartupDialog::image:
-                newProjectFromImage();
+        case StartupDialog::image:
+            newProjectFromImage();
             break;
-            case StartupDialog::open:
-                open();
+        case StartupDialog::open:
+            open();
             break;
-            default:
+        default:
 
             break;
         }    
@@ -195,9 +195,9 @@ void MainWindow::newProjectFromImage()
         qDebug("existing graphicview.");
         _graphicView->setProjectFile(projectFile);
     }
-    projectFile->startHistory(Data::MonofinSurface);
-    projectFile->clearSurface();
-    projectFile->stopHistory(Data::MonofinSurface);
+    //projectFile->startHistory(Data::MonofinSurface);
+    //projectFile->clearSurface();
+    //projectFile->stopHistory(Data::MonofinSurface);
 
     QMdiSubWindow *msw = createMonofin(projectFile);
     Monofin *monofin = static_cast<Monofin *>(msw->widget());
@@ -267,21 +267,26 @@ void MainWindow::updateMenus()
     _actionSave->setEnabled(hasMonofin);
     _actionSaveAs->setEnabled(hasMonofin);
 
+    // MENU DRAW && VIEW
     if (hasMonofin) {
-        _menuDrawExt->clear();
+        _menuDraw->clear();
         _menuView->clear();
         QList<QToolBar*> l = activeMonofin()->toolBar();
         if(l.size() >= 1){
-            _menuDrawExt->addActions(l.first()->actions());
+            _menuDraw->addActions(l.first()->actions());
             if(l.size() >= 2){
                 _menuView->addActions(l.at(1)->actions());
             }
         }
-        _menuDrawExt->setEnabled(true);
+        _menuDraw->addAction(_actionShowGrid);
+        _menuDraw->addSeparator();
+        _menuDraw->addAction(_action3DPreview);
+
+        _menuDraw->setEnabled(true);
         _menuView->setEnabled(true);
     }
     else{
-        _menuDrawExt->setEnabled(false);
+        _menuDraw->setEnabled(false);
         _menuView->setEnabled(false);
     }
 }
@@ -497,14 +502,7 @@ void MainWindow::createMenus()
     // MENU DRAW
     _menuDraw = new QMenu(_menuBar);
     _menuDraw->setObjectName(QString::fromUtf8("menuDraw"));
-    _menuDraw->addAction(_actionShowGrid);
-    _menuDraw->addAction(_actionProperties);
-    _menuDrawExt = new QMenu;
-    _menuDrawExt->setObjectName(QString::fromUtf8("menuDrawExt"));
-    _menuDrawExt->setDisabled(true);
-    _menuDraw->addMenu(_menuDrawExt);
-    _menuDraw->addSeparator();
-    _menuDraw->addAction(_action3DPreview);
+    _menuDraw->setDisabled(true);
 
     // MENU SIMULATION
     _menuSimulation = new QMenu(_menuBar);
@@ -519,6 +517,7 @@ void MainWindow::createMenus()
     //MENU VIEW
     _menuView = new QMenu(_menuBar);
     _menuView->setObjectName(QString::fromUtf8("menuView"));
+    _menuView->setDisabled(true);
 
     // MENU LANGUAGE
     createLanguageMenu();
@@ -533,9 +532,9 @@ void MainWindow::createMenus()
     // MENUBAR
     _menuBar->addAction(_menuFile->menuAction());
     _menuBar->addAction(_menuDraw->menuAction());
+    _menuBar->addAction(_menuView->menuAction());
     _menuBar->addAction(_menuSimulation->menuAction());
     _menuBar->addAction(_menuWin->menuAction());
-    _menuBar->addAction(_menuView->menuAction());
     _menuBar->addAction(_menuLanguage->menuAction());
     _menuBar->addAction(_menuHelp->menuAction());
 }
@@ -610,7 +609,6 @@ void MainWindow::retranslateUi()
     // menus
     _menuFile->setTitle(QApplication::translate("MainWindow", "&File", 0, QApplication::UnicodeUTF8));
     _menuDraw->setTitle(QApplication::translate("MainWindow", "&Draw", 0, QApplication::UnicodeUTF8));
-    _menuDrawExt->setTitle(QApplication::translate("MainWindow", "&Actions", 0, QApplication::UnicodeUTF8));
     _menuSimulation->setTitle(QApplication::translate("MainWindow", "&Simulation", 0, QApplication::UnicodeUTF8));
     _menuView->setTitle(QApplication::translate("MainWindow", "&View", 0, QApplication::UnicodeUTF8));
     _menuLanguage->setTitle(QApplication::translate("MainWindow", "&Language", 0, QApplication::UnicodeUTF8));

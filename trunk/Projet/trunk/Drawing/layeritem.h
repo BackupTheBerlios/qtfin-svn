@@ -12,18 +12,28 @@ class LayerItem : public QWidget
     Q_PROPERTY(qreal heightRatio READ heightRatio WRITE setHeightRatio);
     Q_PROPERTY(qreal lengthRatio READ lengthRatio WRITE setLengthRatio);
 public:
-    LayerItem(Qt::BrushStyle brushStyle = Qt::DiagCrossPattern, qreal heightRatio = 1.0, qreal lengthRatio = 1.0/*, QObject *parent = 0*/);
+    LayerItem(Qt::BrushStyle brushStyle = Qt::DiagCrossPattern, qreal heightRatio = 1.0, qreal lengthRatio = 1.0, QWidget *parent = 0);
     virtual ~LayerItem();
 
     qreal heightRatio() { return _heightRatio; }
     qreal lengthRatio() { return _lengthRatio; }
-    void setHeightRatio(qreal heightRatio) { _heightRatio = heightRatio; }
-    void setLengthRatio(qreal lengthRatio) { _lengthRatio = lengthRatio; }
+    void setHeightRatio(qreal heightRatio) { updateHeightRatio(heightRatio); }
+    void setLengthRatio(qreal lengthRatio) { updateLengthRatio(lengthRatio); }
     QSize sizeHint() const;
 
 protected:
     void paintEvent(QPaintEvent *event);
     void resizeEvent(QResizeEvent* event);
+
+private slots:
+    void updateHeightRatio(qreal heightRatio) {
+        _heightRatio = heightRatio;
+        refreshPixmap();
+    }
+    void updateLengthRatio(qreal lengthRatio) {
+        _lengthRatio = lengthRatio;
+        refreshPixmap();
+    }
 
 private:
     void drawLayer(QPainter *painter);

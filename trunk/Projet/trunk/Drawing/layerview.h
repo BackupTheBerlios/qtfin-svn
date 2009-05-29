@@ -1,7 +1,7 @@
 #ifndef LAYERVIEW_H
 #define LAYERVIEW_H
 
-#include "layeritem.h"
+#include "layerrowitem.h"
 
 #include <QtCore/QVector>
 #include <QtGui/QWidget>
@@ -22,26 +22,27 @@ public:
 
     int nbLayers();
     QSize sizeHint() const;
+    qreal LayerView::getBiggerLength() const;
 
     void addLayerItem(int rank, qreal height, qreal length);
     void removeLayerItem(int rank);
 
 protected slots:
-    void updateLayerHeight();
-    void updateLayerLength();
+    void updateLayerHeight(qreal height, qreal old);
+    void updateLayerLength(qreal length, qreal old);
 
 private:
     void createLayerEditionRow(int row, qreal height, qreal length);
+    void updateLayersHeight() {}
+    void updateLayersLength();
 
 private:
     Data::ProjectFile *_struct;
-    QVector<QDoubleSpinBox*> _heightDoubleSpinBoxes;
-    QVector<QDoubleSpinBox*> _lengthDoubleSpinBoxes;
-    QVector<LayerItem*> _layers;
+    QVector<LayerRowItem*> _layers;
     QVBoxLayout *_layout;
 
     qreal _totalHeight;
-    qreal _totalLength;
+    qreal _maxLength;
 };
 
 #endif // LAYERVIEW_H

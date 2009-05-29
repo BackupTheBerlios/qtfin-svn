@@ -99,7 +99,6 @@ private:
     QMenuBar *_menuBar;
     QMenu *_menuFile;
     QMenu *_menuDraw;
-    QMenu *_menuDrawExt;
     QMenu *_menuSimulation;
     QtWindowListMenu *_menuWin;
     QMenu *_menuView;

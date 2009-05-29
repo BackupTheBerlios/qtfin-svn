@@ -343,9 +343,10 @@ void Monofin::removeSelectedPoints()
     _scene->removeSelectedPoints();
 }
 
-void Monofin::saveForm(QString path){
+void Monofin::saveForm(QString path, QString name)
+{
     QImage image = _scene->getPictureOfTheScene(128,128).toImage();
-    _projectFile->saveForm(path, QString("Untitled"), image);
+    _projectFile->saveForm(path, name, image);
 }
 
 void Monofin::simplifyView(bool a)
@@ -755,10 +756,10 @@ void Monofin::createToolBar()
     toolBarDraw->addSeparator();
     toolBarDraw->addAction(_actionAlignTangents);
     toolBarDraw->addSeparator();
-    toolBarDraw->addAction(_actionMagnet);
-    toolBarDraw->addSeparator();
     toolBarDraw->addAction(_actionInsertLayer);
     toolBarDraw->addAction(_actionRemoveLayer);
+    toolBarDraw->addSeparator();
+    toolBarDraw->addAction(_actionMagnet);
 
     toolBarView->addAction(_actionSimplifyView);
     toolBarView->addAction(_actionSwitchColors);
@@ -788,7 +789,7 @@ void Monofin::initialize()
     _layerView = new LayerView(_projectFile);
     if (!_scene.isNull())
         _scene->deleteLater();
-    _scene = new PaintingScene(1024, 768, _projectFile);
+    _scene = new PaintingScene(800, 600, _projectFile);
 
     _layout->addWidget(new PaintingView(_scene.data(), this));
     _layout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Ignored, QSizePolicy::MinimumExpanding));
@@ -834,6 +835,7 @@ void Monofin::retranslateUi()
     _actionAlignTangents->setText(tr("Align tangents"));
     _actionSimplifyView->setText(tr("Simplify the view"));
     _actionMagnet->setText(tr("Activate / Deactivate the magnet"));
+    _actionMagnet->setShortcut(tr("Ctrl+Shift+M"));
     _actionSwitchColors->setText(tr("Switch colors"));
     _actionSwitchToBlack->setText(tr("Black"));
     _actionSwitchToRed->setText(tr("Red"));

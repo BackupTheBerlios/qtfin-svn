@@ -28,6 +28,7 @@ SOURCES += main.cpp \
     Drawing/ghostline.cpp \
     Drawing/ghostpoint.cpp \
     Drawing/layeritem.cpp \
+    Drawing/layerrowitem.cpp \
     Drawing/layerview.cpp \
     Drawing/paintingscene.cpp \
     Drawing/paintingview.cpp \
@@ -85,6 +86,7 @@ HEADERS += monofin.h \
     Drawing/ghostline.h \
     Drawing/ghostpoint.h \
     Drawing/layeritem.h \
+    Drawing/layerrowitem.h \
     Drawing/layerview.h \
     Drawing/paintingscene.h \
     Drawing/paintingview.h \

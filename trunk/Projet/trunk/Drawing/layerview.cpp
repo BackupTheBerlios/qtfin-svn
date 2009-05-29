@@ -13,7 +13,7 @@
 using namespace Data;
 
 LayerView::LayerView(ProjectFile *structure, QWidget *parent)
-        : QWidget(parent), _struct(structure), _totalHeight(0), _totalLength(0)
+    : QWidget(parent), _struct(structure), _totalHeight(0), _maxLength(0)
 {
     setObjectName("LayerWiew");
     setAttribute(Qt::WA_DeleteOnClose);
@@ -30,8 +30,8 @@ LayerView::LayerView(ProjectFile *structure, QWidget *parent)
     for (i=0; i<_struct->getHowManyLayers(); ++i) {
         qreal height = _struct->getLayerHeight(i);
         qreal length = _struct->getLayerLength(i);
-        _totalHeight += height;
-        _totalLength += length;
+        _totalHeight += height; // obsolete
+        _maxLength = qMax(length, _maxLength);
         createLayerEditionRow(i, height, length);
     }
     if (i==0)
@@ -48,8 +48,8 @@ LayerView::~LayerView()
 int LayerView::nbLayers()
 {
     qDebug("LayerView::nbLayers()");
-     return _layers.count();
- }
+    return _layers.count();
+}
 
 QSize LayerView::sizeHint() const
 {
@@ -62,8 +62,8 @@ void LayerView::addLayerItem(int rank, qreal height, qreal length)
     if (rank < 0 || height < 0 || length < 0)
         return;
 
-    _totalHeight += height;
-    _totalLength += length;
+    _totalHeight += height; // obsolete
+    _maxLength = qMax(length, _maxLength);
     // add a layer into the data structure
     _struct->startHistory(MonofinLayer);
     _struct->addLayer(rank, length, height);
@@ -74,73 +74,67 @@ void LayerView::addLayerItem(int rank, qreal height, qreal length)
 void LayerView::removeLayerItem(int rank)
 {
     qDebug() << QString("LayerView::removeLayerItem(%1)").arg(rank);
-    _totalHeight -= _heightDoubleSpinBoxes.at(rank)->value();
-    _totalLength -= _lengthDoubleSpinBoxes.at(rank)->value();
+    _totalHeight -= _layers.at(rank)->layerHeight(); // obsolete
 
-    // remove the layer
-    if (!_layout->takeAt(rank))
-        qDebug("no item to be removed");
+    // remove the layeritem
+    LayerRowItem *item = _layers.at(rank);
+    _layout->removeWidget(item);
     _layers.remove(rank);
-    _heightDoubleSpinBoxes.remove(rank);
-    _lengthDoubleSpinBoxes.remove(rank);
+    if(item)
+        item->deleteLater();
+    qDebug("nb layers : %d", _layers.count());
 
     // remove the layer from the data structure
     _struct->startHistory(MonofinLayer);
     _struct->removeLayer(rank);
     _struct->stopHistory(MonofinLayer);
+
+    _maxLength = getBiggerLength();
+    updateLayersHeight();
+    updateLayersLength();
 }
 
 // PROTECTED
 
-void LayerView::updateLayerHeight()
+void LayerView::updateLayerHeight(qreal height, qreal old)
 {
-    QDoubleSpinBox *heightSB = static_cast<QDoubleSpinBox*>(QObject::sender());
+    qDebug() << QString("LayerView::updateLayersHeight(%1, %2)").arg(height).arg(old);
+    LayerRowItem *sender = static_cast<LayerRowItem*>(QObject::sender());
     int rank;
-    qreal height;
-    if(heightSB) {
-        height = heightSB->value();
-        rank = _heightDoubleSpinBoxes.indexOf(heightSB);
+    if(sender) {
+        rank = _layers.indexOf(sender);
 
-        qDebug() << "LayerView::updateLayerHeight()" << "height:" << height;
-        _totalHeight -= _struct->getLayerHeight(rank);
+        _totalHeight -= old; // obsolete
         _struct->startHistory(MonofinLayer);
         _struct->setLayerHeight(rank, height);
         _struct->stopHistory(MonofinLayer);
 
         // update values
         height = _struct->getLayerHeight(rank);
-        heightSB->setValue(height);
-        _totalHeight += height;
+        sender->setHeight(height);
+        _totalHeight += height; // obsolete
         _layout->setStretch(rank, qRound(height));
-
-        // BUG HERE
     }
 }
 
 
-void LayerView::updateLayerLength()
+void LayerView::updateLayerLength(qreal length, qreal old)
 {
-    QDoubleSpinBox *lengthSB = static_cast<QDoubleSpinBox*>(QObject::sender());
+    qDebug() << QString("LayerView::updateLayersLength(%1, %2)").arg(length).arg(old);
+    LayerRowItem *sender = static_cast<LayerRowItem*>(QObject::sender());
     int rank;
-    qreal length;
-    if(lengthSB) {
-        length = lengthSB->value();
-        rank = _lengthDoubleSpinBoxes.indexOf(lengthSB);
+    if(sender) {
+        rank = _layers.indexOf(sender);
 
-        qDebug() << "LayerView::updateLayerLength()" << "length:" << length;
-        _totalLength -= _struct->getLayerLength(rank);
         _struct->startHistory(MonofinLayer);
         _struct->setLayerLength(rank, length);
         _struct->stopHistory(MonofinLayer);
 
         // update values
         length = _struct->getLayerLength(rank);
-        lengthSB->setValue(length);
-        _totalLength += length;
-        _layers.at(rank)->setLengthRatio(length/_totalLength);
-        _layers.at(rank)->update();
-
-        // BUG HERE
+        sender->setLength(length);
+        _maxLength = getBiggerLength();
+        updateLayersLength();
     }
 }
 
@@ -149,38 +143,32 @@ void LayerView::updateLayerLength()
 void LayerView::createLayerEditionRow(int row, qreal height, qreal length)
 {
     qDebug() << "LayerView::createLayerEditionRow(" << row << ")";
-    QDoubleSpinBox *heightDoubleSpinBox = new QDoubleSpinBox;
-    heightDoubleSpinBox->setValue(height);
-    heightDoubleSpinBox->setSuffix(QApplication::translate("LayerView", " cm", "centimeters", QApplication::UnicodeUTF8));
-    QDoubleSpinBox *lengthDoubleSPinBox = new QDoubleSpinBox;
-    lengthDoubleSPinBox->setValue(length);
-    lengthDoubleSPinBox->setMaximum(9999.99);
-    lengthDoubleSPinBox->setSuffix(QApplication::translate("LayerView", " cm", "centimeters", QApplication::UnicodeUTF8));
-    QLabel *heightLabel = new QLabel("height");
-    QLabel *lengthLabel = new QLabel("length");
-    QHBoxLayout *hbLayout = new QHBoxLayout;
-    hbLayout->setObjectName(QString("LayerView::hbLayout%1").arg(row));
-    LayerItem *layerItem = new LayerItem((Qt::BrushStyle)(row%4+Qt::CrossPattern), 1.0, length/_totalLength);
+    LayerRowItem *layerRowItem = new LayerRowItem(height, length, length/_maxLength);
 
-    connect(heightDoubleSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateLayerHeight()));
-    connect(lengthDoubleSPinBox, SIGNAL(valueChanged(double)), this, SLOT(updateLayerLength()));
+    connect(layerRowItem, SIGNAL(layerHeightUpdated(qreal,qreal)), this, SLOT(updateLayerHeight(qreal,qreal)));
+    connect(layerRowItem, SIGNAL(layerLengthUpdated(qreal,qreal)), this, SLOT(updateLayerLength(qreal,qreal)));
 
-    _heightDoubleSpinBoxes.insert(row, heightDoubleSpinBox);
-    _lengthDoubleSpinBoxes.insert(row, lengthDoubleSPinBox);
-    _layers.insert(row, layerItem);
+    _layers.insert(row, layerRowItem);
+    _layout->insertWidget(row, layerRowItem, qRound(height));
 
-    hbLayout->addWidget(heightLabel, 0, Qt::AlignRight);
-    hbLayout->addWidget(heightDoubleSpinBox, 0, Qt::AlignLeft);
-    hbLayout->addSpacing(20);
-    hbLayout->addWidget(lengthLabel, 0, Qt::AlignRight);
-    hbLayout->addWidget(lengthDoubleSPinBox, 0, Qt::AlignLeft);
-    hbLayout->addSpacing(20);
-    hbLayout->addWidget(layerItem);
+    layerRowItem->show();
 
-    _layout->insertLayout(row, hbLayout, qRound(height));
-    layerItem->show();
+    updateLayersHeight();
+    updateLayersLength();
 }
 
+void LayerView::updateLayersLength()
+{
+    foreach(LayerRowItem *item, _layers) {
+        item->setLengthRatio(item->layerLength()/_maxLength);
+    }
+}
 
-// TIP
-// utiliser les valeurs de strech vertical pour obtenir les bonnes proportions de hauteur
+qreal LayerView::getBiggerLength() const
+{
+    qreal max = 0;
+    foreach(LayerRowItem *item, _layers) {
+        max = qMax(max, item->layerLength());
+    }
+    return max;
+}

@@ -39,7 +39,6 @@ DrawPreview::DrawPreview(QWidget* parent, ProjectFile* preview, qreal width, qre
 
     QObject::connect(_keepButton, SIGNAL(clicked()), this, SLOT(keep()));
     QObject::connect(_doNotKeepButton, SIGNAL(clicked()), this, SLOT(doNotKeep()));
-    //QObject::connect(this->, SIGNAL(destroyed()), this, SLOT(doNotKeep()));
 }
 
 void DrawPreview::setProjectFile(ProjectFile *monofin, qreal width, qreal height){

@@ -18,18 +18,26 @@ public:
      */
     EdgesExtractionView(EdgesExtractionScene* scene, QWidget* parent = NULL);
 
+    /**
+     * rescale the view
+     */
     void reScale();
-    qreal getScale();
 
 protected:
+    
+    EdgesExtractionScene* _scene; // the scene contained in the view    
+    qreal _initHeight; //the initial height of the view
+    qreal _initWidth; //the initial width of the view
+    qreal _scale; //the scale of the view
+
+    /**
+     * see the Qt Reference Documentation
+     */
     void resizeEvent(QResizeEvent *event);
-    EdgesExtractionScene* _scene; // the scene contained in the view
+    /**
+     * see the Qt Reference Documentation
+     */
     virtual void drawForeground(QPainter *painter, const QRectF &rect);
-
-    qreal _initHeight;
-    qreal _initWidth;
-
-    qreal _scale;
 
 };
 

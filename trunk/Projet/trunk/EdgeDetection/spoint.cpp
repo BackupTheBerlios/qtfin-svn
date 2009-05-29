@@ -14,13 +14,6 @@
 
 using namespace std;
 
-int SPoint::almost(float f){
-    if(f - (int)f > .5)
-        return (int)f + 1;
-    else
-        return (int)f;
-}
-
 SPoint::SPoint(int radPos, int N, const QPointF& center, qreal radius):
         _radPos(radPos), _radius(radius), _grayValue(-1), _rayonFixe(false){
     _carthPos = QPointF();

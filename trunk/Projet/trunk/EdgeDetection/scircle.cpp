@@ -128,76 +128,6 @@ int SCircle::firstPoint(qreal angle, qreal offsetX, qreal offsetY, qreal scale, 
     return p;
 }
 
-qreal SCircle::tangentX(int i){
-    qreal res;
-    if( i >= 0 && i < _spointNb){
-        qreal den = ((qreal)this->getQPoint((i + 1) % _spointNb)->x() - (qreal)this->getQPoint((i + _spointNb - 1) % _spointNb)->x());
-        if (den == 0)
-            den = 1;
-        res = ((qreal)this->getQPoint((i + 1) % _spointNb)->y() - (qreal)this->getQPoint((i + _spointNb - 1) % _spointNb)->y()) /
-              den;
-    }else{
-        res = 0;
-    }
-    return res;
-}
-
-qreal SCircle::tangentY(int i){
-    qreal res;
-    if( i >= 0 && i < _spointNb){
-        qreal den = ((qreal)this->getQPoint((i + 1) % _spointNb)->y() - (qreal)this->getQPoint((i + _spointNb - 1) % _spointNb)->y());
-        if (den == 0)
-            den = 1;
-        res = ((qreal)this->getQPoint((i + 1) % _spointNb)->x() - (qreal)this->getQPoint((i + _spointNb - 1) % _spointNb)->x()) /
-              den;
-    }else{
-        res = 0;
-    }
-    return res;
-}
-
-QLineF SCircle::tangent(int i, bool after, qreal angle, qreal scale){
-    QPointF offsetI = _pixItem->offset();
-    QLineF res;
-    if( i >= 0 && i < _spointNb){
-        if(after)
-            res = QLineF(this->getQPointRotate(i, angle, scale) + offsetI,
-                     this->getQPointRotate((i + 1) % _spointNb, angle, scale) + offsetI);
-        else
-            res = QLineF(this->getQPointRotate((i + _spointNb - 1) % _spointNb, angle, scale) + offsetI,
-                     this->getQPointRotate(i, angle, scale) + offsetI);
-    }else{
-        res = QLineF(0, 0, 0, 0);
-    }
-    return res;
-}
-
-QLineF SCircle::specialTangent(QPointF point, int i, qreal angle, qreal scale){
-    QPointF offsetI = _pixItem->offset();
-    QLineF res;
-    if( i >= 0 && i < _spointNb){
-        res = QLineF(this->getQPointRotate((i + _spointNb - 1) % _spointNb, angle, scale)  + offsetI, point);
-    }else{
-        res = QLineF(0, 0, 0, 0);
-    }
-    return res;
-}
-
-
-
-qreal SCircle::tangentVariation(int i){
-    qreal res;
-    if( i != _spointNb - 1 && i != 0){
-        res = (this->tangentX(i + 1) - this->tangentX(i - 1)) * (this->tangentY(i + 1) - this->tangentY(i - 1));
-    }else if (i == _spointNb - 1){
-        res = (this->tangentX(0) - this->tangentX(i - 1)) * (this->tangentY(0) - this->tangentY(i - 1));
-    }else if (i == 0){
-        res = (this->tangentX(i + 1) - this->tangentX(_spointNb - 1)) * (this->tangentY(i + 1) - this->tangentY(_spointNb - 1));
-    }else{
-        res = 0;
-    }
-    return res;
-}
 
 void SCircle::addSPoint(){
     SPoint* sp = new SPoint(_spointNb, _spointNb + 1, _center, _radius);
@@ -235,12 +165,6 @@ void SCircle::changeSPointNb(int nb){
         this->addSPoint(nb - _spointNb);
     if ( nb < _spointNb)
         this->removeSPoint(_spointNb - nb);
-}
-
-qreal SCircle::valAbs(qreal v){
-    if (v < 0)
-        return - v;
-    return v;
 }
 
 void SCircle::reinitialize(){

@@ -27,7 +27,7 @@ public:
 
     /**
      * getter
-     * @return the coordinate of the heal
+     * @return the coordinate X of the heal
      */
     qreal heal();
 
@@ -86,8 +86,8 @@ signals:
 protected:
     PixmapItem* _pixItem; // the image of the scene
     RotateCircle* _rotCircle; // an item allowing to rotate the image
-    qreal _symetryAxe;
-    qreal _heal;
+    qreal _symetryAxe; //the position of the axe of symetry
+    qreal _heal;//the position of the heal ("red zone")
 };
 
 inline PixmapItem* EdgesExtractionScene::pixItem(){

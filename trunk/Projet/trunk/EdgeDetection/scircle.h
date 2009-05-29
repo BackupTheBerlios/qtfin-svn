@@ -98,35 +98,6 @@ public:
     int firstPoint(qreal angle, qreal offsetX, qreal offsetY, qreal scale, QPointF* fPoint);
 
     /**
-     * give the coefficient of the tangent of a point
-     * @param i : a point of the circle
-     * @return the coefficient
-     */
-    qreal tangentX(int i);
-
-    /**
-     * give the coefficient of the tangent of a point
-     * @param i : a point of the circle
-     * @return the coefficient
-     */
-    qreal tangentY(int i);
-
-     /**
-     * give the tangent of a point
-     * @param i : a point of the circle
-     * @return the tangent
-     */
-    QLineF tangent(int i, bool after, qreal angle, qreal scale);
-
-    /**
-     * give the tangent of a special point
-     * @param point : a special point wich is on the detected edge but is not a point of the scircle
-     * @param i : a point of the circle
-     * @return the tangent
-     */
-    QLineF specialTangent(QPointF point, int i, qreal angle, qreal scale);
-
-    /**
      * give the variation of the coefficient of the tangent for the point i
      * @param i : a point of the circle
      * @return the variation
@@ -185,14 +156,7 @@ protected:
     qreal _initRadius; // the initial radius of the circle
     qreal _radius; // the radius of the circle
     int _spointNb; // the number of points of the circle
-
     PixmapItem* _pixItem; // the "PixmapItem" that contains the form to detect
-
-    /**
-     * @param v real
-     * @return the absolute value of a signed real
-     */
-    qreal valAbs(qreal v);
 
 };
 

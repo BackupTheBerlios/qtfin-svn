@@ -43,7 +43,6 @@ void EdgesExtractionScene::setPixmap(QPixmap pixmap){
                                    pixmap.rect().center().y(),
                                    radius, _pixItem);
 
-    //scircle->addSPoint(1000);
     _pixItem->setSCircle(scircle);
 
     _rotCircle = new RotateCircle(_pixItem);

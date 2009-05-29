@@ -105,20 +105,17 @@ protected:
     qreal Y; // the heigt of the image
     qreal dimInitWidth; // the intial width of the image
     qreal dimInitHeight; // the initial heigt of the image
-
+    qreal _rotateAngl; // the angle of rotation of the image
+    qreal _scale; // the scale of rotation of the image
+    bool _enter; // boolean that is true when the mouse is in the bounding rectangle of the item
+    bool _isForAlgo; // boolean that is true if the pixmapItem is used for algorithms
 
     QPointF _posMousePress; // the position of the mouse when it is pressed
     QPointF _posMouseMove; // the position of the mouse
 
-    qreal _rotateAngl; // the angle of rotation of the image
-    qreal _scale; // the scale of rotation of the image
-
-    bool _enter; // boolean that is true when the mouse is in the bounding rectangle of the item
-
-    bool _isForAlgo;
-
     /**
      * different overloaded functions that handle the mouse events
+     * see the Qt Reference Documentation
      */
     virtual void mousePressEvent(QGraphicsSceneMouseEvent * event );
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* event);

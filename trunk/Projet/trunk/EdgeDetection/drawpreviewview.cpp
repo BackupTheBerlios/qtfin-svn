@@ -59,7 +59,6 @@ void DrawPreviewView::resizeEvent(QResizeEvent *event)
 
 
 void DrawPreviewView::drawBackground(QPainter* painter, const QRectF & rect){
-    //QPainter painter(this);
     Q_UNUSED(rect)
 
     painter->setPen(QPen(QBrush("red"), 3));
@@ -101,8 +100,8 @@ void DrawPreviewView::drawBackground(QPainter* painter, const QRectF & rect){
         painter->drawPath(bezier);
         painter->drawPath(bezierS);
 
-        painter->setPen(QPen(QBrush("blue"), 4));
-        painter->drawPoint((int)p1x, (int)p1y);
+        painter->setPen(QPen(QBrush("blue"), 7));
+        painter->drawPoint(qRound(p1x), qRound(p1y));
     }
     int p, lp, c;
     _preview->getSegment(listSeg.last(), p, lp, c);

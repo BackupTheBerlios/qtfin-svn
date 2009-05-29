@@ -43,13 +43,10 @@ void RotateCircle::paint(QPainter* painter, const QStyleOptionGraphicsItem* opti
     painter->translate(-x, -y);
     QPixmap pix;
     if(_enter)
-        //painter->setBrush(QBrush(QColor("red")));
-        pix = QPixmap(":/images/blueSatellite.png");
-    else
-        //painter->setBrush(QBrush(QColor("green")));
         pix = QPixmap(":/images/redSatellite.png");
+    else
+        pix = QPixmap(":/images/blueSatellite.png");
 
-    //painter->drawEllipse(this->rect());
     painter->drawPixmap(this->rect().toRect(), pix);
 }
 

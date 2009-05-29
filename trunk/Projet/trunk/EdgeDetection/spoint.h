@@ -89,12 +89,6 @@ protected:
 
     int _grayValue; // the level of grey of the pixel that is attached to the point
     bool _rayonFixe; // true if the point is fixed in the scene , else false
-
-    /**
-     * @param f : a float
-     * @return the almost value of f
-     */
-    int almost(float f);
 };
 
 inline int SPoint::radPos(){

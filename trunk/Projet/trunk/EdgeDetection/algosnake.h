@@ -23,10 +23,36 @@ public:
     AlgoSnake(SCircle* scircle = NULL);
 
     /**
+     * getter
+     * @return the number of points of the snake
+     */
+    int numberPointsSnake(){return _numberPointsSnake;}
+
+    /**
+     * getter
+     * @return the coefficient of detection of the snake
+     */
+    int coefficientDetectionSnake(){return _coefficientDetectionSnake;}
+
+    /**
+     * getter
+     * @return the precision of the algorithm Potrace used by the edges extracion
+     */
+    qreal precisionPotrace(){return _precisionPotrace;}
+
+    /**
      * setter
      * @param image : the edges are detected on this image
      */
     void setImage(QImage* image);
+
+    /**
+     * set the differents paramaters of the algorithms
+     * @param numberPointsSnake an integer
+     * @param coefficientDetectionSnake an integer
+     * @param precisionPotrace a float
+     */
+    void setParameters(int numberPointsSnake, int coefficientDetectionSnake, qreal precisionPotrace);
 
     /**
      * implementation of the edges detection algorithm
@@ -43,22 +69,13 @@ public:
      */
     virtual void reinitialize();
 
-    void setParameters(int numberPointsSnake, int coefficientDetectionSnake, qreal precisionPotrace);
-
-    int numberPointsSnake(){return _numberPointsSnake;}
-
-    int coefficientDetectionSnake(){return _coefficientDetectionSnake;}
-
-    qreal precisionPotrace(){return _precisionPotrace;}
-
 protected:
 
     SCircle* _scircle; // the "snake circle" that be used to detect the form
     QImage* _image; // image that contains the form that will be detected
-
-    int _numberPointsSnake;
-    int _coefficientDetectionSnake;
-    qreal _precisionPotrace;
+    int _numberPointsSnake;//the number of points of the snake
+    int _coefficientDetectionSnake; //the coefficient of detection of the snake
+    qreal _precisionPotrace;//the precision of the algorithm Potrace used by the edges extracion
 
 };
 

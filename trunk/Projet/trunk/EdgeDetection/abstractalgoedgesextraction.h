@@ -29,6 +29,9 @@ public:
      */
     virtual bool edgesExtraction(Data::ProjectFile* monofin, qreal offsetX, qreal offsetY) = 0;
 
+    /**
+     * Reinitialize the algorithms
+     */
     virtual void reinitialize() = 0;
 };
 

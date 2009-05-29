@@ -44,21 +44,6 @@ void EdgesExtractionView::reScale(){
     }
 }
 
-qreal EdgesExtractionView::getScale(){
-    qreal sceneWidth = this->scene()->width();
-    qreal sceneHeight = this->scene()->height();
-
-    qreal scaleX = _initWidth / sceneWidth;
-    qreal scaleY = _initHeight / sceneHeight;
-
-    if(scaleX <= scaleY)
-        return scaleX;
-    else
-        return scaleY;
-}
-
-
-
 void EdgesExtractionView::resizeEvent(QResizeEvent *event)
 {
    _initWidth = this->width() - 10;

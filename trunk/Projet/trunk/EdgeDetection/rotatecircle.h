@@ -33,21 +33,24 @@ public:
      */
     bool isMoved();
 
+    /**
+     * see the Qt Reference Documentation
+     */
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
 
 
 protected:
 
-    bool _enter; // boolean ...
-    bool _isMoved;
-    qreal _radiusInit;
-    qreal _radius; // the radius
-    qreal _scale;
+    bool _enter; // boolean that is true if the mouse is on the rotateCirle
+    bool _isMoved; // boolean that is true if the rotateCircle is moving
+    qreal _radiusInit; // the initial radius of circle around wich the rotateCircle revolves
+    qreal _radius; // the actual radius of the circle
+    qreal _scale; //the scale of the item
 
     /**
      * different overloaded functions that handle the mouse events
+     * see the Qt Reference Documentation
      */
-
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* event);
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent * event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent * event);

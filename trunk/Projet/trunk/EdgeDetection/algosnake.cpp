@@ -46,7 +46,7 @@ bool AlgoSnake::edgesDetection(qreal offsetX, qreal offsetY){
                     int gray = qGray(_image->pixel(qp->toPoint()));
                     if(sp->grayValue() != -1){
                         int t = qAbs(sp->grayValue() - gray);
-                        if(t > _coefficientDetectionSnake && t < 250)
+                        if(t > _coefficientDetectionSnake && t < 252)
                         sp->setRadiusFixed(true);
                     }
                     sp->setGrayValue(qGray(_image->pixel(qp->toPoint())));

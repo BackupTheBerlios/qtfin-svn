@@ -9,21 +9,13 @@
 
 PixmapItem::PixmapItem(QPixmap pix):
         QGraphicsPixmapItem(pix),
-        _posMousePress(QPointF(0,0)), _posMouseMove(QPointF(0,0)),
-        _rotateAngl(0), _scale(1), _enter(false), _isForAlgo(false)
+        _rotateAngl(0), _scale(1), _enter(false), _isForAlgo(false),
+        _posMousePress(QPointF(0,0)), _posMouseMove(QPointF(0,0))
 {
     dimInitWidth = pixmap().width();
     dimInitHeight = pixmap().height();
     X = dimInitWidth;
     Y = dimInitHeight;
-
-    /*QRectF rect = this->boundingRect();
-    qreal radius = sqrt(rect.width() * rect.width() +
-                        rect.height() * rect.height()) / 2;
-    _scircle = new SCircle(this->pixmap().rect().center().x(),
-                           this->pixmap().rect().center().y(),
-                           radius, this);
-    _scircle->addSPoint(1000);*/
 
     this->setAcceptHoverEvents(true);
     this->setFlag(QGraphicsItem::ItemIsMovable,true);
@@ -56,7 +48,6 @@ void PixmapItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option
         painter->translate(-x, -y);
         this->offset();
         painter->drawPixmap(this->boundingRect().topLeft(), pixmap());
-        //painter->drawRect(this->boundingRect());
 
         QPen pen(QBrush("black"), 1);
         painter->setPen(pen);
@@ -70,6 +61,9 @@ void PixmapItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option
 
         if(_isForAlgo){
 
+            /*
+             * très long code trop compliqué qui ne sert pas à grand chose
+             */
             qreal axeSymetry = ((EdgesExtractionScene*)this->scene())->symetryAxe();
             qreal heal = ((EdgesExtractionScene*)this->scene())->heal();
             QPointF point;
@@ -168,23 +162,6 @@ void PixmapItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option
 
             QPen pen1(QBrush("yellow"), 5);
             painter->setPen(pen1);
-            /*painter->drawPoint(_scircle->getQPoint(89)->x() + this->offset().x(),
-                               _scircle->getQPoint(89)->y() + this->offset().y());
-            painter->drawPoint(_scircle->getQPoint(12)->x() + this->offset().x(),
-                               _scircle->getQPoint(12)->y() + this->offset().y());
-            painter->drawPoint(_scircle->getQPoint(13)->x() + this->offset().x(),
-                               _scircle->getQPoint(13)->y() + this->offset().y());
-            painter->drawPoint(_scircle->getQPoint(20)->x() + this->offset().x(),
-                               _scircle->getQPoint(20)->y() + this->offset().y());
-            painter->drawPoint(_scircle->getQPoint(22)->x() + this->offset().x(),
-                               _scircle->getQPoint(22)->y() + this->offset().y());
-            painter->drawPoint(_scircle->getQPoint(23)->x() + this->offset().x(),
-                               _scircle->getQPoint(23)->y() + this->offset().y());*/
-            /*QPen pen2(QBrush("green"), 5);
-            painter->setPen(pen2);
-            painter->drawPoint(_scircle->getQPoint(753)->x() + this->offset().x(),
-                               _scircle->getQPoint(753)->y() + this->offset().y());*/
-
         }
     }
 }

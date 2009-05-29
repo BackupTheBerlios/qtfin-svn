@@ -384,9 +384,10 @@ void PaintingScene::activateCreateLine(bool a){
         _state = CreatePointsState;
 
         //_ghostPoint = new GhostPoint(QPointF(this->pointsBoundingZone().bottomLeft().x(),0), this);
-        _ghostPoint->moveTo(QPointF(this->pointsBoundingZone().bottomLeft().x(),0));
+        _ghostPoint->moveTo(QPointF(this->pointsBoundingZone().width()/4.0, 0));
         this->addItem(_ghostPoint);
         _hasPlacedFirstPoint = false;
+        this->update();
     }else{
         if(_state != CreatePointsState){
             qDebug("Warning : attempting to deactivate 'create line', but this function is not active : go back to normal mode");
@@ -850,12 +851,55 @@ void PaintingScene::drawBackground(QPainter* painter, const QRectF& rect){
             }
         }//if showGrid
 
+        /*QPen pen;
+        pen.setWidthF(1.5);
+        pen.setColor(Qt::red);
+
+        painter->setOpacity(1);
+        painter->setPen(pen);*/
+
+        painter->setPen(QPen());
+        painter->setBrush(QBrush("red"));
+        painter->setOpacity(0.5);
+
+        QPainterPath path1;
+        path1.addRect(QRectF(QPointF(-10,this->sceneRect().bottom()), QPointF(0,this->sceneRect().top())));
+        painter->drawPath(path1);
+
+        //painter->drawLine(QPointF(0,this->sceneRect().bottom()), QPointF(0,this->sceneRect().top()));
+        //painter->drawRect(QRectF(QPointF(-10,this->sceneRect().bottom()), QPointF(0,this->sceneRect().top())));
+
+        /*painter->setBrush(QBrush("black"));
+        painter->setOpacity(0.75);
+
+        QPainterPath path1;
+        path1.addRect(rect);
+        QPainterPath path2;
+        path2.addRect(this->sceneRect());
+        path1 -= path2;
+        painter->drawPath(path1);*/
+
+        if(_state == CreatePointsState){
+            painter->setBrush(QBrush("gray"));
+            painter->setOpacity(0.2);
+
+            QPainterPath path2;
+            path2.addRect(QRectF(QPointF(0,0), QPointF(this->sceneRect().width(),this->sceneRect().top())));
+            painter->drawPath(path2);
+        }
+
+
     }//if !isRenderingPicture
 
 
 }
 
 void PaintingScene::getMonofinFromStructure(){
+
+    if(_state == CreatePointsState){
+        this->stopCreateLine();
+    }
+
     //on enlève tous les points sans affecter la structure interne
     this->removeAllPoints();
 
@@ -1146,7 +1190,7 @@ void PaintingScene::mouseMoveEvent(QGraphicsSceneMouseEvent* event){
     }//switch
 
 //ALWAYS
-    this->update(this->sceneRect());
+    this->update();
     QGraphicsScene::mouseMoveEvent(event);
 }
 

@@ -317,11 +317,34 @@ void Monofin::keepBezierCurve(bool a)
 
 void Monofin::launch()
 {
-    _generator->show();
+    if(_isEmpty){
+        QMessageBox::information(0,
+                                 tr("Monofin"),
+                                 tr("Painting zone is empty !\nYou can not launch the script."),
+                                 QMessageBox::Ok,
+                                 QMessageBox::Ok);
+
+    }else{
+        if(_scene->existIntersectionsBetweenLines()){
+            int ret = QMessageBox::warning(0,
+                                           tr("Monofin"),
+                                           tr("Some lines are intersecting.\nDo you still want to launch the simulation ?"),
+                                           QMessageBox::Yes | QMessageBox::No,
+                                           QMessageBox::No);
+            if(ret == QMessageBox::Yes){
+                _generator->show();
+            }
+        }else{
+            _generator->show();
+        }
+    }
 }
 
 void Monofin::loadForm(QString path)
 {
+    if(_actionCreatePolygon->isChecked()){
+        _actionCreatePolygon->trigger();
+    }
     _projectFile->loadForm(path);
     this->updateScene();
 }
@@ -333,6 +356,9 @@ void Monofin::preview3D()
 
 void Monofin::redo()
 {
+    if(_actionCreatePolygon->isChecked()){
+        _actionCreatePolygon->trigger();
+    }
     _scene->redo();
 }
 
@@ -388,6 +414,9 @@ void Monofin::switchToWhite()
 
 void Monofin::undo()
 {
+    if(_actionCreatePolygon->isChecked()){
+        _actionCreatePolygon->trigger();
+    }
     _scene->undo();
 }
 

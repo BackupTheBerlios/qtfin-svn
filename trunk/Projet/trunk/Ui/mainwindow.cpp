@@ -152,7 +152,18 @@ void MainWindow::launch()
     }
 }
 
-void MainWindow::loadForm(QListWidgetItem *item){    if(this->activeMonofin() == NULL){        this->newEmptyProject();    }        if(this->activeMonofin() != NULL){        if(item->type() == FormItem::Type){            this->activeMonofin()->loadForm(((FormItem*)item)->path());        }    }}void MainWindow::preview3D()
+void MainWindow::loadForm(QListWidgetItem *item){
+    if(this->activeMonofin() == NULL){
+        this->newEmptyProject();
+    }
+    if(this->activeMonofin() != NULL){
+        if(item->type() == FormItem::Type){
+            this->activeMonofin()->loadForm(((FormItem*)item)->path());
+        }
+    }
+}
+
+void MainWindow::preview3D()
 {
     if (activeMonofin()) {
         activeMonofin()->preview3D();

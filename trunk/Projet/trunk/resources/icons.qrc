@@ -24,6 +24,7 @@
         <file>icons/drawing/removeBackground.png</file>
         <file>icons/drawing/removeLayer.png</file>
         <file>icons/drawing/switchColor.png</file>
+	  <file>icons/drawing/simplifyView.png</file>
         <file>icons/drawing/transformBackground.png</file>
         <file>icons/drawing/undo.png</file>
         <file>icons/drawing/zoomIn.png</file>

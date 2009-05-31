@@ -30,12 +30,13 @@ for i=1:length(data.segments)
 		[-s.y(1) -s.y(2) -s.y(2) -s.y(3)]);
 end
 
+% s = geomcsg(curves);
+
 % Assemblage des courbes de Bézier en un solide (héritant de 'solid2') représentant la surface de la palme.
 s = geomcoerce('solid', curves);
 
-% Suppression des bordures internes à l'objet. Permet d'avoir une géométrie "propre" en cas de boucles sur les
-% courbes de Bézier.
-s = geomdel(s);
+% Suppression des bordures internes à l'objet.
+% s = geomdel(s);
 
 % Calcul de la longueur de la palme sur son axe central de symétrie.
 % Cette valeur définie la longueur maximale d'une strate constituant la palme.
@@ -60,7 +61,8 @@ z = 0;
 
 % Création des strates (dans un cell array).
 layers = {};
-for i=1:length(data.layers)
+% for i=1:length(data.layers)
+for i=length(data.layers):-1:1
 	st = data.layers(i);
 
 	% Duplication de la surface de la palme dans s1.

@@ -42,7 +42,7 @@
     <message>
         <location filename="../Ui/graphic.ui" line="14"/>
         <source>Edges Extraction</source>
-        <translation type="unfinished"></translation>
+        <translation>Extraction de contours</translation>
     </message>
     <message>
         <location filename="../Ui/graphic.ui" line="66"/>
@@ -110,7 +110,7 @@
     <message>
         <location filename="../Ui/generatecomsolfiledialog.cpp" line="108"/>
         <source>Script executed with success. Would you like to open the generated file in COMSOL Multiphysics now?</source>
-        <translation type="unfinished"></translation>
+        <translation>Exécution du script réussie. Voulez-vous ouvrir le fichier créé dans COMSOL Multiphysics maintenant ?</translation>
     </message>
     <message>
         <location filename="../Ui/generatecomsolfiledialog.cpp" line="116"/>
@@ -228,7 +228,7 @@
     <message>
         <location filename="../Ui/geometry3dviewer.cpp" line="68"/>
         <source>ERROR: Unable to display the geometry preview image.</source>
-        <translation type="unfinished"></translation>
+        <translation>ERREUR : Impossible d&apos;afficher la prévisualisation de la géométrie.</translation>
     </message>
 </context>
 <context>

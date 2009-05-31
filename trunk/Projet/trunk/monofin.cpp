@@ -720,10 +720,12 @@ void Monofin::createToolBar()
 
     _actionIncreaseWindowSize = new QAction(this);
     _actionIncreaseWindowSize->setObjectName(QString::fromUtf8("actionIncreaseWindowSize"));
+    _actionIncreaseWindowSize->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Plus));
     _actionIncreaseWindowSize->setIcon(QIcon(":/icons/drawing/increaseSizeWindow.png"));
 
     _actionDecreaseWindowSize = new QAction(this);
     _actionDecreaseWindowSize->setObjectName(QString::fromUtf8("actionDecreaseWindowSize"));
+    _actionDecreaseWindowSize->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Minus));
     _actionDecreaseWindowSize->setIcon(QIcon(":/icons/drawing/decreaseSizeWindow.png"));
 
     _increaseGridUnitSize = new QAction(this);
@@ -752,11 +754,13 @@ void Monofin::createToolBar()
 
     _enlargeBackgroundPictureSize = new QAction(this);
     _enlargeBackgroundPictureSize->setObjectName(QString::fromUtf8("enlargeBackgroundPictureSize"));
+    _enlargeBackgroundPictureSize->setShortcut(QKeySequence(Qt::Key_PageUp));
     _enlargeBackgroundPictureSize->setDisabled(true);
     _enlargeBackgroundPictureSize->setIcon(QIcon(":/icons/drawing/enlargeBackgroundSize.png"));
 
     _reduceBackgroundPictureSize = new QAction(this);
     _reduceBackgroundPictureSize->setObjectName(QString::fromUtf8("reduceBackgroundPictureSize"));
+    _reduceBackgroundPictureSize->setShortcut(QKeySequence(Qt::Key_PageDown));
     _reduceBackgroundPictureSize->setDisabled(true);
     _reduceBackgroundPictureSize->setIcon(QIcon(":/icons/drawing/reduceBackgroundSize.png"));
 
@@ -791,10 +795,10 @@ void Monofin::createToolBar()
     toolBarDraw->addSeparator();
     toolBarDraw->addAction(_actionAlignTangents);
     toolBarDraw->addSeparator();
+    toolBarDraw->addAction(_actionMagnet);
+    toolBarDraw->addSeparator();
     toolBarDraw->addAction(_actionInsertLayer);
     toolBarDraw->addAction(_actionRemoveLayer);
-    toolBarDraw->addSeparator();
-    toolBarDraw->addAction(_actionMagnet);
 
     toolBarView->addAction(_actionSimplifyView);
     toolBarView->addAction(_actionSwitchColors);
@@ -804,10 +808,10 @@ void Monofin::createToolBar()
     toolBarView->addAction(_decreaseGridUnitSize);
     toolBarView->addSeparator();
     toolBarView->addAction(_actionAddBackgroundPicture);
-    toolBarView->addAction(_actionRemoveBackgroundPicture);
     toolBarView->addAction(_actionTransformBackgroundPicture);
     toolBarView->addAction(_enlargeBackgroundPictureSize);
     toolBarView->addAction(_reduceBackgroundPictureSize);
+    toolBarView->addAction(_actionRemoveBackgroundPicture);
 
 
     _toolBars.append(toolBarDraw); //first

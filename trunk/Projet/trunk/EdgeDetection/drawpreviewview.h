@@ -1,8 +1,8 @@
 #ifndef DRAWPREVIEWVIEW_H
 #define DRAWPREVIEWVIEW_H
 
-#include <QGraphicsview>
-#include "../Data/ProjectFile.h"
+#include <QGraphicsView>
+#include "../Data/projectfile.h"
 
 class DrawPreviewView : public QGraphicsView
 {

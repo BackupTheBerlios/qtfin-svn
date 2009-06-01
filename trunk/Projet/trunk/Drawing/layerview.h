@@ -22,7 +22,7 @@ public:
 
     int nbLayers();
     QSize sizeHint() const;
-    qreal LayerView::getBiggerLength() const;
+    qreal getBiggerLength() const;
 
     void addLayerItem(int rank, qreal height, qreal length);
     void removeLayerItem(int rank);

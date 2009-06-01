@@ -285,7 +285,7 @@ namespace Data{
           *@param projectName, the name given to the save file (default : untitled)
           *@param picture a QImage, an aperçu of the shape saved (default : empty)
           */
-        void saveForm(const QString &path, const QString &projectName = QString("Untitled"), QImage &picture = QImage());
+        void saveForm(const QString &path, const QString &projectName = QString("Untitled"), QImage picture = QImage());
 
         /**
           * load the entire project using LoadVisitor

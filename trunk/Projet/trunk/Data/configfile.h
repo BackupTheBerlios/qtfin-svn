@@ -2,7 +2,7 @@
 #define CONFIGFILE_H
 
 #include <QVector>
-#include "LayerConfig.h"
+#include "layerconfig.h"
 #include "DataConstants.h"
 #include "historyholder.h"
 #include "SaveVisitor.h"

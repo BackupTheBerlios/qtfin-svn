@@ -150,17 +150,17 @@
     <message>
         <location filename="../Ui/generatecomsolfiledialog.ui" line="71"/>
         <source>Extra fine</source>
-        <translation>Extra fin</translation>
+        <translation>Très fin</translation>
     </message>
     <message>
         <location filename="../Ui/generatecomsolfiledialog.ui" line="76"/>
         <source>Finer</source>
-        <translation>Plus fin</translation>
+        <translation>Fin</translation>
     </message>
     <message>
         <location filename="../Ui/generatecomsolfiledialog.ui" line="81"/>
         <source>Fine</source>
-        <translation>Fin</translation>
+        <translation>Moyennement fin</translation>
     </message>
     <message>
         <location filename="../Ui/generatecomsolfiledialog.ui" line="86"/>
@@ -170,22 +170,22 @@
     <message>
         <location filename="../Ui/generatecomsolfiledialog.ui" line="91"/>
         <source>Coarse</source>
-        <translation>grossier</translation>
+        <translation>moyennement grossier</translation>
     </message>
     <message>
         <location filename="../Ui/generatecomsolfiledialog.ui" line="96"/>
         <source>Coarser</source>
-        <translation>plus grossier</translation>
+        <translation>Grossier</translation>
     </message>
     <message>
         <location filename="../Ui/generatecomsolfiledialog.ui" line="101"/>
         <source>Extra coarse</source>
-        <translation>très grossier</translation>
+        <translation>Très grossier</translation>
     </message>
     <message>
         <location filename="../Ui/generatecomsolfiledialog.ui" line="106"/>
         <source>Extremely coarse</source>
-        <translation>extrêmement grossier</translation>
+        <translation>Extrêmement grossier</translation>
     </message>
     <message>
         <location filename="../Ui/generatecomsolfiledialog.ui" line="124"/>
@@ -282,18 +282,18 @@ X11 Format (*.xbm *.xpm);;</translation>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/layerParameters.ui" line="43"/>
+        <location filename="../Ui/layerParameters.ui" line="40"/>
         <source>Young&apos;s modulus</source>
         <translation>module de Young</translation>
     </message>
     <message>
-        <location filename="../Ui/layerParameters.ui" line="56"/>
+        <location filename="../Ui/layerParameters.ui" line="53"/>
         <source> MPa</source>
         <comment>Mega Pascal</comment>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/layerParameters.ui" line="75"/>
+        <location filename="../Ui/layerParameters.ui" line="69"/>
         <source>Poisson&apos;s ratio</source>
         <translation>coefficient de Poisson</translation>
     </message>
@@ -311,177 +311,177 @@ X11 Format (*.xbm *.xpm);;</translation>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="56"/>
-        <location filename="../Ui/mainwindow.cpp" line="267"/>
-        <location filename="../Ui/mainwindow.cpp" line="479"/>
+        <location filename="../Ui/mainwindow.cpp" line="58"/>
+        <location filename="../Ui/mainwindow.cpp" line="282"/>
+        <location filename="../Ui/mainwindow.cpp" line="494"/>
         <source>English</source>
-        <translation>Français</translation>
+        <translation type="unfinished">Français</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="71"/>
-        <location filename="../Ui/mainwindow.cpp" line="365"/>
-        <location filename="../Ui/mainwindow.cpp" line="368"/>
+        <location filename="../Ui/mainwindow.cpp" line="73"/>
+        <location filename="../Ui/mainwindow.cpp" line="380"/>
+        <location filename="../Ui/mainwindow.cpp" line="383"/>
         <source>Monofin</source>
         <translation>Monopalme</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="108"/>
+        <location filename="../Ui/mainwindow.cpp" line="112"/>
         <source>&lt;h2&gt;Monofin %1&lt;/h2&gt;&lt;p&gt;Copyright &amp;copy; 2009 %2&lt;/p&gt;&lt;p&gt;Chaudet Yoann &lt;br/&gt;Garcia Paul &lt;br/&gt;Gautier Quentin &lt;br/&gt;Le Squer Nicolas &lt;br/&gt;Musset Nicolas &lt;br/&gt;Villoing Xavier &lt;br/&gt;&lt;/p&gt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="320"/>
-        <location filename="../Ui/mainwindow.cpp" line="480"/>
+        <location filename="../Ui/mainwindow.cpp" line="335"/>
+        <location filename="../Ui/mainwindow.cpp" line="495"/>
         <source>&amp;%1 %2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="605"/>
+        <location filename="../Ui/mainwindow.cpp" line="634"/>
         <source>E&amp;xit</source>
         <translation>&amp;Quitter</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="606"/>
+        <location filename="../Ui/mainwindow.cpp" line="635"/>
         <source>Ctrl+Q</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="607"/>
+        <location filename="../Ui/mainwindow.cpp" line="636"/>
         <source>&amp;New...</source>
         <translation>&amp;Nouveau...</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="608"/>
+        <location filename="../Ui/mainwindow.cpp" line="637"/>
         <source>Ctrl+N</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="609"/>
+        <location filename="../Ui/mainwindow.cpp" line="638"/>
         <source>&amp;Open...</source>
         <translation>&amp;Ouvrir...</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="610"/>
+        <location filename="../Ui/mainwindow.cpp" line="639"/>
         <source>Ctrl+O</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="611"/>
+        <location filename="../Ui/mainwindow.cpp" line="640"/>
         <source>&amp;Save</source>
         <translation>&amp;Enregistrer</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="612"/>
+        <location filename="../Ui/mainwindow.cpp" line="641"/>
         <source>Ctrl+S</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="613"/>
+        <location filename="../Ui/mainwindow.cpp" line="642"/>
         <source>&amp;Save As...</source>
         <translation>Enregistrer &amp;sous...</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="617"/>
+        <location filename="../Ui/mainwindow.cpp" line="646"/>
         <source>&amp;3D Preview</source>
         <translation>Prévisualisation &amp;3D</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="620"/>
+        <location filename="../Ui/mainwindow.cpp" line="649"/>
         <source>&amp;Fullscreen</source>
         <translation>&amp;Plein écran</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="621"/>
+        <location filename="../Ui/mainwindow.cpp" line="650"/>
         <source>F12</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="622"/>
+        <location filename="../Ui/mainwindow.cpp" line="651"/>
         <source>&amp;Properties...</source>
         <translation>&amp;Propriétés...</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="623"/>
+        <location filename="../Ui/mainwindow.cpp" line="652"/>
         <source>&amp;About</source>
         <translation>&amp;A propos</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="624"/>
+        <location filename="../Ui/mainwindow.cpp" line="653"/>
         <source>About &amp;Qt</source>
         <translation>A propos de &amp;Qt</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="625"/>
+        <location filename="../Ui/mainwindow.cpp" line="654"/>
         <source>&amp;Add form</source>
         <translation>&amp;Ajouter une forme</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="626"/>
+        <location filename="../Ui/mainwindow.cpp" line="655"/>
         <source>&amp;Remove form</source>
         <translation>&amp;Enlever une forme</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="628"/>
+        <location filename="../Ui/mainwindow.cpp" line="657"/>
         <source>&amp;File</source>
         <translation>&amp;Fichier</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="629"/>
+        <location filename="../Ui/mainwindow.cpp" line="658"/>
         <source>&amp;Draw</source>
         <translation>&amp;Dessin</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="630"/>
+        <location filename="../Ui/mainwindow.cpp" line="659"/>
         <source>&amp;Simulation</source>
         <translation>&amp;Simulation</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="631"/>
+        <location filename="../Ui/mainwindow.cpp" line="660"/>
         <source>&amp;View</source>
         <translation>&amp;Vue</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="632"/>
+        <location filename="../Ui/mainwindow.cpp" line="661"/>
         <source>&amp;Language</source>
         <translation>&amp;Langue</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="633"/>
+        <location filename="../Ui/mainwindow.cpp" line="662"/>
         <source>&amp;Help</source>
         <translation>&amp;Aide</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="636"/>
+        <location filename="../Ui/mainwindow.cpp" line="665"/>
         <source>Form library</source>
         <translation>Bibliothèque</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="365"/>
+        <location filename="../Ui/mainwindow.cpp" line="380"/>
         <source>%1[*] - %2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="107"/>
+        <location filename="../Ui/mainwindow.cpp" line="111"/>
         <source>About %1</source>
         <translation>A propos de %1</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="125"/>
+        <location filename="../Ui/mainwindow.cpp" line="129"/>
         <source>Choose form name</source>
         <translation>Indiquer le nom de la forme</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="125"/>
+        <location filename="../Ui/mainwindow.cpp" line="129"/>
         <source>Enter a name for the form:</source>
         <translation>Entrer le nom de la forme:</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="138"/>
+        <location filename="../Ui/mainwindow.cpp" line="142"/>
         <source>File already existing</source>
         <translation>Fichier déjà existant</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="232"/>
+        <location filename="../Ui/mainwindow.cpp" line="247"/>
         <source>Remove file</source>
         <translation>Supprimer un fichier</translation>
     </message>
@@ -489,27 +489,27 @@ X11 Format (*.xbm *.xpm);;</translation>
 <context>
     <name>Monofin</name>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="615"/>
+        <location filename="../Ui/mainwindow.cpp" line="644"/>
         <source>Ctrl+Shift+G</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="614"/>
+        <location filename="../Ui/mainwindow.cpp" line="643"/>
         <source>&amp;Show Grid</source>
         <translation>&amp;Afficher la grille</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="616"/>
+        <location filename="../Ui/mainwindow.cpp" line="645"/>
         <source>&amp;Configurate...</source>
         <translation>&amp;Configurer...</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="618"/>
+        <location filename="../Ui/mainwindow.cpp" line="647"/>
         <source>&amp;Launch</source>
         <translation>&amp;Lancer</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="619"/>
+        <location filename="../Ui/mainwindow.cpp" line="648"/>
         <source>Ctrl+L</source>
         <translation></translation>
     </message>
@@ -531,6 +531,8 @@ X11 Format (*.xbm *.xpm);;</translation>
     </message>
     <message>
         <location filename="../monofin.cpp" line="120"/>
+        <location filename="../monofin.cpp" line="322"/>
+        <location filename="../monofin.cpp" line="330"/>
         <source>Monofin</source>
         <translation>Monopalme</translation>
     </message>
@@ -547,167 +549,181 @@ Voulez-vous enregistrer les modifications ?</translation>
         <translation>Ouvrir une image</translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="826"/>
+        <location filename="../monofin.cpp" line="323"/>
+        <source>Painting zone is empty !
+You can not launch the script.</source>
+        <translation>La zone de dessin est vide !
+Impossible de lancer le script.</translation>
+    </message>
+    <message>
+        <location filename="../monofin.cpp" line="331"/>
+        <source>Some lines are intersecting.
+Do you still want to launch the simulation ?</source>
+        <translation>Certaines lignes se croisent.
+Lancer la simulation malgré tout ?</translation>
+    </message>
+    <message>
+        <location filename="../monofin.cpp" line="859"/>
         <source>Draw toolbar</source>
         <translation>Dessin</translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="828"/>
+        <location filename="../monofin.cpp" line="861"/>
         <source>View toolbar</source>
         <translation>Vue</translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="831"/>
+        <location filename="../monofin.cpp" line="864"/>
         <source>Undo</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="832"/>
+        <location filename="../monofin.cpp" line="865"/>
         <source>Ctrl+Z</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="833"/>
+        <location filename="../monofin.cpp" line="866"/>
         <source>Redo</source>
         <translation>Refaire</translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="834"/>
+        <location filename="../monofin.cpp" line="867"/>
         <source>Ctrl+Shift+Z</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="835"/>
+        <location filename="../monofin.cpp" line="868"/>
         <source>Add control point</source>
         <translation>Ajouter un point de contrôle</translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="836"/>
+        <location filename="../monofin.cpp" line="869"/>
         <source>Add point</source>
         <translation>Ajouter un point</translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="837"/>
+        <location filename="../monofin.cpp" line="870"/>
         <source>Remove selected points</source>
         <translation>Supprimer les points séléctionnés</translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="838"/>
+        <location filename="../monofin.cpp" line="871"/>
         <source>Create polygon</source>
         <translation>Démarrer le tracé</translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="839"/>
+        <location filename="../monofin.cpp" line="872"/>
         <source>Clean polygon</source>
         <translation>Effacer</translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="840"/>
+        <location filename="../monofin.cpp" line="873"/>
         <source>Remove control point</source>
         <translation>Supprimer un point de contrôle</translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="841"/>
+        <location filename="../monofin.cpp" line="874"/>
         <source>Align tangents</source>
         <translation>Aligner les tangentes</translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="842"/>
+        <location filename="../monofin.cpp" line="875"/>
         <source>Simplify the view</source>
         <translation>Simplifier la vue</translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="843"/>
+        <location filename="../monofin.cpp" line="876"/>
         <source>Activate / Deactivate the magnet</source>
         <translation>Grille aimantée</translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="844"/>
+        <location filename="../monofin.cpp" line="877"/>
         <source>Ctrl+Shift+M</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="845"/>
+        <location filename="../monofin.cpp" line="878"/>
         <source>Switch colors</source>
         <translation>Changer la couleur</translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="846"/>
+        <location filename="../monofin.cpp" line="879"/>
         <source>Black</source>
         <translation>Noir</translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="847"/>
+        <location filename="../monofin.cpp" line="880"/>
         <source>Red</source>
         <translation>Rouge</translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="848"/>
+        <location filename="../monofin.cpp" line="881"/>
         <source>White</source>
         <translation>blanc</translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="849"/>
+        <location filename="../monofin.cpp" line="882"/>
         <source>Add a layer</source>
         <translation>Ajouter une strate</translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="850"/>
+        <location filename="../monofin.cpp" line="883"/>
         <source>Remove a layer</source>
         <translation>Supprimer une strate</translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="851"/>
+        <location filename="../monofin.cpp" line="884"/>
         <source>Increase size of the drawing zone</source>
         <translation>Augmenter la  zone de dessin</translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="852"/>
+        <location filename="../monofin.cpp" line="885"/>
         <source>Decrease size of the drawing zone</source>
         <translation>Diminuer la zone de dessin</translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="853"/>
+        <location filename="../monofin.cpp" line="886"/>
         <source>Add a background picture</source>
         <translation>Définir une image de fond</translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="854"/>
+        <location filename="../monofin.cpp" line="887"/>
         <source>Transform the background picture</source>
         <translation>Modifier l&apos;image de fond</translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="855"/>
+        <location filename="../monofin.cpp" line="888"/>
         <source>Remove the background picture</source>
         <translation>Supprimer l&apos;image de fond</translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="856"/>
+        <location filename="../monofin.cpp" line="889"/>
         <source>Enlarge picture size</source>
         <translation>Augmenter la taille de l&apos;image</translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="857"/>
+        <location filename="../monofin.cpp" line="890"/>
         <source>Reduce picture size</source>
         <translation>Diminuer la taille de l&apos;image</translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="858"/>
+        <location filename="../monofin.cpp" line="891"/>
         <source>Increase size of the grid unit</source>
         <translation>Diminuer la finesse de la grille</translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="859"/>
+        <location filename="../monofin.cpp" line="892"/>
         <source>Decrease size of the grid unit</source>
         <translation>Augmenter la finesse de la grille</translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="924"/>
+        <location filename="../monofin.cpp" line="957"/>
         <source>(Untitled %1)</source>
         <translation>(Sans titre %1)</translation>
     </message>
     <message>
-        <location filename="../monofin.cpp" line="934"/>
+        <location filename="../monofin.cpp" line="967"/>
         <source>%1[*]</source>
         <translation></translation>
     </message>

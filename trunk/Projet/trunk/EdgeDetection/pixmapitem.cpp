@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <QLineF>
-#include <QpointF>
+#include <QPointF>
 #include "pixmapitem.h"
 #include "edgesextractionscene.h"
 

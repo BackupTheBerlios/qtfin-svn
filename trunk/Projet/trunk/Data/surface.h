@@ -1,7 +1,7 @@
 #ifndef SURFACE_H
 #define SURFACE_H
 
-#include <QPointf>
+#include <QPointF>
 #include <QHash>
 #include <QList>
 #include "segment.h"

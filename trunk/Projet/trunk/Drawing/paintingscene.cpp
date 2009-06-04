@@ -791,9 +791,24 @@ void PaintingScene::adjustSceneRectangleToItems(){
     }
     max/=2.0;
 
+    //si le rectangle de la scène (légèrement agrandi) ne contient pas
+    //tous les items, on l'ajuste
     if(!sceneRect.adjusted(-max, -max, max, max).contains(itemRect)){
         sceneRect = sceneRect.united(itemRect);
         sceneRect.moveLeft(0);
+        //on s'arrange pour que le rectangle soit symétrique
+        qreal top = sceneRect.top();
+        qreal bottom = sceneRect.bottom();
+        if(sceneRect.bottom() < 0){
+            sceneRect.setBottom(-qMax(qAbs(top), qAbs(bottom)));
+        }else{
+            sceneRect.setBottom(qMax(qAbs(top), qAbs(bottom)));
+        }
+        if(sceneRect.top() < 0){
+            sceneRect.setTop(-qMax(qAbs(top), qAbs(bottom)));
+        }else{
+            sceneRect.setTop(qMax(qAbs(top), qAbs(bottom)));
+        }
         QRect newSceneRect = sceneRect.toRect();
         this->setSceneRect(newSceneRect);
     }
@@ -1006,7 +1021,10 @@ void PaintingScene::getMonofinFromStructure(){
                 ControlPoint* cp = newLine->controlPoint();
                 cp->setInternalKey(controlKey);
                 newLine->setControlPoint(true);
-                newLine->moveControlPoint(QPointF(x, y));
+                //on n'oublie pas de dire que le point de contrôle peut bouger
+                //en dehors de la scène (au cas où la scène actuelle serait trop
+                //petite)
+                newLine->moveControlPoint(QPointF(x, y), false);
             }
 
             //Si l'on est pas à la fin de la boucle, on actualise le segment

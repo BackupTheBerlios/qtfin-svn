@@ -188,8 +188,10 @@ public:
     * Make sure the control point has been activated by setControlPoint(true).
     * If the control point is not activated, it will be replaced at the center
     * of the line on the next call to the method move().
+    * It also updates the bezier curve.
+    @param pos and moveOnlyInScene : see ControlPoint::moveTo()
     **/
-    void moveControlPoint(QPointF pos);
+    void moveControlPoint(QPointF pos, bool moveOnlyInScene = true);
 
     /**
     * Compares the given pointer with the pointers of the two points of the

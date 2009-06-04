@@ -85,9 +85,15 @@ public:
     * Makes the control point moving to the coordinates of the given QPointF,
     * but ONLY in the zone where control points can move, which is the scene
     * rectangle. It also updates the position of the two tangents.
-    * @param p the new coordinates of the control point as a QPointF
+    *@param p the new coordinates of the control point as a QPointF
+    *@param moveOnlyInScene if true, it means that the point will place itself
+    * at the extremity of the scene rectangle if the new coordinates are
+    * outside (it can move only inside this rectangle), this is the default
+    * option ; set this option to false can be useful if you do not know the
+    * size of the entire edge and if you want to adjust the size of the scene
+    * rectangle after this operation
     **/
-    void moveTo(const QPointF& p);
+    void moveTo(const QPointF& p, bool moveOnlyInScene = true);
 
     /**
     * Paints the item as a black circle when it's not under the mouse

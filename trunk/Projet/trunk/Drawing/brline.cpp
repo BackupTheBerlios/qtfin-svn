@@ -146,10 +146,11 @@ void BrLine::move(){
     this->updatePath();
 }
 
-void BrLine::moveControlPoint(QPointF pos){
-    _contr->moveTo(pos);
+void BrLine::moveControlPoint(QPointF pos, bool moveOnlyInScene){
+    _contr->moveTo(pos, moveOnlyInScene);
     _tangent1->setLine(_line->p1(), _contr->coord());
     _tangent2->setLine(_line->p2(), _contr->coord());
+    this->updatePath();
 }
 
 BoundingPoint* BrLine::otherPointAs(BoundingPoint* p){

@@ -53,20 +53,22 @@ bool ControlPoint::isAllowedToMoveAtPosY(qreal posY){
     return (posY > 0 && posY < zone.bottom());
 }
 
-void ControlPoint::moveTo(const QPointF& p){
+void ControlPoint::moveTo(const QPointF& p, bool moveOnlyInScene){
     QPointF pos(p);
     QRectF zone = _scene->sceneRect();
 
-   //on contrôle que le point ne dépasse pas sa zone
-    if(pos.x() < zone.bottomLeft().x()){
-        pos.setX(zone.bottomLeft().x());
-    }else if(pos.x() > zone.bottomRight().x()){
-        pos.setX(zone.bottomRight().x());
-    }
-    if(pos.y() < 0){
-        pos.setY(0);
-    }else if(pos.y() > zone.bottomLeft().y()){
-        pos.setY(zone.bottomLeft().y());
+    if(moveOnlyInScene){
+       //on contrôle que le point ne dépasse pas sa zone
+        if(pos.x() < zone.bottomLeft().x()){
+            pos.setX(zone.bottomLeft().x());
+        }else if(pos.x() > zone.bottomRight().x()){
+            pos.setX(zone.bottomRight().x());
+        }
+        if(pos.y() < 0){
+            pos.setY(0);
+        }else if(pos.y() > zone.bottomLeft().y()){
+            pos.setY(zone.bottomLeft().y());
+        }
     }
 
    //on bouge le point

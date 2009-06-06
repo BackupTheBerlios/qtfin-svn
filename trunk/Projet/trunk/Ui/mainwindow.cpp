@@ -244,7 +244,30 @@ void MainWindow::openRecentFile()
         loadFile(action->data().toString());
 }
 
-void MainWindow::removeForm(){    QListWidgetItem* item = _listWidgetForms->currentItem();    if(item != NULL){        if(item->type() == FormItem::Type){            QString path(((FormItem*)item)->path());            QFile file(path);            if(file.exists()){                QMessageBox msg;                msg.setText(tr("Remove file"));                msg.setIcon(QMessageBox::Question);                msg.setInformativeText(("Are you sure ?"));                msg.setStandardButtons(QMessageBox::Yes | QMessageBox::No);                msg.setDefaultButton(QMessageBox::No);                int ret = msg.exec();                if(ret == QMessageBox::Yes){                    file.remove();                    this->updateLibrary();                }            }        }    }}bool MainWindow::save()
+void MainWindow::removeForm(){
+    QListWidgetItem* item = _listWidgetForms->currentItem();
+    if(item != NULL){
+        if(item->type() == FormItem::Type){
+            QString path(((FormItem*)item)->path());
+            QFile file(path);
+            if(file.exists()){
+                QMessageBox msg;
+                msg.setText(tr("Remove file"));
+                msg.setIcon(QMessageBox::Question);
+                msg.setInformativeText(tr("Are you sure ?"));
+                msg.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+                msg.setDefaultButton(QMessageBox::No);
+                int ret = msg.exec();
+                if(ret == QMessageBox::Yes){
+                    file.remove();
+                    this->updateLibrary();
+                }
+            }
+        }
+    }
+}
+
+bool MainWindow::save()
 {
     if (activeMonofin())
         return activeMonofin()->save();
@@ -693,11 +716,6 @@ QString MainWindow::strippedName(const QString &fullFileName)
 void MainWindow::updateLibrary()
 {
     _listWidgetForms->clear();
-    /*foreach(QListWidgetItem* i, _listItems){
-        _listItems.removeOne(i);
-        delete i;
-    }
-    _listItems.clear();*/
 
     QDir dir(_libraryPath);
     QStringList fileNames =
@@ -714,9 +732,9 @@ void MainWindow::updateLibrary()
                 fileNames[i].left(fileNames[i].size()-5),
                 locale);
 
-        if(Data::ProjectFile::getImage(locale).isNull())
+        if(Data::ProjectFile::getImage(locale).isNull()){
             qDebug("image null");
-        qDebug() << locale;
+        }
 
         _listWidgetForms->setIconSize(QSize(64,64));
         _listWidgetForms->addItem(item);

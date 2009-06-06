@@ -256,6 +256,7 @@ QRectF PaintingScene::pointsBoundingZone(){
 }
 
 void PaintingScene::removeAllPoints(){
+    _isAPointHighlighted = false;
     BoundingPoint* p;
     foreach(p, _pointList){
         //Le point appelle des fonctions de destruction sur chacune
@@ -289,7 +290,16 @@ void PaintingScene::removeLine(BrLine* l){
     delete l;
 }
 
-void PaintingScene::removePoint(BoundingPoint* p){    
+void PaintingScene::removePoint(BoundingPoint* p){
+
+    //on commence par préciser que le point supprimé n'est
+    //plus sous la souris s'il y était avant
+    if(_isAPointHighlighted){
+        if(_itemUnderMouse == p){
+            _isAPointHighlighted = false;
+        }
+    }
+
     //on sauvegarde temporairement les coordonnées au cas où
     QPointF oldCoord = p->coord();
 

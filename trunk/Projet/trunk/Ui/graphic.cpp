@@ -207,12 +207,12 @@ void Graphic::setPixmapPositionY(int y){
 void Graphic::startAlgo(){
     bool ok =_algo->edgesDetection(_graphicsScene->width(), _graphicsScene->height());
     if(!ok){
-        QMessageBox::warning(this, "Over position", "Warning, the image is positionned badly !\nSome points detected are not in the scene !");
+        QMessageBox::warning(this, tr("Over position"), tr("Warning, the image is not correctly positionned!\nSome detected points are not in the scene."));
         _algo->reinitialize();
     }else{
         ok =_algo->edgesExtraction(_monofin, _graphicsScene->heal(), _graphicsScene->symetryAxe());
         if(!ok){
-            QMessageBox::warning(this, "No edge detected", "Warning, the image is positionned badly !\nThe axe of symetry is not detected !");
+            QMessageBox::warning(this, tr("No edge detected"), tr("Warning, the image is not correctly positionned!\nThe symmetry axis is not detected."));
             _algo->reinitialize();
         }else{
             _preview->setProjectFile(_monofin, _graphicsScene->width(), _graphicsScene->height());

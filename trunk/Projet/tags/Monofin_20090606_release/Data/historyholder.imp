@@ -1,0 +1,241 @@
+/*
+ * Implementation file for history holders
+ */
+
+template<typename Type>
+HistoryHolder<Type>::HistoryHolder(Type t):_t(t) {}
+
+template<typename Type>
+HistoryHolder<Type>::~HistoryHolder(){
+
+    //std::cout << "Destructeur HH: " << _toStore.size() << std::endl;
+    foreach(AutomatedStorage toDelete, _toStore)
+        if(toDelete.canBeDeleted)
+            operator delete(toDelete.ptr);
+    _toStore.clear();
+}
+
+template<typename Type>
+void HistoryHolder<Type>::pushInt(int data){
+    AutomatedStorage toPush;
+    toPush.canBeDeleted = false;
+    toPush.ptr = (void*) data;
+    toPush.size = 0;
+    _toStore.push(toPush);
+}
+
+template<typename Type>
+template<typename PtrType>
+void HistoryHolder<Type>::pushPtr(PtrType * ptr){
+    AutomatedStorage toPush;
+    toPush.canBeDeleted = true;
+    toPush.ptr = (void *) ptr;
+    toPush.size = sizeof(PtrType);
+    _toStore.push(toPush);
+}
+
+template<typename Type>
+void * HistoryHolder<Type>::pop(){
+    if(!_toStore.isEmpty())
+        return _toStore.pop().ptr;
+    else
+        return NULL;
+}
+
+template<typename Type>
+int HistoryHolder<Type>::getNumberOfStoredElements(){
+    return _toStore.size();
+}
+
+template<typename Type>
+Type HistoryHolder<Type>::getType(){
+    return _t;
+}
+
+template<typename Type>
+HistoryMaker<Type>::~HistoryMaker() {
+    if(!_makedHistory.isEmpty())
+        foreach(HistoryHolder<Type> * toDelete, _makedHistory)
+            delete toDelete;
+}
+
+template<typename Type>
+HistoryHolder<Type> * HistoryMaker<Type>::getCurrentHistoryHolder(Type t){
+    HistoryHolder<Type> * newHistory = new HistoryHolder<Type>(t);
+    _makedHistory.push_front(newHistory);
+    return newHistory;
+}
+
+template<typename Type>
+HistoryCareTaker<Type>::~HistoryCareTaker() {
+    // if historic are started but not ended we must stop them
+    // in order to de-allocate them correctly
+    /*foreach(Type key,_isStarted.keys())
+        if(_isStarted[key])
+            stopHistory(key);*/
+
+    //int test = 0;
+    //de-allocation of all HistoryHolders.
+    foreach(Type key,_passedHistory.keys()){
+        //std::cout << "Destructeur HCT: current deletetion " << ++test << std::endl;
+        QStack< QList< HistoryHolder<Type> *> > &toClear = _passedHistory[key];
+        while(!toClear.isEmpty()){
+            QList<HistoryHolder<Type> *> list = toClear.pop();
+            foreach(HistoryHolder<Type> * toDelete, list){
+                //std::cout << "Destructeur HCT: list size " << list.size() << std::endl;
+                delete toDelete;
+            }
+        }
+        //std::cout << test << std::endl;
+        //delete toClear;
+    }
+
+    foreach(Type key,_futureHistory.keys()){
+        QStack< QList< HistoryHolder<Type> *> > &toClear = _futureHistory[key];
+        while(!toClear.isEmpty()){
+            foreach(HistoryHolder<Type> * toDelete, toClear.pop())
+                delete toDelete;
+        }
+        //delete toClear;
+    }
+}
+
+template<typename Type>
+void HistoryCareTaker<Type>::undo(Type t){
+    if(_passedHistory.contains(t)){
+        if(_passedHistory.value(t).size()!=0){
+            QList<HistoryHolder<Type> *> toUndo = _passedHistory[t].pop();
+            QList<HistoryHolder<Type> *> globalHistory;
+            foreach(HistoryMaker<Type> * hM, _historyMakers){
+                hM->startHistory(t);
+                hM->undo(toUndo);
+                globalHistory+=hM->retrieveHistory(t);
+            }
+            if(_futureHistory.contains(t)){
+                _futureHistory[t].push_back(globalHistory);
+            }else{
+                QStack<QList<HistoryHolder<Type> *> > toFill; // = new QStack<QList<HistoryHolder<Type> *> >();
+                toFill.push(globalHistory);
+                _futureHistory.insert(t,toFill);
+            }
+        }
+    }
+}
+
+template<typename Type>
+void HistoryCareTaker<Type>::redo(Type t){
+    if(_futureHistory.contains(t)){
+        if(_futureHistory.value(t).size()!=0){
+            QList<HistoryHolder<Type> *> toRedo = _futureHistory[t].pop();
+            QList<HistoryHolder<Type> *> globalHistory;
+            foreach(HistoryMaker<Type> * hM, _historyMakers){
+                hM->startHistory(t);
+                hM->undo(toRedo);
+                globalHistory+=hM->retrieveHistory(t);
+            }
+            if(_passedHistory.contains(t)){
+                _passedHistory[t].push_back(globalHistory);
+            }else{
+                QStack<QList<HistoryHolder<Type> *> > toFill; // = new QStack<QList<HistoryHolder<Type> *> >();
+                toFill.push(globalHistory);
+                _passedHistory.insert(t,toFill);
+            }
+        }
+    }
+}
+
+template<typename Type>
+void HistoryCareTaker<Type>::addHistoryMaker(HistoryMaker<Type> * hM){
+    _historyMakers.append(hM);
+}
+
+template<typename Type>
+int HistoryCareTaker<Type>::numberOfUndo(Type t){
+    if(_passedHistory.contains(t))
+        return _passedHistory[t].size();
+    else
+        return 0;
+}
+
+template<typename Type>
+int HistoryCareTaker<Type>::numberOfRedo(Type t){
+    if(_futureHistory.contains(t))
+        return _futureHistory[t].size();
+    else
+        return 0;
+}
+
+template<typename Type>
+void HistoryCareTaker<Type>::startHistory(Type t){
+
+    if(_isStarted[t])
+        return;
+
+    _isStarted[t]=true;
+
+    if(_futureHistory.contains(t)){
+        _futureHistory[t].clear();
+    }
+
+    foreach(HistoryMaker<Type> * hM, _historyMakers){
+        hM->startHistory(t);
+    }
+}
+
+template<typename Type>
+void HistoryCareTaker<Type>::stopHistory(Type t){
+
+    if(!_isStarted[t])
+        return;
+
+    QList<HistoryHolder<Type> *> globalHistory;
+
+    foreach(HistoryMaker<Type> * hM, _historyMakers)
+        globalHistory+=hM->retrieveHistory(t);
+
+    if(globalHistory.isEmpty())
+        return;
+
+    if(_passedHistory.contains(t)){
+        _passedHistory[t].push_back(globalHistory);
+    }else{
+        QStack<QList<HistoryHolder<Type> *> > toFill; //QStack<QList<HistoryHolder<Type> *> >();
+        toFill.push(globalHistory);
+        _passedHistory.insert(t,toFill);
+    }
+    _isStarted[t] = false;
+}
+
+template<typename Type>
+void HistoryCareTaker<Type>::dropLastHistory(Type t){
+    stopHistory(t);
+    if(_passedHistory.contains(t))
+        _passedHistory[t].pop_back();
+}
+
+template<typename Type>
+void HistoryCareTaker<Type>::dropAllHistory(){
+    foreach(Type key,_passedHistory.keys()){
+        //std::cout << "Destructeur HCT: current deletetion " << ++test << std::endl;
+        QStack< QList< HistoryHolder<Type> *> > &toClear = _passedHistory[key];
+        while(!toClear.isEmpty()){
+            QList<HistoryHolder<Type> *> list = toClear.pop();
+            foreach(HistoryHolder<Type> * toDelete, list){
+                //std::cout << "Destructeur HCT: list size " << list.size() << std::endl;
+                delete toDelete;
+            }
+        }
+        //std::cout << test << std::endl;
+        //delete toClear;
+    }
+
+    foreach(Type key,_futureHistory.keys()){
+        QStack< QList< HistoryHolder<Type> *> > &toClear = _futureHistory[key];
+        while(!toClear.isEmpty()){
+            foreach(HistoryHolder<Type> * toDelete, toClear.pop())
+                delete toDelete;
+        }
+        //delete toClear;
+    }
+
+}

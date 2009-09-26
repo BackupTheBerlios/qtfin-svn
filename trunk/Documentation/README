@@ -1,0 +1,18 @@
+## Prequisites
+
+* Comsol Multiphysics v.???
+* ... compléter (ide?)
+
+## Installation
+
+To ensure the communication between Monofin and Comsol, first Comsol must be 
+installed on the computer running Monofin. Second, the PATH environment 
+variable must contain the following path: INSTALLATION_FOLDER_OF_COMSOL/bin.
+Monofin will try to call a script (comsolapi on Linux/Max and comsolapi.bat
+on Windows) to execute simulations, thus the script must be accessible system
+widely.
+
+compléter
+
+## d'autres choses ?
+

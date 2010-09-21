@@ -46,8 +46,8 @@ MainWindow::MainWindow(QWidget *parent)
     _startupDialog = new StartupDialog(this);
 
 #ifdef Q_OS_MAC
-    _qmPath = qApp->applicationDirPath() + ":/translations";
-    _libraryPath = qApp->applicationDirPath() + ":/library";
+    _qmPath = ":/translations";
+    _libraryPath = ":/library";
 #else
     _qmPath = qApp->applicationDirPath() + "/translations";
     _libraryPath = qApp->applicationDirPath() + "/library";
@@ -469,7 +469,8 @@ void MainWindow::createActions()
     //FORM LIBRARY
     _buttonAddToFormLibrary = new QPushButton(this);
     _buttonAddToFormLibrary->setObjectName(QString::fromUtf8("actionAddToFormLibrary"));
-    _buttonRemoveForm = new QPushButton(this);    _buttonRemoveForm->setObjectName(QString::fromUtf8("buttonRemoveForm"));}
+    _buttonRemoveForm = new QPushButton(this);
+    _buttonRemoveForm->setObjectName(QString::fromUtf8("buttonRemoveForm"));}
 
 void MainWindow::createDocks()
 {

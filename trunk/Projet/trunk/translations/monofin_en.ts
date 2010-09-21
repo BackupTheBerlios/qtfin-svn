@@ -240,7 +240,29 @@
     </message>
     <message>
         <location filename="../Ui/graphic.cpp" line="105"/>
-        <source>All Supported Image Format (*.bmp *.gif *.jpg *.jpeg *.mng *.png *.pbm *.pgm *.ppm *.tiff *.xbm *.xpmWindows Bitmap (*.bmp);;Graphic Interchange Format (*.gif);;JPEG files (*.jpg *.jpeg);;Portable Network Graphics (*.png);;Portable Bitmap (*.pbm *.pgm *.ppm);;Tagged Image File Format (*.tiff);;X11 Format (*.xbm *.xpm);;</source>
+        <source>All Supported Image Format (*.bmp *.gif *.jpg *.jpeg *.mng *.png *.pbm *.pgm *.ppm *.tiff *.xbm *.xpm);;Windows Bitmap (*.bmp);;Graphic Interchange Format (*.gif);;JPEG files (*.jpg *.jpeg);;Portable Network Graphics (*.png);;Portable Bitmap (*.pbm *.pgm *.ppm);;Tagged Image File Format (*.tiff);;X11 Format (*.xbm *.xpm);;</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../Ui/graphic.cpp" line="210"/>
+        <source>Over position</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../Ui/graphic.cpp" line="210"/>
+        <source>Warning, the image is not correctly positionned!
+Some detected points are not in the scene.</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../Ui/graphic.cpp" line="215"/>
+        <source>No edge detected</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../Ui/graphic.cpp" line="215"/>
+        <source>Warning, the image is not correctly positionned!
+The symmetry axis is not detected.</source>
         <translation></translation>
     </message>
 </context>
@@ -305,15 +327,15 @@
     <name>MainWindow</name>
     <message>
         <location filename="../Ui/mainwindow.cpp" line="58"/>
-        <location filename="../Ui/mainwindow.cpp" line="282"/>
-        <location filename="../Ui/mainwindow.cpp" line="494"/>
+        <location filename="../Ui/mainwindow.cpp" line="305"/>
+        <location filename="../Ui/mainwindow.cpp" line="517"/>
         <source>English</source>
         <translation>English</translation>
     </message>
     <message>
         <location filename="../Ui/mainwindow.cpp" line="73"/>
-        <location filename="../Ui/mainwindow.cpp" line="380"/>
-        <location filename="../Ui/mainwindow.cpp" line="383"/>
+        <location filename="../Ui/mainwindow.cpp" line="403"/>
+        <location filename="../Ui/mainwindow.cpp" line="406"/>
         <source>Monofin</source>
         <translation></translation>
     </message>
@@ -328,138 +350,143 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="247"/>
+        <location filename="../Ui/mainwindow.cpp" line="255"/>
         <source>Remove file</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="335"/>
-        <location filename="../Ui/mainwindow.cpp" line="495"/>
+        <location filename="../Ui/mainwindow.cpp" line="257"/>
+        <source>Are you sure ?</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../Ui/mainwindow.cpp" line="358"/>
+        <location filename="../Ui/mainwindow.cpp" line="518"/>
         <source>&amp;%1 %2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="634"/>
+        <location filename="../Ui/mainwindow.cpp" line="657"/>
         <source>E&amp;xit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="635"/>
+        <location filename="../Ui/mainwindow.cpp" line="658"/>
         <source>Ctrl+Q</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="636"/>
+        <location filename="../Ui/mainwindow.cpp" line="659"/>
         <source>&amp;New...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="637"/>
+        <location filename="../Ui/mainwindow.cpp" line="660"/>
         <source>Ctrl+N</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="638"/>
+        <location filename="../Ui/mainwindow.cpp" line="661"/>
         <source>&amp;Open...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="639"/>
+        <location filename="../Ui/mainwindow.cpp" line="662"/>
         <source>Ctrl+O</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="640"/>
+        <location filename="../Ui/mainwindow.cpp" line="663"/>
         <source>&amp;Save</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="641"/>
+        <location filename="../Ui/mainwindow.cpp" line="664"/>
         <source>Ctrl+S</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="642"/>
+        <location filename="../Ui/mainwindow.cpp" line="665"/>
         <source>&amp;Save As...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="646"/>
+        <location filename="../Ui/mainwindow.cpp" line="669"/>
         <source>&amp;3D Preview</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="649"/>
+        <location filename="../Ui/mainwindow.cpp" line="672"/>
         <source>&amp;Fullscreen</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="650"/>
+        <location filename="../Ui/mainwindow.cpp" line="673"/>
         <source>F12</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="651"/>
+        <location filename="../Ui/mainwindow.cpp" line="674"/>
         <source>&amp;Properties...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="652"/>
+        <location filename="../Ui/mainwindow.cpp" line="675"/>
         <source>&amp;About</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="653"/>
+        <location filename="../Ui/mainwindow.cpp" line="676"/>
         <source>About &amp;Qt</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="654"/>
+        <location filename="../Ui/mainwindow.cpp" line="677"/>
         <source>&amp;Add form</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="655"/>
+        <location filename="../Ui/mainwindow.cpp" line="678"/>
         <source>&amp;Remove form</source>
         <translation>R&amp;emove form</translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="657"/>
+        <location filename="../Ui/mainwindow.cpp" line="680"/>
         <source>&amp;File</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="658"/>
+        <location filename="../Ui/mainwindow.cpp" line="681"/>
         <source>&amp;Draw</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="659"/>
+        <location filename="../Ui/mainwindow.cpp" line="682"/>
         <source>&amp;Simulation</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="660"/>
+        <location filename="../Ui/mainwindow.cpp" line="683"/>
         <source>&amp;View</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="661"/>
+        <location filename="../Ui/mainwindow.cpp" line="684"/>
         <source>&amp;Language</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="662"/>
+        <location filename="../Ui/mainwindow.cpp" line="685"/>
         <source>&amp;Help</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="665"/>
+        <location filename="../Ui/mainwindow.cpp" line="688"/>
         <source>Form library</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="380"/>
+        <location filename="../Ui/mainwindow.cpp" line="403"/>
         <source>%1[*] - %2</source>
         <translation></translation>
     </message>
@@ -482,27 +509,27 @@
 <context>
     <name>Monofin</name>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="644"/>
+        <location filename="../Ui/mainwindow.cpp" line="667"/>
         <source>Ctrl+Shift+G</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="643"/>
+        <location filename="../Ui/mainwindow.cpp" line="666"/>
         <source>&amp;Show Grid</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="645"/>
+        <location filename="../Ui/mainwindow.cpp" line="668"/>
         <source>&amp;Configurate...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="647"/>
+        <location filename="../Ui/mainwindow.cpp" line="670"/>
         <source>&amp;Launch</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Ui/mainwindow.cpp" line="648"/>
+        <location filename="../Ui/mainwindow.cpp" line="671"/>
         <source>Ctrl+L</source>
         <translation></translation>
     </message>

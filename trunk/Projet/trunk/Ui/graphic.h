@@ -111,6 +111,8 @@ signals:
     void kept();
 
 protected:
+
+    virtual void showEvent ( QShowEvent * event );
     Ui::EdgesExtraction _graphic; // the graphic's interface
     QDialog* _parametersDialog;
     Ui::Dialog _diag;

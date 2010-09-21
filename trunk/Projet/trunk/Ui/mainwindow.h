@@ -47,13 +47,15 @@ private slots:
     void about();
     void addFormToLibrary();
     void launch();
-    void loadForm(QListWidgetItem *item);    void preview3D();
+    void loadForm(QListWidgetItem *item);
+    void preview3D();
     void newEmptyProject();
     void newFile();
     void newProjectFromImage();
     void open();
     void openRecentFile();
-    void removeForm();    bool save();
+    void removeForm();
+    bool save();
     bool saveAs();
     void setFullScreenMode(bool enabled);
     void showGrid(bool a);

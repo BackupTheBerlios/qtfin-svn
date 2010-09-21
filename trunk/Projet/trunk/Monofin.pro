@@ -131,7 +131,15 @@ TRANSLATIONS = translations/monofin_de.ts \
     translations/monofin_fr.ts
 RESOURCES += resources/images.qrc \
     resources/icons.qrc
-mac:RESOURCES += resources/translations.qrc
+mac {
+RESOURCES += \
+    translations.qrc \
+    library.qrc
+}
 target.path = .
 INSTALLS += target
 RC_FILE = resources/monofin.rc
+
+# compatibility issues
+CONFIG += x86
+QMAKE_CXXFLAGS += -m32

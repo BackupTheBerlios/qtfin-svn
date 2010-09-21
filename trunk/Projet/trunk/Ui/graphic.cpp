@@ -61,6 +61,13 @@ Graphic::Graphic(QWidget *parent, ProjectFile* monofin, qreal width, qreal heigh
      QObject::connect(_graphic.parametersButton, SIGNAL(clicked()), _parametersDialog, SLOT(show()));
 }
 
+void Graphic::showEvent(QShowEvent * event)
+{
+    Q_UNUSED(event);
+
+    _graphic.retranslateUi(this);
+}
+
 
 void Graphic::setSize(qreal width, qreal height){
     EdgesExtractionScene* newScene = new EdgesExtractionScene(_graphic.graphicWidget, width, height);
@@ -102,7 +109,7 @@ void Graphic::setPixmap(){
                      this, SLOT(setPixmapPositionY(int)));
     }
     QString file = QFileDialog::getOpenFileName(this, tr("Open a file"), QString(),
-                                                tr("All Supported Image Format (*.bmp *.gif *.jpg *.jpeg *.mng *.png *.pbm *.pgm *.ppm *.tiff *.xbm *.xpm"
+                                                tr("All Supported Image Format (*.bmp *.gif *.jpg *.jpeg *.mng *.png *.pbm *.pgm *.ppm *.tiff *.xbm *.xpm);;"
                                                    "Windows Bitmap (*.bmp);;"
                                                    "Graphic Interchange Format (*.gif);;"
                                                    "JPEG files (*.jpg *.jpeg);;"

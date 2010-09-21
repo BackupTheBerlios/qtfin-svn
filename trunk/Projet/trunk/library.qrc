@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>library/MonofinSnake1.finf</file>
+        <file>library/MonofinSnake2.finf</file>
+        <file>library/MonofinSnake3.finf</file>
+        <file>library/MonofinSnakeHand.finf</file>
+        <file>library/sample.finf</file>
+        <file>library/turtle.finf</file>
+    </qresource>
+</RCC>
